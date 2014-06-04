@@ -34,8 +34,8 @@ public class Flipperf {
 
 	public static boolean MONITOR_BATTERY = true;
 	public static boolean UI_PERFORMANCE_LOGGING = true;
-//	private static final String BASE_URL_STRING = "http://stage-hyperion-api.digital.ch.flipkart.com:8201/apps/configs/events/bulk";
-	private static final String BASE_URL_STRING = "http://airtel.abhradev.com:9000/rest/test/mudit";
+	private static final String BASE_URL_STRING = "http://stage-hyperion-api.digital.ch.flipkart.com:8201/apps/configs/events/bulk";
+//	private static final String BASE_URL_STRING = "http://airtel.abhradev.com:9000/rest/test/mudit";
 
 	public static Flipperf getInstance() {
 		return instance;
