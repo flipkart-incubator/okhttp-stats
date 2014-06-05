@@ -6,8 +6,8 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
-import com.example.fk_android_batchnetworking.BatchNetworking;
-import com.example.fk_android_batchnetworking.JSONDataHandler;
+import com.flipkart.fk_android_batchnetworking.BatchNetworking;
+import com.flipkart.fk_android_batchnetworking.JSONDataHandler;
 import com.flipkart.fk_android_flipperf.models.PerfContext;
 import com.flipkart.fk_android_flipperf.models.PerfDataSet;
 import com.google.mygson.Gson;
@@ -16,6 +16,9 @@ import com.google.mygson.JsonElement;
 import com.google.mygson.JsonParser;
 
 public class Flipperf {
+	
+	public static final boolean AUTO_CONNECTION_PERFORMANCE_MAPPING = true; 
+
 	private static final String TAG = "Flipperf";
 	private static final String PERFORMANCE_EVENTS = "perf";
 
