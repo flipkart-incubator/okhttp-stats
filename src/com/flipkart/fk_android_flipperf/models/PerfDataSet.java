@@ -2,6 +2,8 @@ package com.flipkart.fk_android_flipperf.models;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import android.content.Context;
 import android.content.Intent;
@@ -48,6 +50,8 @@ public class PerfDataSet {
 					Secure.ANDROID_ID);
 			if (appUniqueId == null)
 				appUniqueId = "";
+			
+			appUniqueId = md5(appUniqueId); 
 		}
 		return appUniqueId;
 	}
@@ -64,9 +68,7 @@ public class PerfDataSet {
 		if (deviceInfo == null) {
 			Log.i(TAG, "Getting device info");
 			deviceInfo = new DeviceInfo();
-			deviceInfo.deviceId = Secure.getString(Flipperf.getInstance()
-					.getApplicationContext().getContentResolver(),
-					Secure.ANDROID_ID);
+			deviceInfo.deviceId = getAppUniqueId();
 
 			Log.i(TAG, "Before getting the telephony manager");
 			TelephonyManager tel = (TelephonyManager) Flipperf.getInstance()
@@ -200,4 +202,29 @@ public class PerfDataSet {
 		@SerializedName("timestamp")
 		public Long timestamp = Long.valueOf(System.currentTimeMillis());
 	}
+	
+	public static final String md5(final String s) {
+	    try {
+	        // Create MD5 Hash
+	        MessageDigest digest = java.security.MessageDigest
+	                .getInstance("MD5");
+	        digest.update(s.getBytes());
+	        byte messageDigest[] = digest.digest();
+
+	        // Create Hex String
+	        StringBuffer hexString = new StringBuffer();
+	        for (int i = 0; i < messageDigest.length; i++) {
+	            String h = Integer.toHexString(0xFF & messageDigest[i]);
+	            while (h.length() < 2)
+	                h = "0" + h;
+	            hexString.append(h);
+	        }
+	        return hexString.toString();
+
+	    } catch (NoSuchAlgorithmException e) {
+	        e.printStackTrace();
+	    }
+	    return null;
+	}
+
 }
