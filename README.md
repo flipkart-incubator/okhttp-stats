@@ -1,4 +1,4 @@
-Flipperf - Performance evaluation through logging: Android
+Flipperf : Android
 ===================
 
 ## Requirements
@@ -43,5 +43,31 @@ Resetting the global context will automatically reset the local context to null.
 
 The basic function to start tagging is:
 
-	public static void track(FlipperfTag tag, TagState tagState, String info)
+	Flipperf.track(FlipperfTag tag, TagState tagState, String info)
+
+#### FlipperfTag
+
+FlipperfTag class provides some standard tags. You should ideally not create an independent tag and instead use the following function to create a child tag of one of the existing tags
+
+	public FlipperfTag createChildTagWithName(String name)
+
+#### State
+
+State has three centinal values START, INTERMEDIATE AND END. START and END starts are used to calculate the time it took for the tagged event to complete. You can use custom states through the method
+
+	public static void track(FlipperfTag tag, String tagState, JsonElement info)
+
+#### Info
+
+This field can be used for logging extra information. You can keep is nil if there is nothing to pass. "info" is internally a JsonElement. You can use one of the overloaded methods to pass it as a String. The String is internally converted to JsonElement.
+
+## Logging concurrent events
+
+Say you have events which run concurrently and have the same tags, then you should use the following method. This is internally used by the library to log the connection tag as you can have multiple request going out at the same time. 
+
+	public void track(final FlipperfTag tag, final String state, final JsonElement info, final Object uniqueKey);
+
+You need to provide a unique key to identify each event saparately. This is internally used to calculate the load time.
+
+
 
