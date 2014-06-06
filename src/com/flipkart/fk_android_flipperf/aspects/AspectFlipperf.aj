@@ -54,7 +54,7 @@ public aspect AspectFlipperf {
 	/**
 	 * Fragment oncreate
 	 **/
-	pointcut fragmentOnCreateView() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_UI_PERFORMANCE_MAPPING) && execution(* FlipperfFragmentTracker+.onCreateView(..));
+	pointcut fragmentOnCreateView() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_UI_PERFORMANCE_MAPPING) && (execution(* FlipperfFragmentTracker+.onCreateView(..)) || execution(* Fragment+.onCreateView(..)));
 
 	before() : fragmentOnCreateView() {
 		String className = thisJoinPoint.getThis().getClass().getSimpleName();

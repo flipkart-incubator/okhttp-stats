@@ -74,7 +74,7 @@ You need to provide a unique key to identify each event saparately. This is inte
 Flipperf auto logs the following
 
 - Activity.onCreate(..)
-- Fragment+.onCreateView(..): Your fragment is a part of compatibility library, it must implement the marker interface FlipperfFragmentTracker. The library can't auto log the things here as code injection happens during the compile time and won't work on compiled libraries.
+- Fragment+.onCreateView(..): If your fragment is a part of compatibility library, it must implement the marker interface FlipperfFragmentTracker. The library can't auto log the things here as code injection happens during the compile time and won't work on compiled libraries. For the Fragment class from the android library logging should start working automatically.
 - BaseAdapter.getView(..)
 - Volley connections: Read the next segment for details.
 
