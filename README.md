@@ -69,7 +69,16 @@ Say you have events which run concurrently and have the same tags, then you shou
 
 You need to provide a unique key to identify each event saparately. This is internally used to calculate the load time.
 
-## Auto logging connection
+## Auto logging
+
+Flipperf auto logs the following
+
+- Activity.onCreate(..)
+- Fragment+.onCreateView(..)
+- BaseAdapter.getView(..)
+- Volley connections
+
+### Auto logging Volley connection
 If you want the library to auto log the performance of a connection, you need to make the following changes in your project. The design here is specific to Volley
 
 - FlipperfRequestQueueHolder: Your application should add a request to Volley queque through "addToVolley" method of the class which implements this interface.

@@ -28,7 +28,6 @@ public aspect AspectFlipperf {
 	after(): applicationONCreate() {
 		Context applicationContext = ((Application) thisJoinPoint.getThis())
 				.getApplicationContext();
-		Log.d(ATAG, "Setting application context");
 		com.flipkart.fk_android_flipperf.Flipperf.getInstance()
 				.setApplicationContext(applicationContext);
 	}
@@ -46,8 +45,9 @@ public aspect AspectFlipperf {
 
 	after() : activityOnCreate() {
 		String className = thisJoinPoint.getThis().getClass().getSimpleName();
-		Flipperf.track(new FlipperfTag("onCreate|" + className), TagState.END,
+		Flipperf.track(FlipperfTag.internalTag.createChildTagWithName("onCreate|" + className), TagState.END,
 				(String) null);
+		Log.d(ATAG, "After logging activityOnCreate");
 	}
 	
 	/**
@@ -63,8 +63,9 @@ public aspect AspectFlipperf {
 
 	after() : fragmentOnCreateView() {
 		String className = thisJoinPoint.getThis().getClass().getSimpleName();
-		Flipperf.track(new FlipperfTag("FragCreateView|" + className), TagState.END,
+		Flipperf.track(FlipperfTag.internalTag.createChildTagWithName("FragCreateView|" + className), TagState.END,
 				(String) null);
+		Log.d(ATAG, "After logging fragmentOnCreateView");
 	}
 	
 	/**
@@ -80,8 +81,9 @@ public aspect AspectFlipperf {
 
 	after() : baseAdapterGetView() {
 		String className = thisJoinPoint.getThis().getClass().getSimpleName();
-		Flipperf.track(new FlipperfTag("BAGetView|" + className), TagState.END,
+		Flipperf.track(FlipperfTag.internalTag.createChildTagWithName("BAGetView|" + className), TagState.END,
 				(String) null);
+		Log.d(ATAG, "After logging baseAdapterGetView");
 	}
 	
 
