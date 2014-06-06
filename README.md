@@ -74,9 +74,9 @@ You need to provide a unique key to identify each event saparately. This is inte
 Flipperf auto logs the following
 
 - Activity.onCreate(..)
-- Fragment+.onCreateView(..)
+- Fragment+.onCreateView(..): Your fragment is a part of compatibility library, it must implement the marker interface FlipperfFragmentTracker. The library can't auto log the things here as code injection happens during the compile time and won't work on compiled libraries.
 - BaseAdapter.getView(..)
-- Volley connections
+- Volley connections: Read the next segment for details.
 
 ### Auto logging Volley connection
 If you want the library to auto log the performance of a connection, you need to make the following changes in your project. The design here is specific to Volley

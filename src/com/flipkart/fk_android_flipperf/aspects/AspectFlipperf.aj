@@ -2,15 +2,16 @@ package com.flipkart.fk_android_flipperf.aspects;
 
 import android.app.Activity;
 import android.app.Application;
-import android.app.Fragment;
 import android.content.Context;
 import android.util.Log;
+import android.widget.BaseAdapter;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.flipkart.fk_android_flipperf.Flipperf;
 import com.flipkart.fk_android_flipperf.FlipperfTag;
 import com.flipkart.fk_android_flipperf.Flipperf.TagState;
+import com.flipperf.fk_android_flipperf.trackers.FlipperfFragmentTracker;
 import com.flipperf.fk_android_flipperf.trackers.FlipperfRequestQueueHolder;
 import com.flipperf.fk_android_flipperf.trackers.FlipperfRequst;
 
@@ -47,13 +48,13 @@ public aspect AspectFlipperf {
 		String className = thisJoinPoint.getThis().getClass().getSimpleName();
 		Flipperf.track(FlipperfTag.internalTag.createChildTagWithName("onCreate|" + className), TagState.END,
 				(String) null);
-		Log.d(ATAG, "After logging activityOnCreate");
+		Log.d(ATAG, "After logging activityOnCreate1");
 	}
 	
 	/**
 	 * Fragment oncreate
 	 **/
-	pointcut fragmentOnCreateView() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_UI_PERFORMANCE_MAPPING) && execution(* Fragment+.onCreateView(..));
+	pointcut fragmentOnCreateView() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_UI_PERFORMANCE_MAPPING) && execution(* FlipperfFragmentTracker+.onCreateView(..));
 
 	before() : fragmentOnCreateView() {
 		String className = thisJoinPoint.getThis().getClass().getSimpleName();
