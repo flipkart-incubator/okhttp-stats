@@ -2,6 +2,7 @@ package com.flipkart.fk_android_flipperf.aspects;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.Fragment;
 import android.content.Context;
 import android.util.Log;
 
@@ -22,7 +23,7 @@ public aspect AspectFlipperf {
 	public String ATAGC = "Conn";
 
 	/** Log App init **/
-	pointcut applicationONCreate() : execution(* Application.onCreate(..));
+	pointcut applicationONCreate() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_UI_PERFORMANCE_MAPPING) && execution(* Application.onCreate(..));
 
 	after(): applicationONCreate() {
 		Context applicationContext = ((Application) thisJoinPoint.getThis())
@@ -35,23 +36,60 @@ public aspect AspectFlipperf {
 	/**
 	 * Activity oncreate
 	 **/
-	pointcut activityMethods() : execution(* Activity+.onCreate(..));
+	pointcut activityOnCreate() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_UI_PERFORMANCE_MAPPING) && execution(* Activity+.onCreate(..));
 
-	before() : activityMethods() {
-		String method = thisJoinPoint.getSignature().toShortString();
-		//
-		// Log.d(ATAG, "=========== entering " +
-		// method+", parms="+Arrays.toString(thisJoinPoint.getArgs()));
-		// Log.d(ATAG, "=========== Hello Mudit 0" +
-		// thisJoinPoint.getThis().getClass().getName());
-		Log.d(ATAG, "=========== Hello Mudit 2" + method);
+	before() : activityOnCreate() {
+		String className = thisJoinPoint.getThis().getClass().getSimpleName();
+		Flipperf.getInstance().trackSilentSTARTState(null,
+				"onCreate|" + className);
 	}
+
+	after() : activityOnCreate() {
+		String className = thisJoinPoint.getThis().getClass().getSimpleName();
+		Flipperf.track(new FlipperfTag("onCreate|" + className), TagState.END,
+				(String) null);
+	}
+	
+	/**
+	 * Fragment oncreate
+	 **/
+	pointcut fragmentOnCreateView() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_UI_PERFORMANCE_MAPPING) && execution(* Fragment+.onCreateView(..));
+
+	before() : fragmentOnCreateView() {
+		String className = thisJoinPoint.getThis().getClass().getSimpleName();
+		Flipperf.getInstance().trackSilentSTARTState(null,
+				"FragCreateView|" + className);
+	}
+
+	after() : fragmentOnCreateView() {
+		String className = thisJoinPoint.getThis().getClass().getSimpleName();
+		Flipperf.track(new FlipperfTag("FragCreateView|" + className), TagState.END,
+				(String) null);
+	}
+	
+	/**
+	 * Base adapter getView
+	 **/
+	pointcut baseAdapterGetView() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_UI_PERFORMANCE_MAPPING) && execution(* BaseAdapter+.getView(..));
+
+	before() : baseAdapterGetView() {
+		String className = thisJoinPoint.getThis().getClass().getSimpleName();
+		Flipperf.getInstance().trackSilentSTARTState(null,
+				"BAGetView|" + className);
+	}
+
+	after() : baseAdapterGetView() {
+		String className = thisJoinPoint.getThis().getClass().getSimpleName();
+		Flipperf.track(new FlipperfTag("BAGetView|" + className), TagState.END,
+				(String) null);
+	}
+	
 
 	/**
 	 * Log the time from putting a request in a Volley RequestQueue till you get
 	 * a call in parseNetworkResponse method of com.android.volley.Request
 	 */
-	pointcut addToConnectionRequestQueue() : if(Flipperf.AUTO_CONNECTION_PERFORMANCE_MAPPING) && (execution(* FlipperfRequestQueueHolder+.addToVolley(..)));
+	pointcut addToConnectionRequestQueue() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_CONNECTION_PERFORMANCE_MAPPING) && (execution(* FlipperfRequestQueueHolder+.addToVolley(..)));
 
 	before() : addToConnectionRequestQueue() {
 		Request request = (Request) thisJoinPoint.getArgs()[0];
@@ -61,7 +99,7 @@ public aspect AspectFlipperf {
 		Log.d(ATAG, "=========== connectionQueue " + info);
 	}
 
-	pointcut connectionResponse() : if(Flipperf.AUTO_CONNECTION_PERFORMANCE_MAPPING) && (execution(* FlipperfRequst+.parseNetworkResponse(..)));
+	pointcut connectionResponse() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_CONNECTION_PERFORMANCE_MAPPING) && (execution(* FlipperfRequst+.parseNetworkResponse(..)));
 
 	after() : connectionResponse() {
 		Request request = (Request) thisJoinPoint.getThis();
@@ -74,7 +112,7 @@ public aspect AspectFlipperf {
 	/**
 	 * Log conn: Volley needs to be compiled with this pointcut
 	 **/
-	pointcut addToVolleyQueue() : if(Flipperf.AUTO_CONNECTION_PERFORMANCE_MAPPING) && (execution(* RequestQueue+.add(..)));
+	pointcut addToVolleyQueue() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_CONNECTION_PERFORMANCE_MAPPING) && (execution(* RequestQueue+.add(..)));
 
 	before() : addToVolleyQueue() {
 		Log.d(ATAG, "=========== addToVolleyQueue 0 ");
@@ -86,7 +124,7 @@ public aspect AspectFlipperf {
 		Log.d(ATAG, "=========== addToVolleyQueue 2 " + info);
 	}
 
-	pointcut volleyResponse() : if(Flipperf.AUTO_CONNECTION_PERFORMANCE_MAPPING) && (execution(* com.android.volley.RequestQueue+.finish(..)));
+	pointcut volleyResponse() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_CONNECTION_PERFORMANCE_MAPPING) && (execution(* com.android.volley.RequestQueue+.finish(..)));
 
 	after() : volleyResponse() {
 		Log.d(ATAG, "=========== volleyResponse 0 ");

@@ -16,8 +16,10 @@ import com.google.mygson.JsonElement;
 import com.google.mygson.JsonParser;
 
 public class Flipperf {
-	
-	public static final boolean AUTO_CONNECTION_PERFORMANCE_MAPPING = true; 
+
+	public static final boolean AUTO_PERFORMANCE_MAPPING = true;
+	public static final boolean AUTO_CONNECTION_PERFORMANCE_MAPPING = true;
+	public static final boolean AUTO_UI_PERFORMANCE_MAPPING = true;
 
 	private static final String TAG = "Flipperf";
 	private static final String PERFORMANCE_EVENTS = "perf";
@@ -38,10 +40,13 @@ public class Flipperf {
 	public static boolean MONITOR_BATTERY = true;
 	public static boolean UI_PERFORMANCE_LOGGING = true;
 	private static final String BASE_URL_STRING = "http://stage-hyperion-api.digital.ch.flipkart.com:8201/apps/configs/events/bulk";
-//	private static final String BASE_URL_STRING = "http://airtel.abhradev.com:9000/rest/test/mudit";
 
 	public static Flipperf getInstance() {
 		return instance;
+	}
+
+	public static void track(FlipperfTag tag, TagState tagState, String info) {
+		Flipperf.getInstance().track(tag, tagState.getName(), info, null);
 	}
 
 	public static void track(FlipperfTag tag, TagState tagState,
@@ -62,8 +67,9 @@ public class Flipperf {
 
 	public void setApplicationContext(Context applicationContext) {
 		this.applicationContext = applicationContext;
-		Log.i(TAG, "In setApplicationContext  applicationContext = " + applicationContext);
-		
+		Log.i(TAG, "In setApplicationContext  applicationContext = "
+				+ applicationContext);
+
 		// Do lazy initialization of BatchNetworking as the application context
 		// is not available when flipperf is initialized
 		if (!isBatchNetworkingInitialized) {
@@ -94,7 +100,7 @@ public class Flipperf {
 
 	private Flipperf() {
 		dateMarkers = new HashMap<Object, Number>();
-		this.resetGlobalContext("appLoad");
+		resetGlobalContext("appLoad");
 		GsonBuilder builder = new GsonBuilder();
 		gson = builder.create();
 		trackerHandler = new Handler();
@@ -120,6 +126,14 @@ public class Flipperf {
 			}
 		}
 		track(tag, state, element, uniqueKey);
+	}
+
+	public void trackSilentSTARTState(final FlipperfTag tag, Object uniqueKeyInternal) {
+		if (null == uniqueKeyInternal) {
+			uniqueKeyInternal = tag.tagName;
+		}
+		Long startTime = Long.valueOf(System.currentTimeMillis());
+		dateMarkers.put(uniqueKeyInternal, startTime);
 	}
 
 	public void track(final FlipperfTag tag, final String state,
