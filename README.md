@@ -82,7 +82,13 @@ Flipperf auto logs the following
 If you want the library to auto log the performance of a connection, you need to make the following changes in your project. The design here is specific to Volley
 
 - FlipperfRequestQueueHolder: Your application should add a request to Volley queque through "addToVolley" method of the class which implements this interface.
-- FlipperfRequst: Your Volley request class should implement this interface. It has a method "parseNetworkResponse" to be implemented, which your request class must already be implementing.
+- FlipperfRequst: Your Volley request class should implement this interface. It has a method "parseNetworkResponse" to be implemented, which your request class must already be implementing. You would have to change the access specifier of the following funtion in the implementation class to public 
+
+Function 
+
+	public Response<T> parseNetworkResponse(NetworkResponse response)
+
+
 
 
 
