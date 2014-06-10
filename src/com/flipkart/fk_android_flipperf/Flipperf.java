@@ -18,8 +18,8 @@ import com.google.mygson.JsonParser;
 public class Flipperf {
 
 	public static final boolean AUTO_PERFORMANCE_MAPPING = true;
-	public static final boolean AUTO_CONNECTION_PERFORMANCE_MAPPING = false;
-	public static final boolean AUTO_UI_PERFORMANCE_MAPPING = false;
+	public static final boolean AUTO_CONNECTION_PERFORMANCE_MAPPING = true;
+	public static final boolean AUTO_UI_PERFORMANCE_MAPPING = true;
 
 	private static final String TAG = "Flipperf";
 	private static final String PERFORMANCE_EVENTS = "perf";

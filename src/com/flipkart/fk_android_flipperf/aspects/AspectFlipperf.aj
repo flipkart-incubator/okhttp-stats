@@ -24,7 +24,7 @@ public aspect AspectFlipperf {
 	public String ATAGC = "Conn";
 
 	/** Log App init **/
-	pointcut applicationONCreate() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_UI_PERFORMANCE_MAPPING) && execution(* Application.onCreate(..));
+	pointcut applicationONCreate() : execution(* Application.onCreate(..));
 
 	after(): applicationONCreate() {
 		Context applicationContext = ((Application) thisJoinPoint.getThis())
