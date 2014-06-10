@@ -128,11 +128,12 @@ public class Flipperf {
 		track(tag, state, element, uniqueKey);
 	}
 
-	public void trackSilentSTARTState(final FlipperfTag tag, Object uniqueKeyInternal) {
+	public void trackSilentSTARTState(final FlipperfTag tag,
+			Object uniqueKeyInternal) {
 		if (null == uniqueKeyInternal) {
 			uniqueKeyInternal = tag.tagName;
 		}
-		Long startTime = Long.valueOf(System.currentTimeMillis());
+		Long startTime = Long.valueOf(System.nanoTime());
 		dateMarkers.put(uniqueKeyInternal, startTime);
 	}
 
@@ -167,21 +168,24 @@ public class Flipperf {
 
 					Long startTime = null;
 					if (state.equals(TagState.START.getName())) {
-						startTime = Long.valueOf(System.currentTimeMillis());
+						startTime = Long.valueOf(System.nanoTime());
 						dateMarkers.put(uniqueKeyInternal, startTime);
 					} else {
 						startTime = (Long) dateMarkers.get(uniqueKeyInternal);
 						if (startTime == null)
-							startTime = Long.valueOf(System.currentTimeMillis());
+							startTime = Long.valueOf(System.nanoTime());
 						if (state.equals(TagState.END.getName())) {
 							dateMarkers.remove(uniqueKeyInternal);
 							long lngStartTime = startTime.longValue();
-							long endTime = System.currentTimeMillis();
+							long endTime = System.nanoTime();
 
 							// time taken to load
-							long elapsedTime = endTime - lngStartTime;
+							double elapsedTime = ((double)endTime - (double)lngStartTime)/1000000;
 							elementData.endTime = Long.valueOf(endTime);
-							elementData.loadTime = Long.valueOf(elapsedTime);
+							elementData.loadTime = Double.valueOf(elapsedTime);
+
+							Log.i(TAG, "elementData.loadTime = "
+									+ elementData.loadTime);
 						}
 					}
 					elementData.startTime = startTime;

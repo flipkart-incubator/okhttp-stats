@@ -145,7 +145,7 @@ public class PerfDataSet {
 		public Long startTime;
 
 		@SerializedName("loadTime")
-		public Long loadTime;
+		public Double loadTime;
 
 		@SerializedName("endTime")
 		public Long endTime;
