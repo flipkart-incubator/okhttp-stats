@@ -46,11 +46,12 @@ public aspect AspectFlipperf {
 
 	after() : activityOnCreate() {
 		String className = thisJoinPoint.getThis().getClass().getSimpleName();
-		Flipperf.track(FlipperfTag.internalTag.createChildTagWithName("onCreate|" + className), TagState.END,
-				(String) null);
-		Log.d(ATAG, "After logging activityOnCreate1");
+		Flipperf.track(
+				FlipperfTag.internalTag.createChildTagWithName("onCreate|"
+						+ className), TagState.END, (String) null);
+		// Log.d(ATAG, "After logging activityOnCreate1");
 	}
-	
+
 	/**
 	 * Fragment oncreate
 	 **/
@@ -64,11 +65,12 @@ public aspect AspectFlipperf {
 
 	after() : fragmentOnCreateView() {
 		String className = thisJoinPoint.getThis().getClass().getSimpleName();
-		Flipperf.track(FlipperfTag.internalTag.createChildTagWithName("FragCreateView|" + className), TagState.END,
-				(String) null);
+		Flipperf.track(FlipperfTag.internalTag
+				.createChildTagWithName("FragCreateView|" + className),
+				TagState.END, (String) null);
 		Log.d(ATAG, "After logging fragmentOnCreateView");
 	}
-	
+
 	/**
 	 * Base adapter getView
 	 **/
@@ -82,11 +84,11 @@ public aspect AspectFlipperf {
 
 	after() : baseAdapterGetView() {
 		String className = thisJoinPoint.getThis().getClass().getSimpleName();
-		Flipperf.track(FlipperfTag.internalTag.createChildTagWithName("BAGetView|" + className), TagState.END,
-				(String) null);
+		Flipperf.track(
+				FlipperfTag.internalTag.createChildTagWithName("BAGetView|"
+						+ className), TagState.END, (String) null);
 		Log.d(ATAG, "After logging baseAdapterGetView");
 	}
-	
 
 	/**
 	 * Log the time from putting a request in a Volley RequestQueue till you get
@@ -99,7 +101,7 @@ public aspect AspectFlipperf {
 		String info = request.getUrl();
 		com.flipkart.fk_android_flipperf.Flipperf.getInstance().track(
 				FlipperfTag.connTag, TagState.START.getName(), info, info);
-		Log.d(ATAG, "=========== connectionQueue " + info);
+		// Log.d(ATAG, "=========== connectionQueue " + info);
 	}
 
 	pointcut connectionResponse() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_CONNECTION_PERFORMANCE_MAPPING) && (execution(* FlipperfRequst+.parseNetworkResponse(..)));
@@ -109,7 +111,7 @@ public aspect AspectFlipperf {
 		String info = request.getUrl();
 		com.flipkart.fk_android_flipperf.Flipperf.getInstance().track(
 				FlipperfTag.connTag, TagState.END.getName(), info, info);
-		Log.d(ATAG, "=========== connectionResponse " + info);
+		// Log.d(ATAG, "=========== connectionResponse " + info);
 	}
 
 	/**
@@ -118,25 +120,21 @@ public aspect AspectFlipperf {
 	pointcut addToVolleyQueue() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_CONNECTION_PERFORMANCE_MAPPING) && (execution(* RequestQueue+.add(..)));
 
 	before() : addToVolleyQueue() {
-		Log.d(ATAG, "=========== addToVolleyQueue 0 ");
+		// Log.d(ATAG, "=========== addToVolleyQueue 0 ");
 		Request request = (Request) thisJoinPoint.getArgs()[0];
 		String info = request.getUrl();
-		Log.d(ATAG, "=========== addToVolleyQueue 1 " + info);
 		com.flipkart.fk_android_flipperf.Flipperf.getInstance().track(
 				FlipperfTag.connTag, TagState.START.getName(), info, info);
-		Log.d(ATAG, "=========== addToVolleyQueue 2 " + info);
 	}
 
 	pointcut volleyResponse() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_CONNECTION_PERFORMANCE_MAPPING) && (execution(* com.android.volley.RequestQueue+.finish(..)));
 
 	after() : volleyResponse() {
-		Log.d(ATAG, "=========== volleyResponse 0 ");
 		Request request = (Request) thisJoinPoint.getArgs()[0];
 		String info = request.getUrl();
-		Log.d(ATAG, "=========== volleyResponse 1 " + info);
+		// Log.d(ATAG, "=========== volleyResponse 1 " + info);
 		com.flipkart.fk_android_flipperf.Flipperf.getInstance().track(
 				FlipperfTag.connTag, TagState.END.getName(), info, info);
-		Log.d(ATAG, "=========== volleyResponse 2 " + info);
 	}
 	// pointcut performRequest() : (execution(*
 	// HurlStack+.performRequest(Request<?>, ..)));

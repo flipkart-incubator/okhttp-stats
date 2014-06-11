@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.Log;
 
 import com.flipkart.fk_android_batchnetworking.BatchNetworking;
@@ -67,14 +68,11 @@ public class Flipperf {
 
 	public void setApplicationContext(Context applicationContext) {
 		this.applicationContext = applicationContext;
-		Log.i(TAG, "In setApplicationContext  applicationContext = "
-				+ applicationContext);
 
 		// Do lazy initialization of BatchNetworking as the application context
 		// is not available when flipperf is initialized
 		if (!isBatchNetworkingInitialized) {
 			isBatchNetworkingInitialized = true;
-			Log.i(TAG, "Initializing batchnetworking");
 			BatchNetworking.getDefaultInstance().initialize(
 					getApplicationContext());
 			try {
@@ -103,7 +101,11 @@ public class Flipperf {
 		resetGlobalContext("appLoad");
 		GsonBuilder builder = new GsonBuilder();
 		gson = builder.create();
-		trackerHandler = new Handler();
+		
+		HandlerThread thread = new HandlerThread("TrackerHandler");
+		thread.setPriority(Thread.NORM_PRIORITY - 2);
+		thread.start();
+		trackerHandler = new Handler(thread.getLooper());
 	}
 
 	public void track(FlipperfTag tag, String state, String info,
@@ -139,7 +141,6 @@ public class Flipperf {
 
 	public void track(final FlipperfTag tag, final String state,
 			final JsonElement info, final Object uniqueKey) {
-		Log.i(TAG, "in track B 1");
 
 		trackerHandler.post(new Runnable() {
 			@Override
@@ -183,14 +184,10 @@ public class Flipperf {
 							double elapsedTime = ((double)endTime - (double)lngStartTime)/1000000;
 							elementData.endTime = Long.valueOf(endTime);
 							elementData.loadTime = Double.valueOf(elapsedTime);
-
-							Log.i(TAG, "elementData.loadTime = "
-									+ elementData.loadTime);
 						}
 					}
 					elementData.startTime = startTime;
 
-					Log.i(TAG, "Before pushing data to batch networking lib");
 					BatchNetworking.getDefaultInstance().pushDataForGroupId(
 							gson.toJsonTree(element), PERFORMANCE_EVENTS);
 

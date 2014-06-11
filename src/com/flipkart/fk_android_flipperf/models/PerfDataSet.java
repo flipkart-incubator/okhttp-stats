@@ -12,10 +12,12 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.flipkart.fk_android_batchnetworking.Connectivity;
 import com.flipkart.fk_android_flipperf.Flipperf;
 import com.google.mygson.annotations.SerializedName;
 
@@ -50,8 +52,8 @@ public class PerfDataSet {
 					Secure.ANDROID_ID);
 			if (appUniqueId == null)
 				appUniqueId = "";
-			
-			appUniqueId = md5(appUniqueId); 
+
+			appUniqueId = md5(appUniqueId);
 		}
 		return appUniqueId;
 	}
@@ -66,26 +68,27 @@ public class PerfDataSet {
 
 	public PerfDataSet() {
 		if (deviceInfo == null) {
-			Log.i(TAG, "Getting device info");
 			deviceInfo = new DeviceInfo();
 			deviceInfo.deviceId = getAppUniqueId();
 
-			Log.i(TAG, "Before getting the telephony manager");
 			TelephonyManager tel = (TelephonyManager) Flipperf.getInstance()
 					.getApplicationContext()
 					.getSystemService(Context.TELEPHONY_SERVICE);
-			Log.i(TAG, "telephony manager = " + tel);
-			String networkOperator = tel.getNetworkOperator();
-			if (networkOperator != null) {
-				deviceInfo.mcc = networkOperator.substring(0, 3);
-				deviceInfo.mnc = networkOperator.substring(3);
+			if (tel != null) {
+				String networkOperator = tel.getNetworkOperator();
+				if (networkOperator != null) {
+					deviceInfo.mcc = networkOperator.substring(0, 3);
+					deviceInfo.mnc = networkOperator.substring(3);
+				}
+				deviceInfo.cn = tel.getNetworkOperatorName();
+
+				deviceInfo.brand = Build.BRAND;
+				deviceInfo.model = Build.MODEL;
+				deviceInfo.version = Integer.valueOf(Build.VERSION.SDK_INT);
 			}
 		}
-		Log.i(TAG, "Before header");
 		header = new Header();
-		Log.i(TAG, "Before data");
 		data = new Data();
-		Log.i(TAG, "After data");
 		data.deviceInfo = deviceInfo;
 	}
 
@@ -165,13 +168,21 @@ public class PerfDataSet {
 		@SerializedName("batteryLevel")
 		public Number batteryLevel = getBatteryLevel();
 
+		@SerializedName("network")
+		public String network = Connectivity.getConnection(Flipperf
+				.getInstance().getApplicationContext());
+
+		@SerializedName("networkSpeed")
+		public String networkSpeed = Connectivity.getConnectionSpeed(Flipperf
+				.getInstance().getApplicationContext());
+
 		@SerializedName("deviceInfo")
 		public DeviceInfo deviceInfo;
 	}
 
 	class DeviceInfo {
 		@SerializedName("cn")
-		public float cn;
+		public String cn;
 
 		@SerializedName("mnc")
 		public String mnc;
@@ -181,6 +192,15 @@ public class PerfDataSet {
 
 		@SerializedName("deviceId")
 		public String deviceId;
+
+		@SerializedName("brand")
+		public String brand;
+
+		@SerializedName("model")
+		public String model;
+
+		@SerializedName("version")
+		public Integer version;
 	}
 
 	public class Header {
@@ -202,29 +222,29 @@ public class PerfDataSet {
 		@SerializedName("timestamp")
 		public Long timestamp = Long.valueOf(System.currentTimeMillis());
 	}
-	
+
 	public static final String md5(final String s) {
-	    try {
-	        // Create MD5 Hash
-	        MessageDigest digest = java.security.MessageDigest
-	                .getInstance("MD5");
-	        digest.update(s.getBytes());
-	        byte messageDigest[] = digest.digest();
+		try {
+			// Create MD5 Hash
+			MessageDigest digest = java.security.MessageDigest
+					.getInstance("MD5");
+			digest.update(s.getBytes());
+			byte messageDigest[] = digest.digest();
 
-	        // Create Hex String
-	        StringBuffer hexString = new StringBuffer();
-	        for (int i = 0; i < messageDigest.length; i++) {
-	            String h = Integer.toHexString(0xFF & messageDigest[i]);
-	            while (h.length() < 2)
-	                h = "0" + h;
-	            hexString.append(h);
-	        }
-	        return hexString.toString();
+			// Create Hex String
+			StringBuffer hexString = new StringBuffer();
+			for (int i = 0; i < messageDigest.length; i++) {
+				String h = Integer.toHexString(0xFF & messageDigest[i]);
+				while (h.length() < 2)
+					h = "0" + h;
+				hexString.append(h);
+			}
+			return hexString.toString();
 
-	    } catch (NoSuchAlgorithmException e) {
-	        e.printStackTrace();
-	    }
-	    return null;
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }
