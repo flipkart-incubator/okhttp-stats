@@ -23,7 +23,7 @@ public class Flipperf {
 	public static final boolean AUTO_UI_PERFORMANCE_MAPPING = true;
 
 	private static final String TAG = "Flipperf";
-	private static final String PERFORMANCE_EVENTS = "perf";
+	private static final String PERFORMANCE_EVENTS = "flipperf";
 
 	public enum TagState {
 		START("start"), INTERMEDIATE("intermediate"), END("end");
