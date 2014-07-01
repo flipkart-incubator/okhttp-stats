@@ -15,7 +15,6 @@ import android.os.BatteryManager;
 import android.os.Build;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 
 import com.flipkart.fk_android_batchnetworking.Connectivity;
 import com.flipkart.fk_android_flipperf.Flipperf;
@@ -93,7 +92,8 @@ public class PerfDataSet {
 	}
 
 	private Number getBatteryLevel() {
-		// TODO implement the method
+		if (!Flipperf.isBatteryMonitoringON())
+			return -1;
 		IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
 		Intent batteryStatus = Flipperf.getInstance().getApplicationContext()
 				.registerReceiver(null, ifilter);

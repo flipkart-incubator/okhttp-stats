@@ -26,6 +26,26 @@ The library works on the Contexts and Tags. A context for the library is a user 
 
 "AppInit" is set as the default context when the library is instantiated.
 
+### Configure
+
+- Add the following line in your AndroidManifest.xml inside application tag
+
+<pre>
+	&lt;meta-data android:name="com.flipkart.fk_android_flipperf" android:resource="@xml/flipperf" /&gt;
+</pre>
+
+- Add a file named flipperf.xml in your res->xml folder and put the following content
+
+<pre>
+	&lt;?xml version="1.0" encoding="utf-8"?&gt;
+	&lt;flipperf xmlns:android="http://schemas.android.com/apk/res/android"&gt;
+    	&lt;flipperf_url&gt;<i><b>[URL of the server where the data has to be sent]</b></i>&lt;/flipperf_url&gt;
+    	&lt;flipperf_off&gt;<i><b>[true|false]</b></i>&lt;/flipperf_off&gt;
+	&lt;/flipperf&gt;
+</pre>
+
+Set the proper values for **flipperf\_url** and **flipperf\_off**
+
 ### Setting the context
 
 You can set the boundries of a context by using the following function

@@ -36,12 +36,13 @@ public aspect AspectFlipperf {
 	/**
 	 * Activity oncreate
 	 **/
-	pointcut activityOnCreate() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_UI_PERFORMANCE_MAPPING) && execution(* Activity+.onCreate(..));
+	pointcut activityOnCreate() : if(Flipperf.isAutoUIPerformanceLoggingON()) && execution(* Activity+.onCreate(..));
 
 	before() : activityOnCreate() {
 		String className = thisJoinPoint.getThis().getClass().getSimpleName();
 		Flipperf.getInstance().trackSilentSTARTState(null,
 				"onCreate|" + className);
+		// Log.d(ATAG, "Before activityOnCreate");
 	}
 
 	after() : activityOnCreate() {
@@ -49,13 +50,13 @@ public aspect AspectFlipperf {
 		Flipperf.track(
 				FlipperfTag.internalTag.createChildTagWithName("onCreate|"
 						+ className), TagState.END, (String) null);
-		// Log.d(ATAG, "After logging activityOnCreate1");
+		// Log.d(ATAG, "After activityOnCreate");
 	}
 
 	/**
 	 * Fragment oncreate
 	 **/
-	pointcut fragmentOnCreateView() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_UI_PERFORMANCE_MAPPING) && (execution(* FlipperfFragmentTracker+.onCreateView(..)) || execution(* Fragment+.onCreateView(..)));
+	pointcut fragmentOnCreateView() : if(Flipperf.isAutoUIPerformanceLoggingON()) && (execution(* FlipperfFragmentTracker+.onCreateView(..)) || execution(* Fragment+.onCreateView(..)));
 
 	before() : fragmentOnCreateView() {
 		String className = thisJoinPoint.getThis().getClass().getSimpleName();
@@ -74,7 +75,7 @@ public aspect AspectFlipperf {
 	/**
 	 * Base adapter getView
 	 **/
-	pointcut baseAdapterGetView() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_UI_PERFORMANCE_MAPPING) && execution(* BaseAdapter+.getView(..));
+	pointcut baseAdapterGetView() : if(Flipperf.isAutoUIPerformanceLoggingON()) && execution(* BaseAdapter+.getView(..));
 
 	before() : baseAdapterGetView() {
 		String className = thisJoinPoint.getThis().getClass().getSimpleName();
@@ -87,14 +88,14 @@ public aspect AspectFlipperf {
 		Flipperf.track(
 				FlipperfTag.internalTag.createChildTagWithName("BAGetView|"
 						+ className), TagState.END, (String) null);
-		Log.d(ATAG, "After logging baseAdapterGetView");
+		// Log.d(ATAG, "After logging baseAdapterGetView");
 	}
 
 	/**
 	 * Log the time from putting a request in a Volley RequestQueue till you get
 	 * a call in parseNetworkResponse method of com.android.volley.Request
 	 */
-	pointcut addToConnectionRequestQueue() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_CONNECTION_PERFORMANCE_MAPPING) && (execution(* FlipperfRequestQueueHolder+.addToVolley(..)));
+	pointcut addToConnectionRequestQueue() : if(Flipperf.isAutoConnectionPerformanceLoggingON()) && (execution(* FlipperfRequestQueueHolder+.addToVolley(..)));
 
 	before() : addToConnectionRequestQueue() {
 		Request request = (Request) thisJoinPoint.getArgs()[0];
@@ -104,7 +105,7 @@ public aspect AspectFlipperf {
 		// Log.d(ATAG, "=========== connectionQueue " + info);
 	}
 
-	pointcut connectionResponse() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_CONNECTION_PERFORMANCE_MAPPING) && (execution(* FlipperfRequst+.parseNetworkResponse(..)));
+	pointcut connectionResponse() : if(Flipperf.isAutoConnectionPerformanceLoggingON()) && (execution(* FlipperfRequst+.parseNetworkResponse(..)));
 
 	after() : connectionResponse() {
 		Request request = (Request) thisJoinPoint.getThis();
@@ -117,7 +118,7 @@ public aspect AspectFlipperf {
 	/**
 	 * Log conn: Volley needs to be compiled with this pointcut
 	 **/
-	pointcut addToVolleyQueue() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_CONNECTION_PERFORMANCE_MAPPING) && (execution(* RequestQueue+.add(..)));
+	pointcut addToVolleyQueue() : if(Flipperf.isAutoConnectionPerformanceLoggingON()) && (execution(* RequestQueue+.add(..)));
 
 	before() : addToVolleyQueue() {
 		// Log.d(ATAG, "=========== addToVolleyQueue 0 ");
@@ -127,7 +128,7 @@ public aspect AspectFlipperf {
 				FlipperfTag.connTag, TagState.START.getName(), info, info);
 	}
 
-	pointcut volleyResponse() : if(Flipperf.AUTO_PERFORMANCE_MAPPING && Flipperf.AUTO_CONNECTION_PERFORMANCE_MAPPING) && (execution(* com.android.volley.RequestQueue+.finish(..)));
+	pointcut volleyResponse() : if(Flipperf.isAutoConnectionPerformanceLoggingON()) && (execution(* com.android.volley.RequestQueue+.finish(..)));
 
 	after() : volleyResponse() {
 		Request request = (Request) thisJoinPoint.getArgs()[0];
