@@ -1,7 +1,7 @@
 package com.flipkart.fk_android_flipperf.models;
 
-import com.google.mygson.JsonElement;
-import com.google.mygson.annotations.SerializedName;
+import com.google.gson.JsonElement;
+import com.google.gson.annotations.SerializedName;
 
 public class PerfContext implements Cloneable
 {

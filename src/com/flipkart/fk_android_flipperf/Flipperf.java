@@ -16,10 +16,10 @@ import com.flipkart.fk_android_batchnetworking.BatchNetworking;
 import com.flipkart.fk_android_batchnetworking.JSONDataHandler;
 import com.flipkart.fk_android_flipperf.models.PerfContext;
 import com.flipkart.fk_android_flipperf.models.PerfDataSet;
-import com.google.mygson.Gson;
-import com.google.mygson.GsonBuilder;
-import com.google.mygson.JsonElement;
-import com.google.mygson.JsonParser;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 public class Flipperf {
 

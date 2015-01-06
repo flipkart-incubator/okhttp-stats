@@ -18,7 +18,7 @@ import android.telephony.TelephonyManager;
 
 import com.flipkart.fk_android_batchnetworking.Connectivity;
 import com.flipkart.fk_android_flipperf.Flipperf;
-import com.google.mygson.annotations.SerializedName;
+import com.google.gson.annotations.SerializedName;
 
 public class PerfDataSet {
 
