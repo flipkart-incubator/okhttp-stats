@@ -43,7 +43,8 @@ android {
     	compile 'com.android.support:appcompat-v7:19.1.+'
         compile 'com.google.code.gson:gson:2.3'
         compile 'com.flipkart.android.batchnetworking:FkBatchNetworking:1.1.+'
-	}
+        compile 'org.aspectj:aspectjrt:1.6.+'
+    }
 
     task wrapper(type: Wrapper) {
         gradleVersion = '2.2.1'
