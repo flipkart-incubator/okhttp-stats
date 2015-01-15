@@ -1,4 +1,4 @@
-package com.flipperf.fk_android_flipperf.trackers;
+package com.flipkart.flipperf.trackers;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

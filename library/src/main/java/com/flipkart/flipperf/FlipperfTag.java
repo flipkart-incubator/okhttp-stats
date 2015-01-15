@@ -1,4 +1,4 @@
-package com.flipkart.fk_android_flipperf;
+package com.flipkart.flipperf;
 
 
 public class FlipperfTag {

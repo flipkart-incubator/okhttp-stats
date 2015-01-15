@@ -1,9 +1,4 @@
-package com.flipkart.fk_android_flipperf.models;
-
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+package com.flipkart.flipperf.models;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,8 +12,13 @@ import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 
 import com.flipkart.fk_android_batchnetworking.Connectivity;
-import com.flipkart.fk_android_flipperf.Flipperf;
+import com.flipkart.flipperf.Flipperf;
 import com.google.gson.annotations.SerializedName;
+
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class PerfDataSet {
 

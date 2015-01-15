@@ -1,93 +1,15 @@
 buildscript {
     repositories {
-        mavenCentral()
         jcenter()
-        maven { url 'http://artifactory.nm.flipkart.com:8081/artifactory/libs-release-local' }
+        mavenCentral()
     }
-
     dependencies {
         classpath 'com.android.tools.build:gradle:1.0.0'
-        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:2.2.3'
-        classpath 'com.flipkart.android.batchnetworking:FkBatchNetworking:1.1.+'
     }
 }
 
-repositories {
-    mavenCentral()
-    maven { url 'http://artifactory.nm.flipkart.com:8081/artifactory/libs-release-local' }
-}
-
-group = ARTIFACTORY_GROUP
-version = VERSION_NAME
-status = STATUS
-
-apply plugin: 'android-library'
-apply plugin: 'artifactory'
-
-android {
-    compileSdkVersion 19
-    buildToolsVersion "19.1.0"
-    
-    sourceSets {
-        main {
-            manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['src']
-            resources.srcDirs = ['src']
-            aidl.srcDirs = ['src']
-            renderscript.srcDirs = ['src']
-            res.srcDirs = ['res']
-            assets.srcDirs = ['assets']
-        }
-    }
-    dependencies {
-    	compile 'com.android.support:appcompat-v7:19.1.+'
-        compile 'com.google.code.gson:gson:2.3'
-        compile 'com.flipkart.android.batchnetworking:FkBatchNetworking:1.1.+'
-	}
-
-    task wrapper(type: Wrapper) {
-        gradleVersion = '2.2.1'
-    }
-
-}
-
-configurations {
-    published
-}
-
-task sourceJar(type: Jar) {
-    from 'src/java'
-    classifier "sources"
-}
-
-artifactoryPublish {
-    dependsOn sourceJar
-}
-
-artifacts {
-    published sourceJar
-}
-
-artifactory {
-    contextUrl = ARTIFACTORY_REPO_URL
-    publish {
-        repository {
-            repoKey = REPO_KEY //The Artifactory repository key to publish to
-            //username = artifactory_user //The publisher user name, property taken from gradle.properties
-            //password = artifactory_password //The publisher password, property taken from gradle.properties
-        }
-        defaults {
-            publishConfigs('archives', 'published')
-            properties = ['build.status': "$it.project.status".toString()]
-            publishPom = true //Publish generated POM files to Artifactory (true by default)
-            publishIvy = false //Publish generated Ivy descriptor files to Artifactory (true by default)
-        }
-    }
-    resolve {
-        repository {
-            repoKey = REPO_KEY //The Artifactory (preferably virtual) repository key to resolve from
-            //username = artifactory_user //Optional resolver user name (leave out to use anonymous resolution), property taken from gradle.properties
-            //password = artifactory_password //The resolver password, property taken from gradle.properties
-        }
+allprojects {
+    repositories {
+        jcenter()
     }
 }

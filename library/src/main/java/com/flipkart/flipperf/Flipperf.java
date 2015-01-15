@@ -1,8 +1,4 @@
-package com.flipkart.fk_android_flipperf;
-
-import java.util.HashMap;
-
-import org.xmlpull.v1.XmlPullParser;
+package com.flipkart.flipperf;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -14,12 +10,16 @@ import android.util.Log;
 
 import com.flipkart.fk_android_batchnetworking.BatchNetworking;
 import com.flipkart.fk_android_batchnetworking.JSONDataHandler;
-import com.flipkart.fk_android_flipperf.models.PerfContext;
-import com.flipkart.fk_android_flipperf.models.PerfDataSet;
+import com.flipkart.flipperf.models.PerfContext;
+import com.flipkart.flipperf.models.PerfDataSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+
+import org.xmlpull.v1.XmlPullParser;
+
+import java.util.HashMap;
 
 public class Flipperf {
 

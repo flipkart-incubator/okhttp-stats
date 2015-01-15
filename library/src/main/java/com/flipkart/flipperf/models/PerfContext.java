@@ -1,4 +1,4 @@
-package com.flipkart.fk_android_flipperf.models;
+package com.flipkart.flipperf.models;
 
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
