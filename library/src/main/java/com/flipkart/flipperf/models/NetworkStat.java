@@ -16,6 +16,7 @@ public class NetworkStat {
 
     private double currentAvgSpeed;
     private double totalSize;
+    private double peakSpeed = 0;
     private Queue<APIEvent> apiEventQueue;
     private static int MAX_QUEUE_SIZE = 5;
     private Handler mHandler;
@@ -31,6 +32,8 @@ public class NetworkStat {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
+                if(apiEvent.getApiSpeed() > peakSpeed)
+                    peakSpeed = apiEvent.getApiSpeed();
                 apiEventQueue.add(apiEvent);
                 totalSize += apiEvent.getResponseSize();
                 if(apiEventQueue.size() > MAX_QUEUE_SIZE) {
