@@ -1,9 +1,0 @@
-package com.flipkart.flipperf;
-
-import com.flipkart.fkvolley.toolbox.OkHttpStack;
-
-public class LoggerStack extends OkHttpStack {
-
-
-
-}
