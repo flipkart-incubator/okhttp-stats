@@ -1,4 +1,10 @@
 
+repositories {
+    mavenCentral()
+    maven { url 'http://artifactory.nm.flipkart.com:8081/artifactory/libs-release-local' }
+}
+
+
 apply plugin: 'com.android.application'
 
 android {
@@ -25,13 +31,8 @@ android {
 
 }
 
-repositories {
-    mavenCentral()
-    maven { url 'http://artifactory.nm.flipkart.com:8081/artifactory/libs-release-local' }
-}
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:19.1.0'
     compile project(':library')
 }

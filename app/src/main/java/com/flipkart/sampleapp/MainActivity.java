@@ -8,8 +8,9 @@ import android.view.MenuItem;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.flipkart.fkvolley.RequestQueue;
+import com.flipkart.fkvolley.toolbox.OkHttpStack;
 import com.flipkart.fkvolley.toolbox.Volley;
-import com.flipkart.flipperf.FlipperfOkHttpStack;
+import com.flipkart.flipperf.FlipperfNetwork;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -25,7 +26,7 @@ public class MainActivity extends ActionBarActivity {
                 VolleyError e = error;
             }
         });
-        RequestQueue req = Volley.newRequestQueue(this, new FlipperfOkHttpStack(this), 1);
+        RequestQueue req = Volley.newRequestQueue(this, new FlipperfNetwork(new OkHttpStack(), this), 1);
         req.add(com);
 
         TestRequest com1 = new TestRequest(0, "http://news.bbcimg.co.uk/media/images/71832000/jpg/_71832498_71825880.jpg", new Response.ErrorListener() {

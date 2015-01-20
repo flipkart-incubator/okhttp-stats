@@ -1,7 +1,7 @@
 buildscript {
     repositories {
-        mavenCentral()
         jcenter()
+        maven { url 'http://repo1.maven.org/maven2' }
         maven { url 'http://artifactory.nm.flipkart.com:8081/artifactory/libs-release-local' }
     }
 
@@ -9,13 +9,14 @@ buildscript {
         classpath 'com.android.tools.build:gradle:1.0.0'
         classpath 'com.github.dcendents:android-maven-plugin:1.+'
         classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:2.2.3'
-        classpath 'com.flipkart.android.fkvolley:library:2.0.+'
         classpath 'com.flipkart.android.batchnetworking:FkBatchNetworking:1.1.+'
+        classpath 'com.flipkart.android.fkvolley:library:2.0.5'
     }
 }
 
 repositories {
-    mavenCentral()
+    jcenter()
+    maven { url 'http://repo1.maven.org/maven2' }
     maven { url 'http://artifactory.nm.flipkart.com:8081/artifactory/libs-release-local' }
 }
 
@@ -34,8 +35,8 @@ android {
     dependencies {
         compile 'com.android.support:appcompat-v7:19.1.+'
         compile 'com.google.code.gson:gson:2.3'
-        compile 'com.flipkart.android.fkvolley:library:2.0.+'
         compile 'com.flipkart.android.batchnetworking:FkBatchNetworking:1.1.+'
+        compile 'com.flipkart.android.fkvolley:library:2.0.5'
     }
 
     task wrapper(type: Wrapper) {

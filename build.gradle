@@ -5,55 +5,12 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.0.0'
-<<<<<<< HEAD
-        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:2.2.3'
-        classpath 'com.flipkart.android.batchnetworking:FkBatchNetworking:1.1.+'
-    }
-}
-
-repositories {
-    mavenCentral()
-    maven { url 'http://artifactory.nm.flipkart.com:8081/artifactory/libs-release-local' }
-}
-
-group = ARTIFACTORY_GROUP
-version = VERSION_NAME
-status = STATUS
-
-apply plugin: 'android-library'
-apply plugin: 'artifactory'
-
-android {
-    compileSdkVersion 19
-    buildToolsVersion "19.1.0"
-    
-    sourceSets {
-        main {
-            manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['src']
-            resources.srcDirs = ['src']
-            aidl.srcDirs = ['src']
-            renderscript.srcDirs = ['src']
-            res.srcDirs = ['res']
-            assets.srcDirs = ['assets']
-        }
-    }
-    dependencies {
-    	compile 'com.android.support:appcompat-v7:19.1.+'
-        compile 'com.google.code.gson:gson:2.3'
-        compile 'com.flipkart.android.batchnetworking:FkBatchNetworking:1.1.+'
-        compile 'org.aspectj:aspectjrt:1.6.+'
-    }
-
-    task wrapper(type: Wrapper) {
-        gradleVersion = '2.2.1'
-=======
->>>>>>> develop
     }
 }
 
 allprojects {
     repositories {
+        mavenCentral()
         jcenter()
     }
 }
