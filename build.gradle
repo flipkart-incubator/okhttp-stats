@@ -1,12 +1,11 @@
 buildscript {
     repositories {
-        mavenCentral()
         jcenter()
-        maven { url 'http://artifactory.nm.flipkart.com:8081/artifactory/libs-release-local' }
+        mavenCentral()
     }
-
     dependencies {
         classpath 'com.android.tools.build:gradle:1.0.0'
+<<<<<<< HEAD
         classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:2.2.3'
         classpath 'com.flipkart.android.batchnetworking:FkBatchNetworking:1.1.+'
     }
@@ -48,47 +47,13 @@ android {
 
     task wrapper(type: Wrapper) {
         gradleVersion = '2.2.1'
+=======
+>>>>>>> develop
     }
-
 }
 
-configurations {
-    published
-}
-
-task sourceJar(type: Jar) {
-    from 'src/java'
-    classifier "sources"
-}
-
-artifactoryPublish {
-    dependsOn sourceJar
-}
-
-artifacts {
-    published sourceJar
-}
-
-artifactory {
-    contextUrl = ARTIFACTORY_REPO_URL
-    publish {
-        repository {
-            repoKey = REPO_KEY //The Artifactory repository key to publish to
-            //username = artifactory_user //The publisher user name, property taken from gradle.properties
-            //password = artifactory_password //The publisher password, property taken from gradle.properties
-        }
-        defaults {
-            publishConfigs('archives', 'published')
-            properties = ['build.status': "$it.project.status".toString()]
-            publishPom = true //Publish generated POM files to Artifactory (true by default)
-            publishIvy = false //Publish generated Ivy descriptor files to Artifactory (true by default)
-        }
-    }
-    resolve {
-        repository {
-            repoKey = REPO_KEY //The Artifactory (preferably virtual) repository key to resolve from
-            //username = artifactory_user //Optional resolver user name (leave out to use anonymous resolution), property taken from gradle.properties
-            //password = artifactory_password //The resolver password, property taken from gradle.properties
-        }
+allprojects {
+    repositories {
+        jcenter()
     }
 }
