@@ -57,6 +57,10 @@ public class NetworkStat {
         currentAvgSpeed = newAvgSpeed;
     }
 
+    public double getPeakSpeed() {
+        return peakSpeed;
+    }
+
     public double getCurrentAvgSpeed() {
         return currentAvgSpeed;
     }
