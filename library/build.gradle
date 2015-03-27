@@ -29,12 +29,12 @@ apply plugin: 'artifactory'
 apply plugin: 'android-maven'
 
 android {
-    compileSdkVersion 19
+    compileSdkVersion 21
     buildToolsVersion "19.1.0"
 
     dependencies {
         compile 'com.google.code.gson:gson:2.3'
-        compile 'com.flipkart.android.batchnetworking:FkBatchNetworking:1.2.2'
+        compile 'com.flipkart.android.batchnetworking:FkBatchNetworking:1.1.6'
         compile 'com.flipkart.android.fkvolley:library:2.0.6'
     }
 
