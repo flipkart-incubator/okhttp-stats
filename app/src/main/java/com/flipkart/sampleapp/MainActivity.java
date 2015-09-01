@@ -2,7 +2,6 @@ package com.flipkart.sampleapp;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -12,7 +11,6 @@ import com.flipkart.fkvolley.RequestQueue;
 import com.flipkart.fkvolley.toolbox.OkHttpStack;
 import com.flipkart.fkvolley.toolbox.Volley;
 import com.flipkart.flipperf.FlipperfNetwork;
-import com.flipkart.flipperf.models.NetworkStat;
 import com.flipkart.flipperf.models.NetworkType;
 import com.flipkart.flipperf.trackers.FlipperfNetworkStatManager;
 
