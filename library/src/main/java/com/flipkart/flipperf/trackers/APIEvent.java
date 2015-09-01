@@ -1,5 +1,7 @@
 package com.flipkart.flipperf.trackers;
 
+import android.content.Context;
+
 import com.flipkart.flipperf.models.NetworkType;
 
 /**
@@ -13,12 +15,13 @@ public class APIEvent implements Event<String> {
     private double responseSize;
     private double apiSpeed;
     private NetworkType networkType;
+    private Context context;
 
     private APIEvent() {
 
     }
 
-    public APIEvent(NetworkType networkType, String eventUrl) {
+    public APIEvent(Context context,NetworkType networkType, String eventUrl) {
         this.networkType = networkType;
         this.eventId = eventUrl;
     }
@@ -37,7 +40,7 @@ public class APIEvent implements Event<String> {
         apiStopTime = System.currentTimeMillis();
         double apiRTT = apiStopTime - apiStartTime;
         apiSpeed = responseSize / apiRTT;
-        FlipperfNetworkStatManager.getInstance().logAPiCallEvent(this);
+        FlipperfNetworkStatManager.getInstance(context).logAPiCallEvent(this);
     }
 
     @Override

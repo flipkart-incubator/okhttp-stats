@@ -31,9 +31,9 @@ public class FlipperfNetwork extends BasicNetwork {
 
     @Override
     public NetworkResponse performRequest(Request<?> request) throws VolleyError {
-        NetworkType networkType = FlipperfNetworkStatManager.getNetworkType(context);
-        APIEvent apiEvent = new APIEvent(networkType, request.getUrl());
-        FlipperfEventManager<String> apiEventManager = FlipperfEventManager.getInstance();
+        NetworkType networkType = FlipperfNetworkStatManager.getInstance(context).getCurrentNetworkType();
+        APIEvent apiEvent = new APIEvent(context,networkType, request.getUrl());
+        FlipperfEventManager<String> apiEventManager = FlipperfEventManager.getInstance(context);
         apiEventManager.startEvent(apiEvent);
         try {
             NetworkResponse networkResponse = super.performRequest(request);
