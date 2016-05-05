@@ -6,7 +6,6 @@ import com.flipkart.flipperf.NetworkEventReporter;
 public class DefaultResponseHandler implements ResponseHandler {
     private final NetworkEventReporter mEventReporter;
     private final String mRequestId;
-
     private int mBytesRead = 0;
 
     public DefaultResponseHandler(NetworkEventReporter eventReporter, String requestId) {
@@ -21,11 +20,6 @@ public class DefaultResponseHandler implements ResponseHandler {
 
     @Override
     public void onEOF() {
-        reportDataReceived();
-    }
-
-    private void reportDataReceived() {
         mEventReporter.dataReceived(mRequestId, mBytesRead);
-//        mEventReporter.responseReadFinished(mRequestId);
     }
 }
