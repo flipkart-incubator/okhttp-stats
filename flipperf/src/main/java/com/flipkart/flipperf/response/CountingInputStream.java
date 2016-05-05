@@ -32,8 +32,7 @@ public class CountingInputStream extends FilterInputStream {
 
     private int count;
     private ResponseHandler responseHandler;
-
-    public CountingInputStream(InputStream in, ResponseHandler responseHandler) throws IOException {
+    public CountingInputStream(InputStream in, ResponseHandler responseHandler) {
         super(in);
         this.responseHandler = responseHandler;
     }
