@@ -16,6 +16,7 @@ import java.io.InputStream;
  */
 public interface NetworkEventReporter {
 
+    void setEnabled(boolean isEnabled);
     /**
      * Check if {@link NetworkEventReporter} is enabled
      *

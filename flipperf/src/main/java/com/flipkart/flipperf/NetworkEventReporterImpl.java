@@ -18,10 +18,7 @@ public class NetworkEventReporterImpl implements NetworkEventReporter {
     private static final String TAG = NetworkEventReporterImpl.class.getName();
     private boolean isReportedEnabled = false;
 
-    public NetworkEventReporterImpl(boolean isReportedEnabled) {
-        this.isReportedEnabled = isReportedEnabled;
-    }
-
+    @Override
     public void setEnabled(boolean isEnabled) {
         isReportedEnabled = isEnabled;
     }

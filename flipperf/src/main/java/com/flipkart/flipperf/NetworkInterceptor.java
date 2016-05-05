@@ -25,7 +25,8 @@ public final class NetworkInterceptor implements Interceptor {
     private final AtomicInteger mNextRequestId = new AtomicInteger(0);
 
     public NetworkInterceptor(Context context) {
-        mEventReporter = new NetworkEventReporterImpl(true);
+        mEventReporter = new NetworkEventReporterImpl();
+        mEventReporter.setEnabled(true);
     }
 
     @Override
@@ -143,7 +144,7 @@ public final class NetworkInterceptor implements Interceptor {
         }
     }
 
-    private static class ForwardingResponseBody extends ResponseBody {
+    public static class ForwardingResponseBody extends ResponseBody {
         private final ResponseBody mBody;
         private final BufferedSource mInterceptedSource;
 
