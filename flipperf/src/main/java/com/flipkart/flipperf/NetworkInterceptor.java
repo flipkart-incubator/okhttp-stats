@@ -1,7 +1,11 @@
 package com.flipkart.flipperf;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.support.annotation.VisibleForTesting;
 
+import com.flipkart.flipperf.response.DefaultResponseHandler;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.Request;
@@ -15,73 +19,113 @@ import java.util.concurrent.atomic.AtomicInteger;
 import okio.BufferedSource;
 import okio.Okio;
 
-/**
- * Created by anirudh.r on 02/05/16 at 12:51 PM.
+/*
  * Custom Interceptor to intercept all network calls.
  */
 public final class NetworkInterceptor implements Interceptor {
+
+    private static final String HANDLER_THREAD_NAME = "flipperf.networkInterceptor";
+    private static final String CONTENT_LENGTH = "Content-Length";
     private final NetworkEventReporter mEventReporter;
     private final AtomicInteger mNextRequestId = new AtomicInteger(0);
-    private long startTime, endTime;
 
-    public NetworkInterceptor(Context context) {
-        mEventReporter = new NetworkEventReporterImpl();
-        mEventReporter.setEnabled(true);
+    private NetworkInterceptor(Context context, Builder builder) {
+        Handler handler = builder.mHandler;
+        //if handler given by client is null, create a new handler
+        if (handler == null) {
+            HandlerThread handlerThread = new HandlerThread(HANDLER_THREAD_NAME);
+            handlerThread.start();
+            handler = new Handler(handlerThread.getLooper());
+        }
+
+        mEventReporter = builder.mNetworkEventReporter == null ? new NetworkEventReporterImpl() : builder.mNetworkEventReporter;
+        mEventReporter.onInitialized(context, handler);
+        mEventReporter.setEnabled(builder.mEnabled);
     }
 
+    /**
+     * Method to intercept all the network calls.
+     *
+     * @param chain {@link com.squareup.okhttp.Interceptor.Chain}
+     * @return {@link Response}
+     * @throws IOException
+     */
     @Override
     public Response intercept(Chain chain) throws IOException {
-        String requestId = String.valueOf(mNextRequestId.getAndIncrement());
+        final String requestId = String.valueOf(mNextRequestId.getAndIncrement());
 
         Request request = chain.request();
+        OkHttpInspectorRequest okHttpInspectorRequest = null;
+
         if (mEventReporter.isReporterEnabled()) {
-            OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request);
+            okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.urlString(), request.method(), request.header(CONTENT_LENGTH));
+            //notify event reporter that request is to be sent.
             mEventReporter.requestToBeSent(okHttpInspectorRequest);
         }
 
-        startTime = System.nanoTime();
+        long mResponseStartTime, mResponseEndTime;
         Response response;
         try {
+            mResponseStartTime = System.nanoTime();
             response = chain.proceed(request);
-            endTime = System.nanoTime();
-        } catch (IOException e) {
+            mResponseEndTime = System.nanoTime();
+        } catch (final IOException e) {
             if (mEventReporter.isReporterEnabled()) {
-                mEventReporter.httpExchangeError(requestId, e);
+                //notify event reporter in case there is any exception while proceeding request
+                mEventReporter.httpExchangeError(okHttpInspectorRequest, e);
             }
             throw e;
         }
 
-        Response newResponse = response;
-
         if (mEventReporter.isReporterEnabled()) {
+            final OkHttpInspectorResponse okHttpInspectorResponse = new OkHttpInspectorResponse(requestId, response.code(), response.header(CONTENT_LENGTH), mResponseEndTime - mResponseStartTime);
 
-            OkHttpInspectorResponse okHttpInspectorResponse = new OkHttpInspectorResponse(requestId, request, response, endTime - startTime);
-            mEventReporter.responseHeadersReceived(okHttpInspectorResponse);
-
+            //if response does not have content length, using CountingInputStream to read its bytes
             if (!okHttpInspectorResponse.hasContentLength()) {
                 ResponseBody body = response.body();
                 InputStream responseStream = null;
                 if (body != null) {
-                    responseStream = body.byteStream();
+                    try {
+                        responseStream = body.byteStream();
+                    } catch (IOException e) {
+                        if (mEventReporter.isReporterEnabled()) {
+                            //notify event reporter in case there is any exception while getting the input stream of response
+                            mEventReporter.responseInputStreamError(okHttpInspectorResponse, e);
+                        }
+                        throw e;
+                    }
                 }
 
+                /**interpreting the response stream using CountingInputStream, once the counting is done,
+                 notify the event reporter that response has been received*/
                 responseStream = mEventReporter.interpretResponseStream(responseStream,
-                        new DefaultResponseHandler(mEventReporter, requestId));
+                        new DefaultResponseHandler(mEventReporter, okHttpInspectorResponse));
 
-                newResponse = response.newBuilder().body(new ForwardingResponseBody(body, responseStream)).build();
+                //creating new response object using the interpreted stream
+                response = response.newBuilder().body(new ForwardingResponseBody(body, responseStream)).build();
+            } else {
+                //if response has content length, notify the event reporter that response has been received.
+                mEventReporter.responseReceived(okHttpInspectorResponse);
             }
         }
 
-        return newResponse;
+        return response;
     }
 
+    /**
+     * Implementation of {@link com.flipkart.flipperf.NetworkEventReporter.InspectorRequest}
+     */
     private static class OkHttpInspectorRequest implements NetworkEventReporter.InspectorRequest {
         private final String mRequestId;
-        private final Request mRequest;
+        private final String mRequestUrl;
+        private final String mMethodType;
+        private final String mContentLength;
 
-        public OkHttpInspectorRequest(String requestId, Request request) {
-            mRequestId = requestId;
-            mRequest = request;
+        public OkHttpInspectorRequest(String requestId, String requestUrl, String methodType, String contentLength) {
+            this.mRequestId = requestId;
+            this.mRequestUrl = requestUrl;
+            this.mMethodType = methodType;
+            this.mContentLength = contentLength;
         }
 
         @Override
@@ -91,40 +135,39 @@ public final class NetworkInterceptor implements Interceptor {
 
         @Override
         public String url() {
-            return mRequest.urlString();
+            return mRequestUrl;
         }
 
         @Override
         public String method() {
-            return mRequest.method();
+            return mMethodType;
         }
 
         @Override
         public String requestSize() {
-            return firstHeaderValue("Content-Length");
-        }
-
-        private String firstHeaderValue(String name) {
-            return mRequest.header(name);
+            return mContentLength;
         }
     }
 
+    /**
+     * Implementation of {@link com.flipkart.flipperf.NetworkEventReporter.InspectorResponse}
+     */
     private static class OkHttpInspectorResponse implements NetworkEventReporter.InspectorResponse {
         private final String mRequestId;
-        private final Response mResponse;
-        private final Request mRequest;
         private final long mResponseTime;
+        private final int mStatusCode;
+        private final String mResponseSize;
 
-        public OkHttpInspectorResponse(String requestId, Request request, Response response, long responseTime) {
-            mRequestId = requestId;
-            mResponse = response;
-            mRequest = request;
-            mResponseTime = responseTime;
+        public OkHttpInspectorResponse(String requestId, int statusCode, String responseSize, long responseTime) {
+            this.mRequestId = requestId;
+            this.mStatusCode = statusCode;
+            this.mResponseSize = responseSize;
+            this.mResponseTime = responseTime;
         }
 
         @Override
         public boolean hasContentLength() {
-            return mResponse.header("Content-Length") != null;
+            return mResponseSize != null;
         }
 
         @Override
@@ -133,18 +176,13 @@ public final class NetworkInterceptor implements Interceptor {
         }
 
         @Override
-        public String url() {
-            return mRequest.urlString();
-        }
-
-        @Override
         public int statusCode() {
-            return mResponse.code();
+            return mStatusCode;
         }
 
         @Override
         public String responseSize() {
-            return mResponse.header("Content-Length");
+            return mResponseSize;
         }
 
         @Override
@@ -153,6 +191,10 @@ public final class NetworkInterceptor implements Interceptor {
         }
     }
 
+    /**
+     * Wrapper for {@link ResponseBody}
+     */
+    @VisibleForTesting
     public static class ForwardingResponseBody extends ResponseBody {
         private final ResponseBody mBody;
         private final BufferedSource mInterceptedSource;
@@ -175,6 +217,52 @@ public final class NetworkInterceptor implements Interceptor {
         @Override
         public BufferedSource source() {
             return mInterceptedSource;
+        }
+    }
+
+    /**
+     * Builder Pattern for {@link NetworkInterceptor}
+     */
+    public static class Builder {
+        private boolean mEnabled;
+        private Handler mHandler;
+        private NetworkEventReporter mNetworkEventReporter;
+
+        /**
+         * To enable disable the {@link NetworkEventReporter}
+         *
+         * @param enabled boolean
+         * @return {@link Builder}
+         */
+        public Builder setEnabled(boolean enabled) {
+            this.mEnabled = enabled;
+            return this;
+        }
+
+        /**
+         * Setting handler for background. Give it null if you want to use the handler of the library
+         *
+         * @param handler {@link Handler}
+         * @return {@link Builder}
+         */
+        public Builder setHandler(Handler handler) {
+            this.mHandler = handler;
+            return this;
+        }
+
+        /**
+         * Can leave it null for the default implementation
+         *
+         * @param networkEventReporter {@link NetworkEventReporter}
+         * @return {@link Builder}
+         */
+        public Builder setEventReporter(NetworkEventReporter networkEventReporter) {
+            this.mNetworkEventReporter = networkEventReporter;
+            return this;
+        }
+
+        public NetworkInterceptor build(Context context) {
+            return new NetworkInterceptor(context, this);
         }
     }
 }

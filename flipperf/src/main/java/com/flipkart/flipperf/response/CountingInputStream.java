@@ -30,16 +30,17 @@ import java.io.InputStream;
  */
 public class CountingInputStream extends FilterInputStream {
 
-    private int count;
-    private ResponseHandler responseHandler;
+    private int mCount;
+    private ResponseHandler mResponseHandler;
+
     public CountingInputStream(InputStream in, ResponseHandler responseHandler) {
         super(in);
-        this.responseHandler = responseHandler;
+        this.mResponseHandler = responseHandler;
     }
 
     private synchronized int checkEOF(int n) {
         if (n == -1) {
-            responseHandler.onEOF();
+            mResponseHandler.onEOF();
         }
         return n;
     }
@@ -49,9 +50,9 @@ public class CountingInputStream extends FilterInputStream {
         try {
             int result = checkEOF(in.read());
             if (result != -1) {
-                count++;
+                mCount++;
             }
-            responseHandler.onRead(count);
+            mResponseHandler.onRead(mCount);
             return result;
         } catch (IOException ex) {
             return 0;
@@ -68,9 +69,9 @@ public class CountingInputStream extends FilterInputStream {
         try {
             int result = checkEOF(in.read(b, off, len));
             if (result != -1) {
-                count += result;
+                mCount += result;
             }
-            responseHandler.onRead(result);
+            mResponseHandler.onRead(result);
             return result;
         } catch (IOException ex) {
             return 0;
