@@ -2,7 +2,6 @@ package com.flipkart.flipperf;
 
 import android.content.Context;
 
-import com.flipkart.flipperf.response.DefaultResponseHandler;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.Request;
@@ -23,6 +22,7 @@ import okio.Okio;
 public final class NetworkInterceptor implements Interceptor {
     private final NetworkEventReporter mEventReporter;
     private final AtomicInteger mNextRequestId = new AtomicInteger(0);
+    private long startTime, endTime;
 
     public NetworkInterceptor(Context context) {
         mEventReporter = new NetworkEventReporterImpl();
@@ -39,9 +39,11 @@ public final class NetworkInterceptor implements Interceptor {
             mEventReporter.requestToBeSent(okHttpInspectorRequest);
         }
 
+        startTime = System.nanoTime();
         Response response;
         try {
             response = chain.proceed(request);
+            endTime = System.nanoTime();
         } catch (IOException e) {
             if (mEventReporter.isReporterEnabled()) {
                 mEventReporter.httpExchangeError(requestId, e);
@@ -53,7 +55,7 @@ public final class NetworkInterceptor implements Interceptor {
 
         if (mEventReporter.isReporterEnabled()) {
 
-            OkHttpInspectorResponse okHttpInspectorResponse = new OkHttpInspectorResponse(requestId, request, response);
+            OkHttpInspectorResponse okHttpInspectorResponse = new OkHttpInspectorResponse(requestId, request, response, endTime - startTime);
             mEventReporter.responseHeadersReceived(okHttpInspectorResponse);
 
             if (!okHttpInspectorResponse.hasContentLength()) {
@@ -111,11 +113,13 @@ public final class NetworkInterceptor implements Interceptor {
         private final String mRequestId;
         private final Response mResponse;
         private final Request mRequest;
+        private final long mResponseTime;
 
-        public OkHttpInspectorResponse(String requestId, Request request, Response response) {
+        public OkHttpInspectorResponse(String requestId, Request request, Response response, long responseTime) {
             mRequestId = requestId;
             mResponse = response;
             mRequest = request;
+            mResponseTime = responseTime;
         }
 
         @Override
@@ -141,6 +145,11 @@ public final class NetworkInterceptor implements Interceptor {
         @Override
         public String responseSize() {
             return mResponse.header("Content-Length");
+        }
+
+        @Override
+        public long responseTime() {
+            return mResponseTime;
         }
     }
 

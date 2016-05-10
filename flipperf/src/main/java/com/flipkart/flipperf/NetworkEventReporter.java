@@ -3,9 +3,6 @@ package com.flipkart.flipperf;
 
 import android.support.annotation.Nullable;
 
-import com.flipkart.flipperf.response.DefaultResponseHandler;
-import com.flipkart.flipperf.response.ResponseHandler;
-
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -92,5 +89,7 @@ public interface NetworkEventReporter {
         int statusCode();
 
         String responseSize();
+
+        long responseTime();
     }
 }

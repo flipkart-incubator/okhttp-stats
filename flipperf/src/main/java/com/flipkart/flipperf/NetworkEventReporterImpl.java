@@ -3,9 +3,6 @@ package com.flipkart.flipperf;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.flipkart.flipperf.response.CountingInputStream;
-import com.flipkart.flipperf.response.ResponseHandler;
-
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -41,11 +38,13 @@ public class NetworkEventReporterImpl implements NetworkEventReporter {
         if (!inspectorResponse.hasContentLength()) {
             Log.d(TAG, "RESPONSE HEADERS RECEIVED FOR ID : " + inspectorResponse.requestId()
                     + "\nUrl : " + inspectorResponse.url()
+                    + "\nTime : " + inspectorResponse.responseTime()
                     + "\nStatus Code : " + inspectorResponse.statusCode());
         } else {
             Log.d(TAG, "RESPONSE HEADERS RECEIVED FOR ID : " + inspectorResponse.requestId()
                     + "\nUrl : " + inspectorResponse.url()
                     + "\nSize : " + inspectorResponse.responseSize()
+                    + "\nTime : " + inspectorResponse.responseTime()
                     + "\nStatus Code : " + inspectorResponse.statusCode());
         }
     }
