@@ -31,8 +31,6 @@ import static org.mockito.Mockito.when;
 @Config(constants = BuildConfig.class, sdk = 21)
 public class NetworkInterceptorTest {
 
-    NetworkEventReporter networkEventReporter;
-
     /**
      * Test to verify the request object before and after interception
      *
@@ -40,8 +38,12 @@ public class NetworkInterceptorTest {
      */
     @Test
     public void testInterceptedRequest() throws IOException {
-        networkEventReporter = mock(NetworkEventReporter.class);
-        NetworkInterceptor networkInterceptor = new NetworkInterceptor(RuntimeEnvironment.application);
+        NetworkEventReporter networkEventReporter = mock(NetworkEventReporter.class);
+        NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
+                .setEnabled(true)
+                .setHandler(null)
+                .setEventReporter(null)
+                .build(RuntimeEnvironment.application);
 
         Uri requestUri = Uri.parse("http://www.flipkart.com");
         String requestText = "Test Request";
@@ -86,9 +88,13 @@ public class NetworkInterceptorTest {
      */
     @Test
     public void testInterceptedResponse() throws IOException {
-        networkEventReporter = mock(NetworkEventReporter.class);
+        NetworkEventReporter networkEventReporter = mock(NetworkEventReporter.class);
 
-        NetworkInterceptor networkInterceptor = new NetworkInterceptor(RuntimeEnvironment.application);
+        NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
+                .setEnabled(true)
+                .setHandler(null)
+                .setEventReporter(null)
+                .build(RuntimeEnvironment.application);
         when(networkEventReporter.isReporterEnabled()).thenReturn(true);
 
         Uri requestUri = Uri.parse("http://www.flipkart.com");
@@ -123,15 +129,19 @@ public class NetworkInterceptorTest {
     }
 
     /**
-     * Test to verify {@link com.flipkart.flipperf.NetworkInterceptor.ForwardingResponseBody}
+     * Test to verify {@link NetworkInterceptor.ForwardingResponseBody}
      *
      * @throws IOException
      */
     @Test
     public void testResponseBody() throws IOException {
-        networkEventReporter = mock(NetworkEventReporter.class);
+        NetworkEventReporter networkEventReporter = mock(NetworkEventReporter.class);
 
-        NetworkInterceptor networkInterceptor = new NetworkInterceptor(RuntimeEnvironment.application);
+        NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
+                .setEnabled(true)
+                .setHandler(null)
+                .setEventReporter(null)
+                .build(RuntimeEnvironment.application);
         when(networkEventReporter.isReporterEnabled()).thenReturn(true);
 
         Uri requestUri = Uri.parse("http://www.flipkart.com");
@@ -173,9 +183,13 @@ public class NetworkInterceptorTest {
 
     @Test
     public void testInterceptedResponseWithContentLength() throws IOException {
-        networkEventReporter = mock(NetworkEventReporter.class);
+        NetworkEventReporter networkEventReporter = mock(NetworkEventReporter.class);
 
-        NetworkInterceptor networkInterceptor = new NetworkInterceptor(RuntimeEnvironment.application);
+        NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
+                .setEnabled(true)
+                .setHandler(null)
+                .setEventReporter(null)
+                .build(RuntimeEnvironment.application);
         when(networkEventReporter.isReporterEnabled()).thenReturn(true);
 
         Uri requestUri = Uri.parse("http://www.flipkart.com");

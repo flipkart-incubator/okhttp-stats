@@ -6,7 +6,6 @@ import com.flipkart.flipperf.response.ResponseHandler;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
@@ -26,9 +25,6 @@ import static org.mockito.Mockito.verify;
 @Config(constants = BuildConfig.class, sdk = 21)
 public class CountingInputStreamTest {
 
-    @Mock
-    ResponseHandler responseHandler;
-
     /**
      * Test the working of onRead of {@link CountingInputStream#read()} and verify {@link ResponseHandler#onRead(int)} gets called once
      *
@@ -37,7 +33,7 @@ public class CountingInputStreamTest {
     @Test
     public void testOnRead() throws IOException {
 
-        responseHandler = mock(ResponseHandler.class);
+        ResponseHandler responseHandler = mock(ResponseHandler.class);
         String myString = "Hello! How are you";
 
         InputStream is = new ByteArrayInputStream(myString.getBytes());
@@ -55,7 +51,7 @@ public class CountingInputStreamTest {
      */
     @Test
     public void testOnReadWithByte() throws IOException {
-        responseHandler = mock(ResponseHandler.class);
+        ResponseHandler responseHandler = mock(ResponseHandler.class);
         String myString = "Hello! How are you";
 
         InputStream is = new ByteArrayInputStream(myString.getBytes());
@@ -73,7 +69,7 @@ public class CountingInputStreamTest {
      */
     @Test
     public void testOnMark() throws IOException {
-        responseHandler = mock(ResponseHandler.class);
+        ResponseHandler responseHandler = mock(ResponseHandler.class);
         String myString = "Hello! How are you";
         InputStream is = new ByteArrayInputStream(myString.getBytes());
 
@@ -90,7 +86,7 @@ public class CountingInputStreamTest {
      */
     @Test(expected = UnsupportedOperationException.class)
     public void testReset() throws IOException {
-        responseHandler = mock(ResponseHandler.class);
+        ResponseHandler responseHandler = mock(ResponseHandler.class);
         String myString = "Hello! How are you";
         InputStream is = new ByteArrayInputStream(myString.getBytes());
 

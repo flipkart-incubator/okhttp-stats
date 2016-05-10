@@ -1,6 +1,7 @@
 package com.flipkart.flipperf;
 
 import com.flipkart.flipperf.response.DefaultResponseHandler;
+import com.flipkart.flipperf.response.ResponseHandler;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,29 +19,31 @@ import static org.mockito.Mockito.verify;
 @Config(constants = BuildConfig.class, sdk = 21)
 public class DefaultResponseHandlerTest {
 
-    NetworkEventReporter networkEventReporter;
-
     /**
-     * Test to verify that {@link NetworkEventReporter#dataReceived(String, int)} gets called once
+     * Test for {@link ResponseHandler#onEOF()}
      */
     @Test
     public void testOnEOF() {
-        networkEventReporter = mock(NetworkEventReporter.class);
+        NetworkEventReporter networkEventReporter = mock(NetworkEventReporter.class);
+        NetworkEventReporter.InspectorResponse inspectorResponse = mock(NetworkEventReporter.InspectorResponse.class);
 
-        String requestId = "Hello";
-        DefaultResponseHandler defaultResponseHandler = new DefaultResponseHandler(networkEventReporter, requestId);
+        DefaultResponseHandler defaultResponseHandler = new DefaultResponseHandler(networkEventReporter, inspectorResponse);
         defaultResponseHandler.onEOF();
 
-        //verify that dataReceived gets called once
-        verify(networkEventReporter, times(1)).dataReceived(requestId, 0);
+        //verify that responseDataReceived gets called once
+        verify(networkEventReporter, times(1)).responseDataReceived(inspectorResponse, 0);
     }
 
+    /**
+     * Test for {@link ResponseHandler#onRead(int)}
+     */
     @Test
     public void testOnRead() {
-        networkEventReporter = mock(NetworkEventReporter.class);
+        NetworkEventReporter networkEventReporter = mock(NetworkEventReporter.class);
+        NetworkEventReporter.InspectorResponse inspectorResponse = mock(NetworkEventReporter.InspectorResponse.class);
 
         String requestId = "Hello";
-        DefaultResponseHandler defaultResponseHandler = new DefaultResponseHandler(networkEventReporter, requestId);
+        DefaultResponseHandler defaultResponseHandler = new DefaultResponseHandler(networkEventReporter, inspectorResponse);
         defaultResponseHandler.onRead(requestId.length());
     }
 }
