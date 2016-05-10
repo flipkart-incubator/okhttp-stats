@@ -7,9 +7,9 @@ import java.util.ArrayList;
  */
 public class ResourceList {
 
-    public ArrayList<String> arrayList;
+    public static ArrayList<String> arrayList;
 
-    public ResourceList() {
+    public static ArrayList<String> getResourceList() {
         arrayList = new ArrayList<>();
 
         arrayList.add("http://rukmini1.flixcart.com/image/225/225/landline-phone/q/c/c/panasonic-kx-tg3611sxb-original-imaeeypeagc6uk4e.jpeg?q=70");
@@ -39,14 +39,7 @@ public class ResourceList {
         arrayList.add("http://rukmini1.flixcart.com/image/120/100/shoe/7/m/y/tan-k-905-kraasa-9-original-imaeb6wnejr7dzxs.jpeg?q=90");
         arrayList.add("http://rukmini1.flixcart.com/image/120/100/shoe/z/h/f/grey-slvr-grn-wht-blk-v67411-reebok-8-original-imaef7jv9syt5fem.jpeg?q=90");
         arrayList.add("http://rukmini1.flixcart.com/image/120/100/apparels-combo/w/p/k/br-1red-070-delux-look-original-imae8kux5uvpaq3z.jpeg?q=90");
-        arrayList.add("http://rukmini1.flixcart.com/image/120/100/apparels-combo/w/p/k/br-1red-070-delux-look-original-imae8kux4kpphtjn.jpeg?q=90");
-        arrayList.add("http://rukmini1.flixcart.com/image/120/100/apparels-combo/w/p/k/br-1red-070-delux-look-original-imae8kuxzgshs74x.jpeg?q=90");
-        arrayList.add("http://rukmini1.flixcart.com/image/120/100/apparels-combo/j/2/t/br-1red-070-delux-look-original-imae8kuxw7xtyevh.jpeg?q=90");
-        arrayList.add("http://rukmini1.flixcart.com/image/354/260/sunglass/h/x/x/bqbwf16-beqube-m-original-imaeeg7eptzhuw6j.jpeg?q=90");
-        arrayList.add("http://rukmini1.flixcart.com/image/354/260/shoe/2/h/x/black-a-2601-knight-ace-6-original-imaectu42hwmfghy.jpeg?q=90");
-    }
 
-    public ArrayList<String> getArrayList() {
         return arrayList;
     }
 }

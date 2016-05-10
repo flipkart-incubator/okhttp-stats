@@ -2,6 +2,8 @@ package com.flipkart.flipperfdemo;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.util.LruCache;
@@ -30,14 +32,24 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         ImageLoader.ImageCache imageCache = new BitmapLruCache();
-        final ImageLoader imageLoader = new ImageLoader(Volley.newRequestQueue(this, new OkHttp2Stack(), 1), imageCache);
-        OkHttp2Stack.setInterceptor(new NetworkInterceptor(this));
+        final ImageLoader imageLoader = new ImageLoader(Volley.newRequestQueue(this, new OkHttp2Stack(), -1), imageCache);
+
+        HandlerThread handlerThread = new HandlerThread("background");
+        handlerThread.start();
+        Handler handler = new Handler(handlerThread.getLooper());
+
+        NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
+                .setEventReporter(null)
+                .setEnabled(true)
+                .setHandler(handler)
+                .build(this);
+
+        OkHttp2Stack.setInterceptor(networkInterceptor);
 
         final NetworkImageView networkImageView = (NetworkImageView) findViewById(R.id.img);
         assert networkImageView != null;
 
-        ResourceList resourceList = new ResourceList();
-        final ArrayList<String> image_list = resourceList.getArrayList();
+        final ArrayList<String> image_list = ResourceList.getResourceList();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         assert fab != null;
@@ -50,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
     }
 
     @Override
