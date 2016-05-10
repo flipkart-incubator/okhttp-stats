@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- From: file:/Users/anirudh.r/AndroidStudioProjects/Flipkart/FlipperfDemo/library/build/intermediates/exploded-aar/com.flipkart.android.batchnetworking/FkBatchNetworking/1.1.6/res/values/values.xml -->
+    <eat-comment/>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <string name="action_settings">Settings</string>
+    <string name="app_name">fk-android-batchnetworking</string>
+    <string name="hello_world">Hello world!</string>
+</resources>

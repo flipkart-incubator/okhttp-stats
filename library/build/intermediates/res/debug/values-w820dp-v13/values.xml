@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- From: file:/Users/anirudh.r/AndroidStudioProjects/Flipkart/FlipperfDemo/library/build/intermediates/exploded-aar/com.flipkart.android.batchnetworking/FkBatchNetworking/1.1.6/res/values-w820dp-v13/values.xml -->
+    <eat-comment/>
+    <dimen name="activity_horizontal_margin">64dp</dimen>
+</resources>
