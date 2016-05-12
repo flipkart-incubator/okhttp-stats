@@ -12,7 +12,7 @@ public interface NetworkManager {
 
     void onResponseInputStreamError(RequestResponseModel requestResponseModel);
 
-    void addResponseReceivedListener(OnResponseReceivedListener networkManager);
+    void addListener(OnResponseReceivedListener networkManager);
 
     void unregisterListener(OnResponseReceivedListener networkManager);
 

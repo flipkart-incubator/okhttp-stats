@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
         onResponseReceived = new OnResponseReceived();
         networkManager = new NetworkStatManager(this);
-        networkManager.addResponseReceivedListener(onResponseReceived);
+        networkManager.addListener(onResponseReceived);
 
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
                 .setEventReporter(new NetworkEventReporterImpl())

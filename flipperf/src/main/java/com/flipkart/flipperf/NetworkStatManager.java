@@ -25,7 +25,7 @@ public class NetworkStatManager implements NetworkManager {
     }
 
     @Override
-    public void addResponseReceivedListener(OnResponseReceivedListener onResponseReceivedListener) {
+    public void addListener(OnResponseReceivedListener onResponseReceivedListener) {
         if (mOnResponseReceivedListenerList != null) {
             mOnResponseReceivedListenerList.add(onResponseReceivedListener);
         }
