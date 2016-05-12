@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.util.LruCache;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,12 +18,20 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
 import com.flipkart.fkvolley.toolbox.OkHttp2Stack;
+import com.flipkart.flipperf.NetworkEventReporterImpl;
 import com.flipkart.flipperf.NetworkInterceptor;
+import com.flipkart.flipperf.NetworkManager;
+import com.flipkart.flipperf.NetworkStatManager;
+import com.flipkart.flipperf.OnResponseReceivedListener;
+import com.flipkart.flipperf.model.RequestResponseModel;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
+
+    private OnResponseReceived onResponseReceived;
+    private NetworkManager networkManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +47,14 @@ public class MainActivity extends AppCompatActivity {
         handlerThread.start();
         Handler handler = new Handler(handlerThread.getLooper());
 
+        onResponseReceived = new OnResponseReceived();
+        networkManager = new NetworkStatManager(this);
+        networkManager.addResponseReceivedListener(onResponseReceived);
+
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
-                .setEventReporter(null)
-                .setEnabled(true)
+                .setEventReporter(new NetworkEventReporterImpl())
+                .setNetworkManager(networkManager)
+                .setReporterEnabled(true)
                 .setHandler(handler)
                 .build(this);
 
@@ -63,6 +77,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        networkManager.unregisterListener(onResponseReceived);
+        networkManager.flush();
+        super.onDestroy();
     }
 
     @Override
@@ -118,6 +139,34 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void putBitmap(String url, Bitmap bitmap) {
             put(url, bitmap);
+        }
+    }
+
+    private class OnResponseReceived implements OnResponseReceivedListener {
+
+        @Override
+        public void onResponseReceived(RequestResponseModel requestResponseModel) {
+            Log.d("Response Received", "onResponseReceived : "
+                    + "\nId : " + requestResponseModel.getRequestId()
+                    + "\nUrl : " + requestResponseModel.getRequestUrl()
+                    + "\nMethod : " + requestResponseModel.getRequestMethodType()
+                    + "\nHost : " + requestResponseModel.getHostName()
+                    + "\nRequest Size : " + requestResponseModel.getRequestSize()
+                    + "\nResponse Size : " + requestResponseModel.getResponseSize()
+                    + "\nResponse Time : " + requestResponseModel.getResponseTime()
+                    + "\nApi Speed : " + requestResponseModel.getApiSpeed()
+                    + "\nStatus Code : " + requestResponseModel.getResponseStatusCode()
+                    + "\nNetwork Type : " + requestResponseModel.getNetworkType());
+        }
+
+        @Override
+        public void onHttpErrorReceived(RequestResponseModel requestResponseModel) {
+
+        }
+
+        @Override
+        public void onInputStreamReadError(RequestResponseModel requestResponseModel) {
+
         }
     }
 }
