@@ -6,6 +6,7 @@ import android.content.Intent;
 
 /**
  * Created by anirudh.r on 06/05/16 at 11:55 AM.
+ * Broadcast Receiver for network change
  */
 public class NetworkChangeReceiver extends BroadcastReceiver {
 
@@ -17,6 +18,6 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        onNetworkChangeListener.onNetworkChange(NetworkHelper.getDetailedNetworkType(context));
+        onNetworkChangeListener.onNetworkChange(NetworkHelper.getNetworkType(context));
     }
 }

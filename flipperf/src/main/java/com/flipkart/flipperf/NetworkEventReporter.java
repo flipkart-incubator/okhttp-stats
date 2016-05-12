@@ -14,7 +14,7 @@ import java.io.InputStream;
 
 /**
  * Created by anirudh.r on 02/05/16 at 12:53 PM.
- *
+ * <p>
  * Interface for Network Request Reporter
  */
 public interface NetworkEventReporter {
@@ -22,7 +22,7 @@ public interface NetworkEventReporter {
     /**
      * Initialization method. Initialize all variables here
      */
-    void onInitialized(Context context, Handler handler);
+    void onInitialized(Context context, Handler handler, NetworkManager networkManager);
 
     /**
      * To enable event reporter
@@ -56,7 +56,7 @@ public interface NetworkEventReporter {
      * Reports any {@link IOException} while {@link com.squareup.okhttp.Response} is being proceeded.
      *
      * @param inspectorRequest {@link InspectorRequest}
-     * @param e : error message
+     * @param e                : error message
      */
     void httpExchangeError(InspectorRequest inspectorRequest, IOException e);
 
@@ -74,7 +74,7 @@ public interface NetworkEventReporter {
      * Notifies the {@link NetworkEventReporter} that reponse data has been received
      *
      * @param inspectorResponse {@link InspectorResponse}
-     * @param dataLength : length of response
+     * @param dataLength        : length of response
      */
     void responseDataReceived(InspectorResponse inspectorResponse, int dataLength);
 
@@ -82,24 +82,26 @@ public interface NetworkEventReporter {
      * Reports error while getting the input steam from {@link com.squareup.okhttp.ResponseBody}
      *
      * @param inspectorResponse {@link InspectorResponse}
-     * @param e : error message
+     * @param e                 : error message
      */
     void responseInputStreamError(InspectorResponse inspectorResponse, IOException e);
 
     interface InspectorRequest {
-        String requestId();
+        int requestId();
 
         String url();
 
         String method();
 
         String requestSize();
+
+        String hostName();
     }
 
     interface InspectorResponse {
         boolean hasContentLength();
 
-        String requestId();
+        int requestId();
 
         int statusCode();
 

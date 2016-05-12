@@ -1,10 +1,17 @@
 package com.flipkart.flipperf;
 
 import android.content.Context;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.util.SparseArray;
 
 import com.flipkart.flipperf.model.RequestResponseModel;
+import com.flipkart.flipperf.network.NetworkChangeReceiver;
+import com.flipkart.flipperf.network.NetworkHelper;
+import com.flipkart.flipperf.network.OnNetworkChangeListener;
 import com.flipkart.flipperf.response.CountingInputStream;
 import com.flipkart.flipperf.response.ResponseHandler;
 import com.squareup.okhttp.Request;
@@ -12,63 +19,64 @@ import com.squareup.okhttp.ResponseBody;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by anirudh.r on 09/05/16 at 12:32 PM.
- *
+ * <p>
  * Whenever we get a {@link NetworkEventReporterImpl#requestToBeSent(InspectorRequest)} callback, we create a {@link CurrentExecutingRequest}
- * object and add it to the {@link HashMap}.
- *
+ * object and add it to the {@link SparseArray}.
+ * <p>
  * {@link CurrentExecutingRequest} indicates those request that are currently in execution.
- *
- * There are two cases by which we get a response callback:
- *
+ * <p>
+ * There are two cases by which we will get a response callback:
+ * <p>
  * 1st Case : When response do not have Content-Length
  * Whenever we receive {@link NetworkEventReporterImpl#responseReceived(InspectorResponse)} callback, we get the corresponding {@link CurrentExecutingRequest}
- * from the {@link HashMap} using the requestId, and create a {@link RequestResponseModel} and send it accros
- *
+ * from the {@link SparseArray} using the requestId, and create a {@link RequestResponseModel} and send it accros
+ * <p>
  * 2nd Case : When response have Content-Length
  * Whenever we receive {@link NetworkEventReporterImpl#responseDataReceived(InspectorResponse, int)} callback, the same steps are repeated as in
  * {@link NetworkEventReporterImpl#responseReceived(InspectorResponse)}
- *
- * After the Response has been received, the particular {@link CurrentExecutingRequest} is removed from the {@link HashMap}.
- *
+ * <p>
+ * After the Response has been received, the particular {@link CurrentExecutingRequest} is removed from the {@link SparseArray}.
+ * <p>
  * In case of any {@link IOException} during the {@link com.squareup.okhttp.Interceptor.Chain#proceed(Request)},
  * {@link NetworkEventReporter#httpExchangeError(InspectorRequest, IOException)} gets called with appropriate error message.
- *
+ * <p>
  * In case of any {@link IOException} during the {@link ResponseBody#byteStream()}, {@link NetworkEventReporter#responseInputStreamError(InspectorResponse, IOException)}
  * gets called with appropriate error message.
- *
- *                    when no content length
- *                   -------------------------->  {@link NetworkEventReporterImpl#responseReceived(InspectorResponse)}
- *                  |
- *                  |
- *                  |
- *   REQUEST -------
- *                  |
- *                  |
- *                  |   with content length
- *                   -------------------------->  {@link NetworkEventReporterImpl#responseDataReceived(InspectorResponse, int)}
- *
+ * <p>
+ *             with content length
+ *           -------------------------->  {@link NetworkEventReporterImpl#responseReceived(InspectorResponse)}
+ *          |
+ *          |
+ *          |
+ * REQUEST --->
+ *          |
+ *          |
+ *          |  without content length
+ *            -------------------------->  {@link NetworkEventReporterImpl#responseDataReceived(InspectorResponse, int)}
  */
-public class NetworkEventReporterImpl implements NetworkEventReporter {
+public class NetworkEventReporterImpl implements NetworkEventReporter, OnNetworkChangeListener {
 
     private Handler mHandler;
     private boolean mIsReporterEnabled = false;
-    private NetworkCallManager mNetworkCallManager;
-    private Map<String, CurrentExecutingRequest> mCurrentRequestMap;
+    private String mNetworkType;
+    private SparseArray<CurrentExecutingRequest> mCurrentRequestArray;
+    private NetworkManager mNetworkManager;
 
-    public Map<String, CurrentExecutingRequest> getCurrentRequestMap() {
-        return mCurrentRequestMap;
+    @VisibleForTesting
+    public SparseArray<CurrentExecutingRequest> getCurrentRequestArray() {
+        return mCurrentRequestArray;
     }
 
     @Override
-    public void onInitialized(Context context, Handler handler) {
+    public void onInitialized(Context context, Handler handler, NetworkManager networkManager) {
         this.mHandler = handler;
-        this.mCurrentRequestMap = new HashMap<>();
-        this.mNetworkCallManager = new NetworkCallManagerImpl(context, mHandler);
+        this.mCurrentRequestArray = new SparseArray<>();
+        this.mNetworkType = NetworkHelper.getNetworkType(context);
+        this.mNetworkManager = networkManager;
+        this.mNetworkManager.setNetworkType(mNetworkType);
     }
 
     @Override
@@ -87,32 +95,35 @@ public class NetworkEventReporterImpl implements NetworkEventReporter {
         this.mHandler.post(new Runnable() {
             @Override
             public void run() {
-                mCurrentRequestMap.put(currentRequest.getCurrentRequestId(), currentRequest);
+                mCurrentRequestArray.put(currentRequest.getCurrentRequestId(), currentRequest);
             }
         });
     }
 
     @Override
     public void responseReceived(final InspectorResponse inspectorResponse) {
-        final String requestId = inspectorResponse.requestId();
+        final int requestId = inspectorResponse.requestId();
         this.mHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (mCurrentRequestMap.containsKey(requestId)) {
-                    CurrentExecutingRequest currentRequest = mCurrentRequestMap.get(requestId);
-                    if (currentRequest.getCurrentRequestId().equals(requestId) && inspectorResponse.responseSize() != null) {
+                //check if request associated exists in the sparsearray
+                if (mCurrentRequestArray.indexOfKey(requestId) >= 0 && inspectorResponse.hasContentLength()) {
+                    CurrentExecutingRequest currentRequest = mCurrentRequestArray.get(requestId);
+                    if (currentRequest.getCurrentRequestId() == requestId) {
                         RequestResponseModel requestResponseModel = new RequestResponseModel();
-                        requestResponseModel.setRequestId(currentRequest.getCurrentRequestId());
+                        requestResponseModel.setRequestId(requestId);
                         requestResponseModel.setRequestSize(currentRequest.getCurrentRequestSize());
                         requestResponseModel.setRequestUrl(currentRequest.getCurrentRequestUrl());
                         requestResponseModel.setRequestMethodType(currentRequest.getCurrentRequestMethod());
+                        requestResponseModel.setHostName(currentRequest.getCurrentHostName());
                         requestResponseModel.setResponseSize(inspectorResponse.responseSize());
                         requestResponseModel.setResponseStatusCode(inspectorResponse.statusCode());
                         requestResponseModel.setResponseTime(inspectorResponse.responseTime());
                         requestResponseModel.setApiSpeed(Double.parseDouble(requestResponseModel.getResponseSize()) / requestResponseModel.getResponseTime());
+                        requestResponseModel.setNetworkType(mNetworkType);
 
-                        mNetworkCallManager.onResponseReceived(requestResponseModel);
-                        mCurrentRequestMap.remove(requestId);
+                        mNetworkManager.onResponseReceived(requestResponseModel);
+                        mCurrentRequestArray.remove(requestId);
                     }
                 }
             }
@@ -121,21 +132,23 @@ public class NetworkEventReporterImpl implements NetworkEventReporter {
 
     @Override
     public void httpExchangeError(final InspectorRequest inspectorRequest, final IOException e) {
-        final String requestId = inspectorRequest.requestId();
+        final int requestId = inspectorRequest.requestId();
         this.mHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (mCurrentRequestMap.containsKey(requestId)) {
-                    CurrentExecutingRequest currentRequest = mCurrentRequestMap.get(requestId);
-                    if (currentRequest.getCurrentRequestId().equals(requestId)) {
+                if (mCurrentRequestArray.indexOfKey(requestId) >= 0) {
+                    CurrentExecutingRequest currentRequest = mCurrentRequestArray.get(requestId);
+                    if (currentRequest.getCurrentRequestId() == requestId) {
                         RequestResponseModel requestResponseModel = new RequestResponseModel();
                         requestResponseModel.setRequestId(currentRequest.getCurrentRequestId());
                         requestResponseModel.setRequestUrl(currentRequest.getCurrentRequestUrl());
                         requestResponseModel.setRequestMethodType(currentRequest.getCurrentRequestMethod());
+                        requestResponseModel.setHostName(currentRequest.getCurrentHostName());
                         requestResponseModel.setHttpExchangeErrorMessage(e.getMessage());
+                        requestResponseModel.setNetworkType(mNetworkType);
 
-                        mNetworkCallManager.onHttpExchangeError(requestResponseModel);
-                        mCurrentRequestMap.remove(requestId);
+                        mNetworkManager.onHttpExchangeError(requestResponseModel);
+                        mCurrentRequestArray.remove(requestId);
                     }
                 }
             }
@@ -149,25 +162,27 @@ public class NetworkEventReporterImpl implements NetworkEventReporter {
 
     @Override
     public void responseDataReceived(final InspectorResponse inspectorResponse, final int dataLength) {
-        final String requestId = inspectorResponse.requestId();
+        final int requestId = inspectorResponse.requestId();
         this.mHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (mCurrentRequestMap.containsKey(requestId)) {
-                    CurrentExecutingRequest currentRequest = mCurrentRequestMap.get(requestId);
-                    if (currentRequest.getCurrentRequestId().equals(requestId)) {
+                if (mCurrentRequestArray.indexOfKey(requestId) >= 0) {
+                    CurrentExecutingRequest currentRequest = mCurrentRequestArray.get(requestId);
+                    if (currentRequest.getCurrentRequestId() == requestId) {
                         RequestResponseModel requestResponseModel = new RequestResponseModel();
-                        requestResponseModel.setRequestId(currentRequest.getCurrentRequestId());
+                        requestResponseModel.setRequestId(requestId);
                         requestResponseModel.setRequestSize(currentRequest.getCurrentRequestSize());
                         requestResponseModel.setRequestUrl(currentRequest.getCurrentRequestUrl());
                         requestResponseModel.setRequestMethodType(currentRequest.getCurrentRequestMethod());
+                        requestResponseModel.setHostName(currentRequest.getCurrentHostName());
                         requestResponseModel.setResponseSize(String.valueOf(dataLength));
                         requestResponseModel.setResponseStatusCode(inspectorResponse.statusCode());
                         requestResponseModel.setResponseTime(inspectorResponse.responseTime());
                         requestResponseModel.setApiSpeed(Double.parseDouble(requestResponseModel.getResponseSize()) / requestResponseModel.getResponseTime());
+                        requestResponseModel.setNetworkType(mNetworkType);
 
-                        mNetworkCallManager.onResponseReceived(requestResponseModel);
-                        mCurrentRequestMap.remove(requestId);
+                        mNetworkManager.onResponseReceived(requestResponseModel);
+                        mCurrentRequestArray.remove(requestId);
                     }
                 }
             }
@@ -176,39 +191,59 @@ public class NetworkEventReporterImpl implements NetworkEventReporter {
 
     @Override
     public void responseInputStreamError(InspectorResponse inspectorResponse, final IOException e) {
-        final String requestId = inspectorResponse.requestId();
+        final int requestId = inspectorResponse.requestId();
         this.mHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (mCurrentRequestMap.containsKey(requestId)) {
-                    CurrentExecutingRequest currentRequest = mCurrentRequestMap.get(requestId);
-                    if (currentRequest.getCurrentRequestId().equals(requestId)) {
+                if (mCurrentRequestArray.indexOfKey(requestId) >= 0) {
+                    CurrentExecutingRequest currentRequest = mCurrentRequestArray.get(requestId);
+                    if (currentRequest.getCurrentRequestId() == requestId) {
                         RequestResponseModel requestResponseModel = new RequestResponseModel();
                         requestResponseModel.setRequestId(requestId);
                         requestResponseModel.setResponseInputStreamError(e.getMessage());
+                        requestResponseModel.setNetworkType(mNetworkType);
 
-                        mNetworkCallManager.onResponseInputStreamError(requestResponseModel);
-                        mCurrentRequestMap.remove(requestId);
+                        mNetworkManager.onResponseInputStreamError(requestResponseModel);
+                        mCurrentRequestArray.remove(requestId);
                     }
                 }
             }
         });
     }
 
+    @Override
+    public void onNetworkChange(String networkType) {
+        mNetworkType = networkType;
+        this.mNetworkManager.setNetworkType(mNetworkType);
+    }
+
+    private void registerReceiver(Context context) {
+        NetworkChangeReceiver networkChangeReceiver = new NetworkChangeReceiver(this);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        context.registerReceiver(networkChangeReceiver, intentFilter);
+    }
+
     public class CurrentExecutingRequest {
-        private String mCurrentRequestId;
-        private String mCurrentRequestUrl;
-        private String mCurrentRequestMethod;
-        private String mCurrentRequestSize;
+        private final int mCurrentRequestId;
+        private final String mCurrentRequestUrl;
+        private final String mCurrentRequestMethod;
+        private final String mCurrentRequestSize;
+        private final String mCurrentHostName;
 
         public CurrentExecutingRequest(InspectorRequest inspectorRequest) {
             this.mCurrentRequestId = inspectorRequest.requestId();
             this.mCurrentRequestUrl = inspectorRequest.url();
             this.mCurrentRequestMethod = inspectorRequest.method();
             this.mCurrentRequestSize = inspectorRequest.requestSize();
+            this.mCurrentHostName = inspectorRequest.hostName();
         }
 
-        public String getCurrentRequestId() {
+        public String getCurrentHostName() {
+            return mCurrentHostName;
+        }
+
+        public int getCurrentRequestId() {
             return mCurrentRequestId;
         }
 

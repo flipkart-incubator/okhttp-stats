@@ -1,54 +1,80 @@
 package com.flipkart.flipperf;
 
-import com.flipkart.flipperf.NetworkManager;
-import com.flipkart.flipperf.OnResponseBatchReadyListener;
+import android.content.Context;
+import android.util.Log;
+
 import com.flipkart.flipperf.model.RequestResponseModel;
+import com.flipkart.flipperf.network.NetworkStat;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by anirudh.r on 10/05/16 at 11:59 AM.
  */
 public class NetworkStatManager implements NetworkManager {
 
-    private OnResponseBatchReadyListener mOnNetworkDataBatchReady;
+    private static final String TAG = NetworkStatManager.class.getName();
+    private List<OnResponseReceivedListener> mOnResponseReceivedListenerList = new ArrayList<>();
+    private FlipperfPreferenceManager flipperfPreferenceManager;
+    private int responseCount = 0;
+    private String mNetworkType;
 
-    public NetworkStatManager(OnResponseBatchReadyListener onNetworkDataBatchReady) {
-        this.mOnNetworkDataBatchReady = onNetworkDataBatchReady;
+    public NetworkStatManager(Context context) {
+        flipperfPreferenceManager = new FlipperfPreferenceManager(context);
+    }
+
+    @Override
+    public void addResponseReceivedListener(OnResponseReceivedListener onResponseReceivedListener) {
+        if (mOnResponseReceivedListenerList != null) {
+            mOnResponseReceivedListenerList.add(onResponseReceivedListener);
+        }
+    }
+
+    @Override
+    public void unregisterListener(OnResponseReceivedListener onResponseReceivedListener) {
+        if (mOnResponseReceivedListenerList != null) {
+            mOnResponseReceivedListenerList.remove(onResponseReceivedListener);
+        }
+    }
+
+    @Override
+    public void flush() {
+        Log.d(TAG, "flush : " + NetworkStat.getAverageSpeed());
+        flipperfPreferenceManager.setAverageSpeed(mNetworkType, NetworkStat.getAverageSpeed());
+    }
+
+    @Override
+    public void setNetworkType(String networkType) {
+        this.mNetworkType = networkType;
     }
 
     @Override
     public void onResponseReceived(RequestResponseModel requestResponseModel) {
-        mOnNetworkDataBatchReady.onBatchResponseReceived(requestResponseModel);
+        responseCount += 1;
+        for (OnResponseReceivedListener onResponseReceivedListener : mOnResponseReceivedListenerList) {
+            if (onResponseReceivedListener != null) {
+                onResponseReceivedListener.onResponseReceived(requestResponseModel);
+            }
+        }
+        NetworkStat.calculateNetworkAvgSpeed(requestResponseModel, responseCount);
     }
 
     @Override
     public void onHttpExchangeError(RequestResponseModel requestResponseModel) {
-
+        for (OnResponseReceivedListener onResponseReceivedListener : mOnResponseReceivedListenerList) {
+            if (onResponseReceivedListener != null) {
+                onResponseReceivedListener.onHttpErrorReceived(requestResponseModel);
+            }
+        }
     }
 
     @Override
     public void onResponseInputStreamError(RequestResponseModel requestResponseModel) {
-
+        for (OnResponseReceivedListener onResponseReceivedListener : mOnResponseReceivedListenerList) {
+            if (onResponseReceivedListener != null) {
+                onResponseReceivedListener.onInputStreamReadError(requestResponseModel);
+            }
+        }
     }
-
-//    private NetworkStat getNetworkStat(String networkType) {
-//        NetworkStat networkStat;
-//        if (mNetworkStatMap.containsKey(networkType)) {
-//            networkStat = mNetworkStatMap.get(networkType);
-//        } else {
-//            networkStat = new NetworkStat();
-//            mNetworkStatMap.put(networkType, networkStat);
-//        }
-//        return networkStat;
-//    }
-//
-//    private boolean isReadyToFlush(int i) {
-//        return mCount >= i;
-//    }
-//
-//    private void flush() {
-//        mCount = 0;
-//        Map<String, NetworkStat> tempMap = new HashMap<>(mNetworkStatMap);
-//        mOnNetworkDataBatchReady.onBatchResponseReceived(tempMap);
-//        mNetworkStatMap.clear();
-//    }
 }

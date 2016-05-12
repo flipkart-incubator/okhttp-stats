@@ -7,6 +7,9 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.telephony.TelephonyManager;
 
+/*
+ *Helper class for all network information
+ */
 public final class NetworkHelper {
 
     public static String getNetworkType(Context context) {
@@ -60,17 +63,7 @@ public final class NetworkHelper {
             }
         }
     }
-
-    public static String getDetailedNetworkType(Context context) {
-        String networkType = getNetworkType(context);
-        switch (networkType) {
-            case "WIFI":
-                return NetworkType.WIFI + getWifiSSID(context).hashCode();
-            default:
-                return null;
-        }
-    }
-
+    
     public static String getMobileOperatorName(Context context) {
         TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         return telephonyManager.getNetworkOperatorName();

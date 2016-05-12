@@ -2,20 +2,38 @@ package com.flipkart.flipperf.model;
 
 /**
  * Created by anirudh.r on 09/05/16 at 12:32 PM.
- * Model for RequestResponse
+ * P.O.J.O for RequestResponse
  */
 public class RequestResponseModel {
 
-    private String mRequestId;
+    private int mRequestId;
     private String mRequestMethodType;
     private String mRequestSize;
     private String mRequestUrl;
     private String mResponseSize;
+    private String mHostName;
     private int mResponseStatusCode;
     private long mResponseTime;
     private String mHttpExchangeErrorMessage;
     private String mResponseInputStreamError;
     private double mApiSpeed;
+    private String mNetworkType;
+
+    public String getNetworkType() {
+        return mNetworkType;
+    }
+
+    public void setNetworkType(String mNetworkType) {
+        this.mNetworkType = mNetworkType;
+    }
+
+    public String getHostName() {
+        return mHostName;
+    }
+
+    public void setHostName(String mHostName) {
+        this.mHostName = mHostName;
+    }
 
     public String getResponseInputStreamError() {
         return mResponseInputStreamError;
@@ -49,11 +67,11 @@ public class RequestResponseModel {
         this.mResponseTime = mResponseTime;
     }
 
-    public String getRequestId() {
+    public int getRequestId() {
         return mRequestId;
     }
 
-    public void setRequestId(String mRequestId) {
+    public void setRequestId(int mRequestId) {
         this.mRequestId = mRequestId;
     }
 
