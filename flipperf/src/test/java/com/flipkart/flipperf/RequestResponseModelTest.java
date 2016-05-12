@@ -19,7 +19,7 @@ public class RequestResponseModelTest {
     public void testDataIntegrity() {
         RequestResponseModel requestResponseModel = new RequestResponseModel();
 
-        requestResponseModel.setRequestId("1");
+        requestResponseModel.setRequestId(1);
         requestResponseModel.setRequestUrl("Some_url");
         requestResponseModel.setRequestSize("20");
         requestResponseModel.setRequestMethodType("POST");
@@ -29,8 +29,10 @@ public class RequestResponseModelTest {
         requestResponseModel.setHttpExchangeErrorMessage("Error reading response");
         requestResponseModel.setResponseTime(2);
         requestResponseModel.setResponseStatusCode(200);
+        requestResponseModel.setNetworkType("WIFI");
+        requestResponseModel.setHostName("flipkart.com");
 
-        Assert.assertTrue(requestResponseModel.getRequestId().equals("1"));
+        Assert.assertTrue(requestResponseModel.getRequestId() == 1);
         Assert.assertTrue(requestResponseModel.getRequestUrl().equals("Some_url"));
         Assert.assertTrue(requestResponseModel.getRequestSize().equals("20"));
         Assert.assertTrue(requestResponseModel.getRequestMethodType().equals("POST"));
@@ -40,5 +42,7 @@ public class RequestResponseModelTest {
         Assert.assertTrue(requestResponseModel.getHttpExchangeErrorMessage().equals("Error reading response"));
         Assert.assertTrue(requestResponseModel.getResponseTime() == 2);
         Assert.assertTrue(requestResponseModel.getResponseStatusCode() == 200);
+        Assert.assertTrue(requestResponseModel.getNetworkType().equals("WIFI"));
+        Assert.assertTrue(requestResponseModel.getHostName().equals("flipkart.com"));
     }
 }
