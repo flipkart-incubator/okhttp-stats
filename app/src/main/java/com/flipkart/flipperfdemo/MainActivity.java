@@ -23,7 +23,7 @@ import com.flipkart.flipperf.NetworkInterceptor;
 import com.flipkart.flipperf.NetworkManager;
 import com.flipkart.flipperf.NetworkStatManager;
 import com.flipkart.flipperf.OnResponseReceivedListener;
-import com.flipkart.flipperf.model.RequestResponseModel;
+import com.flipkart.flipperf.model.RequestStats;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -48,15 +48,16 @@ public class MainActivity extends AppCompatActivity {
         Handler handler = new Handler(handlerThread.getLooper());
 
         onResponseReceived = new OnResponseReceived();
-        networkManager = new NetworkStatManager(this);
+        networkManager = new NetworkStatManager(getApplication());
         networkManager.addListener(onResponseReceived);
+        networkManager.setMaxSize(5);
 
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
                 .setEventReporter(new NetworkEventReporterImpl())
                 .setNetworkManager(networkManager)
                 .setReporterEnabled(true)
                 .setHandler(handler)
-                .build(this);
+                .build(getApplication());
 
         OkHttp2Stack.setInterceptor(networkInterceptor);
 
@@ -82,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         networkManager.unregisterListener(onResponseReceived);
-        networkManager.flush();
         super.onDestroy();
     }
 
@@ -145,28 +145,20 @@ public class MainActivity extends AppCompatActivity {
     private class OnResponseReceived implements OnResponseReceivedListener {
 
         @Override
-        public void onResponseReceived(RequestResponseModel requestResponseModel) {
+        public void onResponseReceived(RequestStats requestStats) {
             Log.d("Response Received", "onResponseReceived : "
-                    + "\nId : " + requestResponseModel.getRequestId()
-                    + "\nUrl : " + requestResponseModel.getRequestUrl()
-                    + "\nMethod : " + requestResponseModel.getRequestMethodType()
-                    + "\nHost : " + requestResponseModel.getHostName()
-                    + "\nRequest Size : " + requestResponseModel.getRequestSize()
-                    + "\nResponse Size : " + requestResponseModel.getResponseSize()
-                    + "\nResponse Time : " + requestResponseModel.getResponseTime()
-                    + "\nApi Speed : " + requestResponseModel.getApiSpeed()
-                    + "\nStatus Code : " + requestResponseModel.getResponseStatusCode()
-                    + "\nNetwork Type : " + requestResponseModel.getNetworkType());
-        }
-
-        @Override
-        public void onHttpErrorReceived(RequestResponseModel requestResponseModel) {
-
-        }
-
-        @Override
-        public void onInputStreamReadError(RequestResponseModel requestResponseModel) {
-
+                    + "\nId : " + requestStats.getId()
+                    + "\nUrl : " + requestStats.getUrl()
+                    + "\nMethod : " + requestStats.getMethodType()
+                    + "\nHost : " + requestStats.getHostName()
+                    + "\nRequest Size : " + requestStats.getSize()
+                    + "\nResponse Size : " + requestStats.getResponseSize()
+                    + "\nStart Time : " + requestStats.getStartTime()
+                    + "\nEnd Time : " + requestStats.getEndTime()
+                    + "\nStatus Code : " + requestStats.getHttpStatusCode()
+                    + "\nException  : " + requestStats.getException()
+                    + "\nException Type : " + requestStats.getExceptionType()
+                    + "\nNetwork Type : " + requestStats.getNetworkType());
         }
     }
 }
