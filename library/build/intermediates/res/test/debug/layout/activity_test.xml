@@ -1,8 +1,0 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.flipkart.fk_android_batchnetworking.TestActivity"
-    tools:ignore="MergeRootFrame" />
-<!-- From: file:/var/lib/jenkins/$(ITEM_ROOTDIR)/FkBatchNetworking/res/layout/activity_test.xml --><!-- From: file:/Users/anirudh.r/AndroidStudioProjects/Flipkart/FlipperfDemo/library/build/intermediates/exploded-aar/com.flipkart.android.batchnetworking/FkBatchNetworking/1.1.6/res/layout/activity_test.xml -->
