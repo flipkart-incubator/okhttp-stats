@@ -19,6 +19,8 @@ import org.robolectric.shadows.ShadowLooper;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import static org.mockito.Mockito.mock;
 
@@ -47,7 +49,7 @@ public class NetworkEventReporterImplTest {
      * Test for {@link NetworkEventReporterImpl#requestToBeSent(NetworkEventReporter.InspectorRequest)}
      */
     @Test
-    public void testRequestToBeSent() {
+    public void testRequestToBeSent() throws MalformedURLException {
         NetworkManager networkManager = mock(NetworkManager.class);
 
         HandlerThread handlerThread = new HandlerThread("back");
@@ -59,11 +61,12 @@ public class NetworkEventReporterImplTest {
         NetworkEventReporterImpl networkEventReporter = new NetworkEventReporterImpl();
         networkEventReporter.onInitialized(RuntimeEnvironment.application, handler, networkManager);
 
-        CustomInspectorRequest customInspectorRequest = new CustomInspectorRequest(1, "flipkart.com", "POST", "20", "");
+        URL url = new URL("http://www.flipkart.com");
+        CustomInspectorRequest customInspectorRequest = new CustomInspectorRequest(1, url, "POST", "20", "");
         networkEventReporter.requestToBeSent(customInspectorRequest);
         shadowLooper.runToEndOfTasks();
 
-        CustomInspectorRequest customInspectorRequest1 = new CustomInspectorRequest(2, "flipkart.com", "GET", "202", "");
+        CustomInspectorRequest customInspectorRequest1 = new CustomInspectorRequest(2, url, "GET", "202", "");
         networkEventReporter.requestToBeSent(customInspectorRequest1);
         shadowLooper.runToEndOfTasks();
 
@@ -74,7 +77,7 @@ public class NetworkEventReporterImplTest {
      * Test for {@link NetworkEventReporter#responseReceived(NetworkEventReporter.InspectorResponse)}
      */
     @Test
-    public void testResponseReceived() {
+    public void testResponseReceived() throws MalformedURLException {
         NetworkManager networkManager = mock(NetworkManager.class);
 
         HandlerThread handlerThread = new HandlerThread("back");
@@ -86,14 +89,15 @@ public class NetworkEventReporterImplTest {
         NetworkEventReporterImpl networkEventReporter = new NetworkEventReporterImpl();
         networkEventReporter.onInitialized(RuntimeEnvironment.application, handler, networkManager);
 
-        CustomInspectorRequest customInspectorRequest = new CustomInspectorRequest(1, "flipkart.com", "POST", "20", "flipkart.com");
+        URL url = new URL("http://www.flipkart.com");
+        CustomInspectorRequest customInspectorRequest = new CustomInspectorRequest(1, url, "POST", "20", "http://www.flipkart.com");
         networkEventReporter.requestToBeSent(customInspectorRequest);
         shadowLooper.runToEndOfTasks();
 
         //assert that hashMap contains 1 request
         Assert.assertTrue(networkEventReporter.getCurrentRequestArray().size() == 1);
 
-        CustomInspectorResponse customInspectorResponse = new CustomInspectorResponse(1, "22", 200, 1, true);
+        CustomInspectorResponse customInspectorResponse = new CustomInspectorResponse(1, "22", 200, 100, 150, true);
         //received response
         networkEventReporter.responseReceived(customInspectorResponse);
         shadowLooper.runToEndOfTasks();
@@ -106,7 +110,7 @@ public class NetworkEventReporterImplTest {
      * Test for {@link NetworkEventReporter#responseDataReceived(NetworkEventReporter.InspectorResponse, int)}
      */
     @Test
-    public void testResponseDataReceived() {
+    public void testResponseDataReceived() throws MalformedURLException {
         NetworkManager networkManager = mock(NetworkManager.class);
 
         HandlerThread handlerThread = new HandlerThread("back");
@@ -118,14 +122,15 @@ public class NetworkEventReporterImplTest {
         NetworkEventReporterImpl networkEventReporter = new NetworkEventReporterImpl();
         networkEventReporter.onInitialized(RuntimeEnvironment.application, handler, networkManager);
 
-        CustomInspectorRequest customInspectorRequest = new CustomInspectorRequest(1, "flipkart.com", "POST", "20", "flipkart.com");
+        URL url = new URL("http://www.flipkart.com");
+        CustomInspectorRequest customInspectorRequest = new CustomInspectorRequest(1, url, "POST", "20", "http://www.flipkart.com");
         networkEventReporter.requestToBeSent(customInspectorRequest);
         shadowLooper.runToEndOfTasks();
 
         //assert that hashMap contains 1 request
         Assert.assertTrue(networkEventReporter.getCurrentRequestArray().size() == 1);
 
-        CustomInspectorResponse customInspectorResponse = new CustomInspectorResponse(1, "22", 200, 1, false);
+        CustomInspectorResponse customInspectorResponse = new CustomInspectorResponse(1, "22", 200, 100, 150, false);
         //received response
         networkEventReporter.responseDataReceived(customInspectorResponse, 22);
         shadowLooper.runToEndOfTasks();
@@ -138,7 +143,7 @@ public class NetworkEventReporterImplTest {
      * Test for {@link NetworkEventReporter#httpExchangeError(NetworkEventReporter.InspectorRequest, IOException)}
      */
     @Test
-    public void testHttpExchangeError() {
+    public void testHttpExchangeError() throws MalformedURLException {
         NetworkManager networkManager = mock(NetworkManager.class);
 
         HandlerThread handlerThread = new HandlerThread("back");
@@ -150,7 +155,8 @@ public class NetworkEventReporterImplTest {
         NetworkEventReporterImpl networkEventReporter = new NetworkEventReporterImpl();
         networkEventReporter.onInitialized(RuntimeEnvironment.application, handler, networkManager);
 
-        CustomInspectorRequest customInspectorRequest = new CustomInspectorRequest(1, "flipkart.com", "POST", "20", "flipkart.com");
+        URL url = new URL("http://www.flipkart.com");
+        CustomInspectorRequest customInspectorRequest = new CustomInspectorRequest(1, url, "POST", "20", "http://www.flipkart.com");
         networkEventReporter.requestToBeSent(customInspectorRequest);
         shadowLooper.runToEndOfTasks();
 
@@ -168,7 +174,7 @@ public class NetworkEventReporterImplTest {
      * Test for {@link NetworkEventReporter#responseInputStreamError(NetworkEventReporter.InspectorResponse, IOException)}
      */
     @Test
-    public void testResponseInputStreamError() {
+    public void testResponseInputStreamError() throws MalformedURLException {
         NetworkManager networkManager = mock(NetworkManager.class);
 
         HandlerThread handlerThread = new HandlerThread("back");
@@ -180,14 +186,15 @@ public class NetworkEventReporterImplTest {
         NetworkEventReporterImpl networkEventReporter = new NetworkEventReporterImpl();
         networkEventReporter.onInitialized(RuntimeEnvironment.application, handler, networkManager);
 
-        CustomInspectorRequest customInspectorRequest = new CustomInspectorRequest(1, "flipkart.com", "POST", "20", "flipkart.com");
+        URL url = new URL("http://www.flipkart.com");
+        CustomInspectorRequest customInspectorRequest = new CustomInspectorRequest(1, url, "POST", "20", "http://www.flipkart.com");
         networkEventReporter.requestToBeSent(customInspectorRequest);
         shadowLooper.runToEndOfTasks();
 
         //assert that hashMap contains 1 request
         Assert.assertTrue(networkEventReporter.getCurrentRequestArray().size() == 1);
 
-        CustomInspectorResponse customInspectorResponse = new CustomInspectorResponse(1, "22", 200, 1, false);
+        CustomInspectorResponse customInspectorResponse = new CustomInspectorResponse(1, "22", 200, 100, 150, false);
         //received response
         networkEventReporter.responseInputStreamError(customInspectorResponse, new IOException("Error while reading inputstream"));
         shadowLooper.runToEndOfTasks();
@@ -218,39 +225,17 @@ public class NetworkEventReporterImplTest {
     }
 
     /**
-     * Test for {@link NetworkEventReporterImpl#onNetworkChange(String)}
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testOnNetworkChange() throws Exception {
-
-        NetworkManager networkManager = mock(NetworkManager.class);
-
-        HandlerThread handlerThread = new HandlerThread("back");
-        handlerThread.start();
-        Looper looper = handlerThread.getLooper();
-        Handler handler = new Handler(looper);
-        ShadowLooper shadowLooper = (ShadowLooper) ShadowExtractor.extract(looper);
-
-        NetworkEventReporterImpl networkEventReporter = new NetworkEventReporterImpl();
-        networkEventReporter.onInitialized(RuntimeEnvironment.application, handler, networkManager);
-
-        networkEventReporter.onNetworkChange("WIFI");
-    }
-
-    /**
      * Custom Inspector Request class for testing purposes
      */
     private class CustomInspectorRequest implements NetworkEventReporter.InspectorRequest {
 
         private final int requestId;
-        private final String requestUrl;
+        private final URL requestUrl;
         private final String requestMethod;
         private final String requestSize;
         private final String hostName;
 
-        public CustomInspectorRequest(int requestId, String requestUrl, String requestMethod, String requestSize, String hostname) {
+        public CustomInspectorRequest(int requestId, URL requestUrl, String requestMethod, String requestSize, String hostname) {
             this.requestId = requestId;
             this.requestUrl = requestUrl;
             this.requestMethod = requestMethod;
@@ -264,7 +249,7 @@ public class NetworkEventReporterImplTest {
         }
 
         @Override
-        public String url() {
+        public URL url() {
             return requestUrl;
         }
 
@@ -289,14 +274,16 @@ public class NetworkEventReporterImplTest {
         private final String responseSize;
         private final int statusCode;
         private final int requestId;
-        private final long responseTime;
+        private final long startTime;
+        private final long endTime;
         private final boolean hasContentLength;
 
-        public CustomInspectorResponse(int requestId, String responseSize, int statusCode, long responseTime, boolean hasContentLength) {
+        public CustomInspectorResponse(int requestId, String responseSize, int statusCode, long startTime, long endTime, boolean hasContentLength) {
             this.requestId = requestId;
             this.responseSize = responseSize;
             this.statusCode = statusCode;
-            this.responseTime = responseTime;
+            this.startTime = startTime;
+            this.endTime = endTime;
             this.hasContentLength = hasContentLength;
         }
 
@@ -321,8 +308,13 @@ public class NetworkEventReporterImplTest {
         }
 
         @Override
-        public long responseTime() {
-            return responseTime;
+        public long startTime() {
+            return startTime;
+        }
+
+        @Override
+        public long endTime() {
+            return endTime;
         }
     }
 }

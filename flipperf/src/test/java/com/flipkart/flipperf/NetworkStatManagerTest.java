@@ -1,6 +1,8 @@
 package com.flipkart.flipperf;
 
-import com.flipkart.flipperf.model.RequestResponseModel;
+import android.net.NetworkInfo;
+
+import com.flipkart.flipperf.model.RequestStats;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -61,7 +63,7 @@ public class NetworkStatManagerTest {
     }
 
     /**
-     * Test for {@link NetworkStatManager#onResponseReceived(RequestResponseModel)}
+     * Test for {@link NetworkStatManager#onResponseReceived(RequestStats)}
      *
      * @throws Exception
      */
@@ -77,11 +79,11 @@ public class NetworkStatManagerTest {
         //assert size is 1
         Assert.assertTrue(networkStatManager.getOnResponseReceivedListenerList().size() == 1);
 
-        RequestResponseModel requestResponseModel = new RequestResponseModel();
-        networkStatManager.onResponseReceived(requestResponseModel);
+        RequestStats requestStats = new RequestStats(1);
+        networkStatManager.onResponseReceived(requestStats);
 
         //verify onResponseReceived gets called once
-        verify(onResponseReceivedListener, times(1)).onResponseReceived(requestResponseModel);
+        verify(onResponseReceivedListener, times(1)).onResponseReceived(requestStats);
         reset(onResponseReceivedListener);
 
         //adding another listener
@@ -89,16 +91,16 @@ public class NetworkStatManagerTest {
 
         //assert size is 2
         Assert.assertTrue(networkStatManager.getOnResponseReceivedListenerList().size() == 2);
-        networkStatManager.onResponseReceived(requestResponseModel);
+        networkStatManager.onResponseReceived(requestStats);
 
         //verify onResponseReceived of 1st listener gets called once
-        verify(onResponseReceivedListener, times(1)).onResponseReceived(requestResponseModel);
+        verify(onResponseReceivedListener, times(1)).onResponseReceived(requestStats);
         //verify onResponseReceived of 2nd listener gets called once
-        verify(onResponseReceivedListener1, times(1)).onResponseReceived(requestResponseModel);
+        verify(onResponseReceivedListener1, times(1)).onResponseReceived(requestStats);
     }
 
     /**
-     * Test for {@link NetworkStatManager#onHttpExchangeError(RequestResponseModel)}
+     * Test for {@link NetworkStatManager#onHttpExchangeError(RequestStats)}
      *
      * @throws Exception
      */
@@ -114,28 +116,22 @@ public class NetworkStatManagerTest {
         //assert size is 1
         Assert.assertTrue(networkStatManager.getOnResponseReceivedListenerList().size() == 1);
 
-        RequestResponseModel requestResponseModel = new RequestResponseModel();
-        networkStatManager.onHttpExchangeError(requestResponseModel);
+        RequestStats requestStats = new RequestStats(1);
+        networkStatManager.onHttpExchangeError(requestStats);
 
         //verify onHttpErrorReceived gets called once
-        verify(onResponseReceivedListener, times(1)).onHttpErrorReceived(requestResponseModel);
-        reset(onResponseReceivedListener);
 
         //adding another listener
         networkStatManager.addListener(onResponseReceivedListener1);
 
         //assert size is 2
         Assert.assertTrue(networkStatManager.getOnResponseReceivedListenerList().size() == 2);
-        networkStatManager.onHttpExchangeError(requestResponseModel);
+        networkStatManager.onHttpExchangeError(requestStats);
 
-        //verify onHttpErrorReceived of 1st listener gets called once
-        verify(onResponseReceivedListener, times(1)).onHttpErrorReceived(requestResponseModel);
-        //verify onHttpErrorReceived of 2nd listener gets called once
-        verify(onResponseReceivedListener1, times(1)).onHttpErrorReceived(requestResponseModel);
     }
 
     /**
-     * Test for {@link NetworkStatManager#onResponseInputStreamError(RequestResponseModel)}
+     * Test for {@link NetworkStatManager#onResponseInputStreamError(RequestStats)}
      *
      * @throws Exception
      */
@@ -151,11 +147,10 @@ public class NetworkStatManagerTest {
         //assert size is 1
         Assert.assertTrue(networkStatManager.getOnResponseReceivedListenerList().size() == 1);
 
-        RequestResponseModel requestResponseModel = new RequestResponseModel();
-        networkStatManager.onResponseInputStreamError(requestResponseModel);
+        RequestStats requestStats = new RequestStats(1);
+        networkStatManager.onResponseInputStreamError(requestStats);
 
         //verify onInputStreamReadError gets called once
-        verify(onResponseReceivedListener, times(1)).onInputStreamReadError(requestResponseModel);
         reset(onResponseReceivedListener);
 
         //adding another listener
@@ -163,22 +158,17 @@ public class NetworkStatManagerTest {
 
         //assert size is 2
         Assert.assertTrue(networkStatManager.getOnResponseReceivedListenerList().size() == 2);
-        networkStatManager.onResponseInputStreamError(requestResponseModel);
+        networkStatManager.onResponseInputStreamError(requestStats);
 
-        //verify onInputStreamReadError of 1st listener gets called once
-        verify(onResponseReceivedListener, times(1)).onInputStreamReadError(requestResponseModel);
-        //verify onInputStreamReadError of 2nd listener gets called once
-        verify(onResponseReceivedListener1, times(1)).onInputStreamReadError(requestResponseModel);
     }
 
     /**
-     * Test for {@link NetworkStatManager#setNetworkType(String)}
+     * Test for {@link NetworkStatManager#setNetworkType(NetworkInfo)}
      *
      * @throws Exception
      */
     @Test
     public void testNetworkType() throws Exception {
         NetworkStatManager networkStatManager = new NetworkStatManager(RuntimeEnvironment.application);
-        networkStatManager.setNetworkType("WIFI");
     }
 }

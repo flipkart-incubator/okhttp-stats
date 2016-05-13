@@ -421,12 +421,12 @@ public class NetworkInterceptorTest {
                 .addHeader("HOST", "flipkart")
                 .build();
 
-        NetworkInterceptor.OkHttpInspectorRequest okHttpInspectorRequest = new NetworkInterceptor.OkHttpInspectorRequest(1, request.urlString(), request.method(), request.header("Content-Length"), request.header("HOST"));
+        NetworkInterceptor.OkHttpInspectorRequest okHttpInspectorRequest = new NetworkInterceptor.OkHttpInspectorRequest(1, request.url(), request.method(), request.header("Content-Length"), request.header("HOST"));
 
         //assert id is same
         Assert.assertTrue(okHttpInspectorRequest.requestId() == 1);
         //assert url is same
-        Assert.assertTrue(okHttpInspectorRequest.url().equals(request.urlString()));
+        Assert.assertTrue(okHttpInspectorRequest.url().equals(request.url()));
         //assert content length is same
         Assert.assertTrue(okHttpInspectorRequest.requestSize().equals(request.header("Content-Length")));
         //assert hostname is same
@@ -438,14 +438,14 @@ public class NetworkInterceptorTest {
     @Test
     public void testOkHttpInspectorResponse() throws Exception {
 
-        NetworkInterceptor.OkHttpInspectorResponse okHttpInspectorResponse = new NetworkInterceptor.OkHttpInspectorResponse(1, 200, "20", 2);
+        NetworkInterceptor.OkHttpInspectorResponse okHttpInspectorResponse = new NetworkInterceptor.OkHttpInspectorResponse(1, 200, "20", 2, 3);
 
         //assert id is same
         Assert.assertTrue(okHttpInspectorResponse.requestId() == 1);
         //assert content length is same
         Assert.assertTrue(okHttpInspectorResponse.responseSize().equals("20"));
         //assert response time is same
-        Assert.assertTrue(okHttpInspectorResponse.responseTime() == 2);
+        Assert.assertTrue(okHttpInspectorResponse.startTime() == 2);
         //assert statuscode is same
         Assert.assertTrue(okHttpInspectorResponse.statusCode() == 200);
     }
