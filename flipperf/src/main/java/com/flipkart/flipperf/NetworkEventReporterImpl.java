@@ -156,7 +156,7 @@ public class NetworkEventReporterImpl implements NetworkEventReporter, OnNetwork
     }
 
     @Override
-    public InputStream interpretResponseStream(@Nullable InputStream inputStream, ResponseHandler responseHandler) throws IOException {
+    public InputStream interpretResponseStream(@Nullable InputStream inputStream, ResponseHandler responseHandler) {
         return new CountingInputStream(inputStream, responseHandler);
     }
 

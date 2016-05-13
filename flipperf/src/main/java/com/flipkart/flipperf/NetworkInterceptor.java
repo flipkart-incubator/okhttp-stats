@@ -116,7 +116,8 @@ public final class NetworkInterceptor implements Interceptor {
     /**
      * Implementation of {@link com.flipkart.flipperf.NetworkEventReporter.InspectorRequest}
      */
-    private static class OkHttpInspectorRequest implements NetworkEventReporter.InspectorRequest {
+    @VisibleForTesting
+    public static class OkHttpInspectorRequest implements NetworkEventReporter.InspectorRequest {
         private final int mRequestId;
         private final String mRequestUrl;
         private final String mMethodType;
@@ -160,7 +161,8 @@ public final class NetworkInterceptor implements Interceptor {
     /**
      * Implementation of {@link com.flipkart.flipperf.NetworkEventReporter.InspectorResponse}
      */
-    private static class OkHttpInspectorResponse implements NetworkEventReporter.InspectorResponse {
+    @VisibleForTesting
+    public static class OkHttpInspectorResponse implements NetworkEventReporter.InspectorResponse {
         private final int mRequestId;
         private final long mResponseTime;
         private final int mStatusCode;

@@ -31,7 +31,7 @@ import java.io.InputStream;
 public class CountingInputStream extends FilterInputStream {
 
     private int mCount;
-    private ResponseHandler mResponseHandler;
+    private final ResponseHandler mResponseHandler;
 
     public CountingInputStream(InputStream in, ResponseHandler responseHandler) {
         super(in);

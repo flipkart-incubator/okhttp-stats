@@ -9,7 +9,7 @@ import android.content.SharedPreferences;
 public class FlipperfPreferenceManager {
 
     private static final String MyPREFERENCES = "MyPrefs";
-    private SharedPreferences mSharedPreferences;
+    private final SharedPreferences mSharedPreferences;
 
     public FlipperfPreferenceManager(Context context) {
         this.mSharedPreferences = context.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);

@@ -7,8 +7,8 @@ import com.flipkart.flipperf.model.RequestResponseModel;
  */
 public final class NetworkStat {
 
-    private static float mTotalAPISpeed;
-    private static int mTotalResponseCount;
+    private static float mTotalAPISpeed = 0F;
+    private static int mTotalResponseCount = 0;
 
     public static synchronized void calculateNetworkAvgSpeed(final RequestResponseModel requestResponseModel, int responseCount) {
         mTotalAPISpeed += requestResponseModel.getApiSpeed();

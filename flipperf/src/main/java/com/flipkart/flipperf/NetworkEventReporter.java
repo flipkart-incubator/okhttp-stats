@@ -68,7 +68,7 @@ public interface NetworkEventReporter {
      * @return {@link InputStream}
      * @throws IOException
      */
-    InputStream interpretResponseStream(@Nullable InputStream inputStream, ResponseHandler responseHandler) throws IOException;
+    InputStream interpretResponseStream(@Nullable InputStream inputStream, ResponseHandler responseHandler);
 
     /**
      * Notifies the {@link NetworkEventReporter} that reponse data has been received

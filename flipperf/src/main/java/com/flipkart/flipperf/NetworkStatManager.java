@@ -1,7 +1,7 @@
 package com.flipkart.flipperf;
 
 import android.content.Context;
-import android.util.Log;
+import android.support.annotation.VisibleForTesting;
 
 import com.flipkart.flipperf.model.RequestResponseModel;
 import com.flipkart.flipperf.network.NetworkStat;
@@ -15,8 +15,14 @@ import java.util.List;
 public class NetworkStatManager implements NetworkManager {
 
     private static final String TAG = NetworkStatManager.class.getName();
+
+    @VisibleForTesting
+    public List<OnResponseReceivedListener> getOnResponseReceivedListenerList() {
+        return mOnResponseReceivedListenerList;
+    }
+
     private List<OnResponseReceivedListener> mOnResponseReceivedListenerList = new ArrayList<>();
-    private FlipperfPreferenceManager flipperfPreferenceManager;
+    private final FlipperfPreferenceManager flipperfPreferenceManager;
     private int responseCount = 0;
     private String mNetworkType;
 
@@ -40,7 +46,6 @@ public class NetworkStatManager implements NetworkManager {
 
     @Override
     public void flush() {
-        Log.d(TAG, "flush : " + NetworkStat.getAverageSpeed());
         flipperfPreferenceManager.setAverageSpeed(mNetworkType, NetworkStat.getAverageSpeed());
     }
 

@@ -4,6 +4,9 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 
+import com.flipkart.flipperf.response.DefaultResponseHandler;
+import com.flipkart.flipperf.response.ResponseHandler;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +16,9 @@ import org.robolectric.annotation.Config;
 import org.robolectric.internal.ShadowExtractor;
 import org.robolectric.shadows.ShadowLooper;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import static org.mockito.Mockito.mock;
 
@@ -192,12 +197,58 @@ public class NetworkEventReporterImplTest {
     }
 
     /**
+     * Test for {@link NetworkEventReporter#interpretResponseStream(InputStream, ResponseHandler)}
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testInterpretInputStream() throws Exception {
+        NetworkManager networkManager = mock(NetworkManager.class);
+
+        HandlerThread handlerThread = new HandlerThread("back");
+        handlerThread.start();
+        Looper looper = handlerThread.getLooper();
+        Handler handler = new Handler(looper);
+        ShadowLooper shadowLooper = (ShadowLooper) ShadowExtractor.extract(looper);
+
+        NetworkEventReporterImpl networkEventReporter = new NetworkEventReporterImpl();
+        networkEventReporter.onInitialized(RuntimeEnvironment.application, handler, networkManager);
+
+        networkEventReporter.interpretResponseStream(new ByteArrayInputStream("Hello".getBytes()), new DefaultResponseHandler(networkEventReporter, null));
+    }
+
+    /**
+     * Test for {@link NetworkEventReporterImpl#onNetworkChange(String)}
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testOnNetworkChange() throws Exception {
+
+        NetworkManager networkManager = mock(NetworkManager.class);
+
+        HandlerThread handlerThread = new HandlerThread("back");
+        handlerThread.start();
+        Looper looper = handlerThread.getLooper();
+        Handler handler = new Handler(looper);
+        ShadowLooper shadowLooper = (ShadowLooper) ShadowExtractor.extract(looper);
+
+        NetworkEventReporterImpl networkEventReporter = new NetworkEventReporterImpl();
+        networkEventReporter.onInitialized(RuntimeEnvironment.application, handler, networkManager);
+
+        networkEventReporter.onNetworkChange("WIFI");
+    }
+
+    /**
      * Custom Inspector Request class for testing purposes
      */
     private class CustomInspectorRequest implements NetworkEventReporter.InspectorRequest {
 
-        private int requestId;
-        private String requestUrl, requestMethod, requestSize, hostName;
+        private final int requestId;
+        private final String requestUrl;
+        private final String requestMethod;
+        private final String requestSize;
+        private final String hostName;
 
         public CustomInspectorRequest(int requestId, String requestUrl, String requestMethod, String requestSize, String hostname) {
             this.requestId = requestId;
@@ -235,10 +286,11 @@ public class NetworkEventReporterImplTest {
 
     private class CustomInspectorResponse implements NetworkEventReporter.InspectorResponse {
 
-        private String responseSize;
-        private int statusCode, requestId;
-        private long responseTime;
-        private boolean hasContentLength;
+        private final String responseSize;
+        private final int statusCode;
+        private final int requestId;
+        private final long responseTime;
+        private final boolean hasContentLength;
 
         public CustomInspectorResponse(int requestId, String responseSize, int statusCode, long responseTime, boolean hasContentLength) {
             this.requestId = requestId;
