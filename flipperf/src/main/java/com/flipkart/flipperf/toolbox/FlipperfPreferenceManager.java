@@ -8,11 +8,11 @@ import android.content.SharedPreferences;
  */
 public class FlipperfPreferenceManager {
 
-    private static final String MyPREFERENCES = "MyPrefs";
+    private static final String FLIPPERF_PREFERENCES = "FLIPPERF_PREFERENCES";
     private final SharedPreferences mSharedPreferences;
 
     public FlipperfPreferenceManager(Context context) {
-        this.mSharedPreferences = context.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        this.mSharedPreferences = context.getSharedPreferences(FLIPPERF_PREFERENCES, Context.MODE_PRIVATE);
     }
 
     public void setAverageSpeed(String networkType, float avgSpeed) {
