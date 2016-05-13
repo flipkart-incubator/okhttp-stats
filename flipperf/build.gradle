@@ -3,12 +3,14 @@ buildscript {
         jcenter()
         maven { url 'http://repo1.maven.org/maven2' }
         maven { url 'http://artifactory.nm.flipkart.com:8081/artifactory/libs-release-local' }
+        maven { url 'https://plugins.gradle.org/m2/' }
     }
 
     dependencies {
         classpath 'com.android.tools.build:gradle:2.0.0'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.3'
         classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:2.2.3'
+        classpath 'net.ltgt.gradle:gradle-errorprone-plugin:0.0.8'
     }
 }
 
@@ -16,11 +18,13 @@ repositories {
     jcenter()
     maven { url 'http://repo1.maven.org/maven2' }
     maven { url 'http://artifactory.nm.flipkart.com:8081/artifactory/libs-release-local' }
+    maven { url "https://plugins.gradle.org/m2/" }
 }
 
 apply plugin: 'com.android.library'
 apply plugin: 'artifactory'
 apply plugin: 'android-maven'
+apply plugin: 'net.ltgt.errorprone'
 
 android {
     compileSdkVersion 23
@@ -49,7 +53,7 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
-    testCompile 'com.squareup.okhttp:mockwebserver:1.2.1'
+    testCompile 'com.squareup.okhttp:mockwebserver:2.7.5'
     testCompile 'org.robolectric:robolectric:3.0'
 }
 
