@@ -1,29 +1,68 @@
 package com.flipkart.flipperf.model;
 
+import android.net.NetworkInfo;
+import android.support.annotation.Nullable;
+
+import java.io.IOException;
+import java.net.URL;
+
 /**
  * Created by anirudh.r on 09/05/16 at 12:32 PM.
- * P.O.J.O for RequestResponse
+ * P.O.J.O for RequestStats
  */
 public class RequestStats {
 
-    private int mRequestId;
-    private String mRequestMethodType;
-    private String mRequestSize;
-    private String mRequestUrl;
+    private final int mId;
+    private String mMethodType;
+    private String mSize;
+    private URL mUrl;
     private String mResponseSize;
     private String mHostName;
-    private int mResponseStatusCode;
-    private long mResponseTime;
-    private String mHttpExchangeErrorMessage;
-    private String mResponseInputStreamError;
-    private double mApiSpeed;
-    private String mNetworkType;
+    private int mHttpStatusCode;
+    private long mStartTime;
+    private long mEndTime;
+    private NetworkInfo mNetworkType;
+    @Nullable
+    private IOException mException;
+    /**
+     * -1 if none
+     */
+    private int mExceptionType = -1;
 
-    public String getNetworkType() {
+    public RequestStats(int requestId) {
+        this.mId = requestId;
+    }
+
+    public int getExceptionType() {
+        return mExceptionType;
+    }
+
+    public void setExceptionType(int mExceptionType) {
+        this.mExceptionType = mExceptionType;
+    }
+
+    @Nullable
+    public IOException getException() {
+        return mException;
+    }
+
+    public void setException(@Nullable IOException mException) {
+        this.mException = mException;
+    }
+
+    public int getHttpStatusCode() {
+        return mHttpStatusCode;
+    }
+
+    public void setHttpStatusCode(int mHttpStatusCode) {
+        this.mHttpStatusCode = mHttpStatusCode;
+    }
+
+    public NetworkInfo getNetworkType() {
         return mNetworkType;
     }
 
-    public void setNetworkType(String mNetworkType) {
+    public void setNetworkType(NetworkInfo mNetworkType) {
         this.mNetworkType = mNetworkType;
     }
 
@@ -35,68 +74,32 @@ public class RequestStats {
         this.mHostName = mHostName;
     }
 
-    public String getResponseInputStreamError() {
-        return mResponseInputStreamError;
+    public int getId() {
+        return mId;
     }
 
-    public void setResponseInputStreamError(String mResponseInputStreamError) {
-        this.mResponseInputStreamError = mResponseInputStreamError;
+    public String getMethodType() {
+        return mMethodType;
     }
 
-    public double getApiSpeed() {
-        return mApiSpeed;
+    public void setMethodType(String mMethodType) {
+        this.mMethodType = mMethodType;
     }
 
-    public void setApiSpeed(double mApiSpeed) {
-        this.mApiSpeed = mApiSpeed;
+    public String getSize() {
+        return mSize;
     }
 
-    public String getHttpExchangeErrorMessage() {
-        return mHttpExchangeErrorMessage;
+    public void setSize(String mSize) {
+        this.mSize = mSize;
     }
 
-    public void setHttpExchangeErrorMessage(String mHttpExchangeErrorCount) {
-        this.mHttpExchangeErrorMessage = mHttpExchangeErrorCount;
+    public URL getUrl() {
+        return mUrl;
     }
 
-    public long getResponseTime() {
-        return mResponseTime;
-    }
-
-    public void setResponseTime(long mResponseTime) {
-        this.mResponseTime = mResponseTime;
-    }
-
-    public int getRequestId() {
-        return mRequestId;
-    }
-
-    public void setRequestId(int mRequestId) {
-        this.mRequestId = mRequestId;
-    }
-
-    public String getRequestMethodType() {
-        return mRequestMethodType;
-    }
-
-    public void setRequestMethodType(String mRequestMethodType) {
-        this.mRequestMethodType = mRequestMethodType;
-    }
-
-    public String getRequestSize() {
-        return mRequestSize;
-    }
-
-    public void setRequestSize(String mRequestSize) {
-        this.mRequestSize = mRequestSize;
-    }
-
-    public String getRequestUrl() {
-        return mRequestUrl;
-    }
-
-    public void setRequestUrl(String mRequestUrl) {
-        this.mRequestUrl = mRequestUrl;
+    public void setUrl(URL mUrl) {
+        this.mUrl = mUrl;
     }
 
     public String getResponseSize() {
@@ -107,11 +110,19 @@ public class RequestStats {
         this.mResponseSize = mResponseSize;
     }
 
-    public int getResponseStatusCode() {
-        return mResponseStatusCode;
+    public long getEndTime() {
+        return mEndTime;
     }
 
-    public void setResponseStatusCode(int mResponseStatusCode) {
-        this.mResponseStatusCode = mResponseStatusCode;
+    public void setEndTime(long mEndTime) {
+        this.mEndTime = mEndTime;
+    }
+
+    public long getStartTime() {
+        return mStartTime;
+    }
+
+    public void setStartTime(long mStartTime) {
+        this.mStartTime = mStartTime;
     }
 }

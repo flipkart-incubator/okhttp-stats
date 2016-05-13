@@ -12,8 +12,12 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import okio.BufferedSource;
@@ -24,6 +28,7 @@ import okio.Okio;
  */
 public final class NetworkInterceptor implements Interceptor {
 
+    private Logger logger = LoggerFactory.getLogger(NetworkInterceptor.class);
     private static final String HANDLER_THREAD_NAME = " com.flipkart.flipperf.networkInterceptor";
     private static final String CONTENT_LENGTH = "Content-Length";
     private final NetworkEventReporter mEventReporter;
@@ -60,19 +65,22 @@ public final class NetworkInterceptor implements Interceptor {
         OkHttpInspectorRequest okHttpInspectorRequest = null;
 
         if (mEventReporter.isReporterEnabled()) {
-            okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.urlString(), request.method(), request.header(CONTENT_LENGTH), request.header("HOST"));
+            okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url(), request.method(), request.header(CONTENT_LENGTH), request.header("HOST"));
             //notify event reporter that request is to be sent.
             mEventReporter.requestToBeSent(okHttpInspectorRequest);
         }
 
-        long mResponseStartTime, mResponseEndTime;
+        long mStartTime, mEndTime;
         Response response;
         try {
             //note the time taken for the response
-            mResponseStartTime = System.nanoTime();
+            mStartTime = System.currentTimeMillis();
             response = chain.proceed(request);
-            mResponseEndTime = System.nanoTime();
+            mEndTime = System.currentTimeMillis();
         } catch (final IOException e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Error received while proceeding response {}", e.getMessage());
+            }
             if (mEventReporter.isReporterEnabled()) {
                 //notify event reporter in case there is any exception while proceeding request
                 mEventReporter.httpExchangeError(okHttpInspectorRequest, e);
@@ -81,7 +89,7 @@ public final class NetworkInterceptor implements Interceptor {
         }
 
         if (mEventReporter.isReporterEnabled()) {
-            final OkHttpInspectorResponse okHttpInspectorResponse = new OkHttpInspectorResponse(requestId, response.code(), response.header(CONTENT_LENGTH), mResponseEndTime - mResponseStartTime);
+            final OkHttpInspectorResponse okHttpInspectorResponse = new OkHttpInspectorResponse(requestId, response.code(), response.header(CONTENT_LENGTH), mStartTime, mEndTime);
 
             //if response does not have content length, using CountingInputStream to read its bytes
             if (!okHttpInspectorResponse.hasContentLength()) {
@@ -91,6 +99,10 @@ public final class NetworkInterceptor implements Interceptor {
                     try {
                         responseStream = body.byteStream();
                     } catch (IOException e) {
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Error received while reading input stream {}", e.getMessage());
+                        }
+
                         if (mEventReporter.isReporterEnabled()) {
                             //notify event reporter in case there is any exception while getting the input stream of response
                             mEventReporter.responseInputStreamError(okHttpInspectorResponse, e);
@@ -119,12 +131,12 @@ public final class NetworkInterceptor implements Interceptor {
     @VisibleForTesting
     public static class OkHttpInspectorRequest implements NetworkEventReporter.InspectorRequest {
         private final int mRequestId;
-        private final String mRequestUrl;
+        private final URL mRequestUrl;
         private final String mMethodType;
         private final String mContentLength;
         private final String mHostName;
 
-        public OkHttpInspectorRequest(int requestId, String requestUrl, String methodType, String contentLength, String hostName) {
+        public OkHttpInspectorRequest(int requestId, URL requestUrl, String methodType, String contentLength, String hostName) {
             this.mRequestId = requestId;
             this.mRequestUrl = requestUrl;
             this.mMethodType = methodType;
@@ -138,7 +150,7 @@ public final class NetworkInterceptor implements Interceptor {
         }
 
         @Override
-        public String url() {
+        public URL url() {
             return mRequestUrl;
         }
 
@@ -164,15 +176,17 @@ public final class NetworkInterceptor implements Interceptor {
     @VisibleForTesting
     public static class OkHttpInspectorResponse implements NetworkEventReporter.InspectorResponse {
         private final int mRequestId;
-        private final long mResponseTime;
+        private final long mStartTime;
+        private final long mEndTime;
         private final int mStatusCode;
         private final String mResponseSize;
 
-        public OkHttpInspectorResponse(int requestId, int statusCode, String responseSize, long responseTime) {
+        public OkHttpInspectorResponse(int requestId, int statusCode, String responseSize, long startTime, long endTime) {
             this.mRequestId = requestId;
             this.mStatusCode = statusCode;
             this.mResponseSize = responseSize;
-            this.mResponseTime = responseTime;
+            this.mStartTime = startTime;
+            this.mEndTime = endTime;
         }
 
         @Override
@@ -196,8 +210,13 @@ public final class NetworkInterceptor implements Interceptor {
         }
 
         @Override
-        public long responseTime() {
-            return mResponseTime;
+        public long startTime() {
+            return mStartTime;
+        }
+
+        @Override
+        public long endTime() {
+            return mEndTime;
         }
     }
 
@@ -273,10 +292,9 @@ public final class NetworkInterceptor implements Interceptor {
             return this;
         }
 
-
         /**
-         * @param networkManager
-         * @return
+         * @param networkManager {@link NetworkManager}
+         * @return {@link Builder}
          */
         public Builder setNetworkManager(NetworkManager networkManager) {
             this.mNetworkManager = networkManager;

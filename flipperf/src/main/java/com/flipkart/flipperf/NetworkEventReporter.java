@@ -10,6 +10,7 @@ import com.flipkart.flipperf.response.ResponseHandler;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 
 
 /**
@@ -66,7 +67,6 @@ public interface NetworkEventReporter {
      * @param inputStream     {@link InputStream}
      * @param responseHandler {@link DefaultResponseHandler}
      * @return {@link InputStream}
-     * @throws IOException
      */
     InputStream interpretResponseStream(@Nullable InputStream inputStream, ResponseHandler responseHandler);
 
@@ -89,7 +89,7 @@ public interface NetworkEventReporter {
     interface InspectorRequest {
         int requestId();
 
-        String url();
+        URL url();
 
         String method();
 
@@ -107,6 +107,8 @@ public interface NetworkEventReporter {
 
         String responseSize();
 
-        long responseTime();
+        long startTime();
+
+        long endTime();
     }
 }
