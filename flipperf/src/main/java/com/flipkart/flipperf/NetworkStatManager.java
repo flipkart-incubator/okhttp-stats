@@ -1,11 +1,14 @@
 package com.flipkart.flipperf;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.VisibleForTesting;
+import android.telephony.TelephonyManager;
 
 import com.flipkart.flipperf.model.RequestStats;
 import com.flipkart.flipperf.toolbox.FlipperfPreferenceManager;
+import com.flipkart.flipperf.toolbox.NetworkSpeed;
 import com.flipkart.flipperf.toolbox.NetworkStat;
 
 import org.slf4j.Logger;
@@ -30,6 +33,58 @@ public class NetworkStatManager implements NetworkManager {
     public NetworkStatManager(Context context) {
         this.mFlipperfPreferenceManager = new FlipperfPreferenceManager(context);
         this.MAX_SIZE = DEFAULT_MAX_SIZE;
+    }
+
+    @Override
+    public NetworkInfo getNetworkInfo() {
+        return mNetworkInfo;
+    }
+
+    @Override
+    public NetworkSpeed getNetworkSpeed() {
+        switch (mNetworkInfo.getType()) {
+            case ConnectivityManager.TYPE_WIFI:
+                return NetworkSpeed.FAST_NETWORK;
+            case ConnectivityManager.TYPE_MOBILE:
+                switch (mNetworkInfo.getSubtype()) {
+                    case TelephonyManager.NETWORK_TYPE_1xRTT:
+                        return NetworkSpeed.SLOW_NETWORK; // ~ 50-100 kbps
+                    case TelephonyManager.NETWORK_TYPE_CDMA:
+                        return NetworkSpeed.SLOW_NETWORK; // ~ 14-64 kbps
+                    case TelephonyManager.NETWORK_TYPE_EDGE:
+                        return NetworkSpeed.SLOW_NETWORK; // ~ 50-100 kbps
+                    case TelephonyManager.NETWORK_TYPE_EVDO_0:
+                        return NetworkSpeed.MEDIUM_NETWORK; // ~ 400-1000 kbps
+                    case TelephonyManager.NETWORK_TYPE_EVDO_A:
+                        return NetworkSpeed.MEDIUM_NETWORK; // ~ 600-1400 kbps
+                    case TelephonyManager.NETWORK_TYPE_GPRS:
+                        return NetworkSpeed.SLOW_NETWORK; // ~ 100 kbps
+                    case TelephonyManager.NETWORK_TYPE_HSDPA:
+                        return NetworkSpeed.FAST_NETWORK; // ~ 2-14 Mbps
+                    case TelephonyManager.NETWORK_TYPE_HSPA:
+                        return NetworkSpeed.FAST_NETWORK; // ~ 700-1700 kbps
+                    case TelephonyManager.NETWORK_TYPE_HSUPA:
+                        return NetworkSpeed.FAST_NETWORK; // ~ 1-23 Mbps
+                    case TelephonyManager.NETWORK_TYPE_UMTS:
+                        return NetworkSpeed.MEDIUM_NETWORK; // ~ 400-7000 kbps
+                    case TelephonyManager.NETWORK_TYPE_EHRPD: // API level 11
+                        return NetworkSpeed.FAST_NETWORK; // ~ 1-2 Mbps
+                    case TelephonyManager.NETWORK_TYPE_EVDO_B: // API level 9
+                        return NetworkSpeed.FAST_NETWORK; // ~ 5 Mbps
+                    case TelephonyManager.NETWORK_TYPE_HSPAP: // API level 13
+                        return NetworkSpeed.FAST_NETWORK; // ~ 10-20 Mbps
+                    case TelephonyManager.NETWORK_TYPE_IDEN: // API level 8
+                        return NetworkSpeed.FAST_NETWORK; // ~25 kbps
+                    case TelephonyManager.NETWORK_TYPE_LTE: // API level 11
+                        return NetworkSpeed.FAST_NETWORK; // ~ 10+ Mbps
+                    case TelephonyManager.NETWORK_TYPE_UNKNOWN:
+                        return NetworkSpeed.SLOW_NETWORK;
+                    default:
+                        return NetworkSpeed.SLOW_NETWORK;
+                }
+            default:
+                return NetworkSpeed.SLOW_NETWORK;
+        }
     }
 
     @VisibleForTesting
@@ -59,6 +114,11 @@ public class NetworkStatManager implements NetworkManager {
     @Override
     public void setMaxSize(int size) {
         this.MAX_SIZE = size;
+    }
+
+    @Override
+    public float getAverageNetworkSpeed() {
+        return this.mFlipperfPreferenceManager.getAverageSpeed(mNetworkInfo.getTypeName());
     }
 
     @Override
@@ -111,7 +171,12 @@ public class NetworkStatManager implements NetworkManager {
     }
 
     private void saveToSharedPreference() {
-        mFlipperfPreferenceManager.setAverageSpeed(mNetworkInfo.getTypeName(), NetworkStat.getAverageSpeed());
+        if (mLogger.isDebugEnabled()) {
+            mLogger.debug("avg speed", "saveToSharedPreference: " + NetworkStat.getAverageSpeed());
+        }
+        float olAvgSpeed = mFlipperfPreferenceManager.getAverageSpeed(mNetworkInfo.getTypeName());
+        float newAvgSpeed = NetworkStat.getAverageSpeed();
+        mFlipperfPreferenceManager.setAverageSpeed(mNetworkInfo.getTypeName(), (olAvgSpeed + newAvgSpeed) / 2);
         NetworkStat.reset();
         mResponseCount = 0;
     }

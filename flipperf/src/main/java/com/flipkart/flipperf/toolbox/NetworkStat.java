@@ -10,19 +10,21 @@ import java.util.List;
  */
 public final class NetworkStat {
 
-    private static float mTotalSize = 0F;
-    private static float mTotalTime = 0F;
+    private static float mTotalSize;
+    private static float mTotalTime;
     private static List<RequestStats> mRequestStatsList = new ArrayList<>();
+    private static float totalApiTime;
 
     private NetworkStat() {
     }
 
     public static float getAverageSpeed() {
         for (RequestStats requestStats : mRequestStatsList) {
-            mTotalSize += Float.parseFloat(requestStats.getResponseSize());
-            mTotalTime += (requestStats.getEndTime() - requestStats.getStartTime());
+            mTotalSize = Float.parseFloat(requestStats.getResponseSize());
+            mTotalTime = (requestStats.getEndTime() - requestStats.getStartTime());
+            totalApiTime += (mTotalSize / mTotalTime);
         }
-        return (mTotalSize / mTotalTime) / mRequestStatsList.size();
+        return totalApiTime / mRequestStatsList.size();
     }
 
     public static void reset() {
