@@ -66,7 +66,7 @@ configurations {
 }
 
 task sourceJar(type: Jar) {
-    from 'src/java'
+    from 'src/main/java'
     classifier "sources"
 }
 
