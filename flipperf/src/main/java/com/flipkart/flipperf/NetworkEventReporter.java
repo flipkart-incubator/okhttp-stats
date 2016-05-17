@@ -40,18 +40,11 @@ public interface NetworkEventReporter {
     boolean isReporterEnabled();
 
     /**
-     * Notifies the {@link NetworkEventReporter} that the intercepted {@link com.squareup.okhttp.Request} is to be sent
-     *
-     * @param inspectorRequest : contains request details
-     */
-    void requestToBeSent(InspectorRequest inspectorRequest);
-
-    /**
      * Notifies the {@link NetworkEventReporter} that the intercepted {@link com.squareup.okhttp.Response} headers has been received
      *
      * @param inspectorResponse : contains response headers
      */
-    void responseReceived(InspectorResponse inspectorResponse);
+    void responseReceived(InspectorRequest inspectorRequest, InspectorResponse inspectorResponse);
 
     /**
      * Reports any {@link IOException} while {@link com.squareup.okhttp.Response} is being proceeded.
@@ -76,7 +69,7 @@ public interface NetworkEventReporter {
      * @param inspectorResponse {@link InspectorResponse}
      * @param dataLength        : length of response
      */
-    void responseDataReceived(InspectorResponse inspectorResponse, int dataLength);
+    void responseDataReceived(InspectorRequest inspectorRequest, InspectorResponse inspectorResponse, int dataLength);
 
     /**
      * Reports error while getting the input steam from {@link com.squareup.okhttp.ResponseBody}
@@ -84,7 +77,7 @@ public interface NetworkEventReporter {
      * @param inspectorResponse {@link InspectorResponse}
      * @param e                 : error message
      */
-    void responseInputStreamError(InspectorResponse inspectorResponse, IOException e);
+    void responseInputStreamError(InspectorRequest inspectorRequest,InspectorResponse inspectorResponse, IOException e);
 
     interface InspectorRequest {
         int requestId();

@@ -66,8 +66,6 @@ public final class NetworkInterceptor implements Interceptor {
 
         if (mEventReporter.isReporterEnabled()) {
             okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url(), request.method(), request.header(CONTENT_LENGTH), request.header("HOST"));
-            //notify event reporter that request is to be sent.
-            mEventReporter.requestToBeSent(okHttpInspectorRequest);
         }
 
         long mStartTime, mEndTime;
@@ -105,7 +103,7 @@ public final class NetworkInterceptor implements Interceptor {
 
                         if (mEventReporter.isReporterEnabled()) {
                             //notify event reporter in case there is any exception while getting the input stream of response
-                            mEventReporter.responseInputStreamError(okHttpInspectorResponse, e);
+                            mEventReporter.responseInputStreamError(okHttpInspectorRequest, okHttpInspectorResponse, e);
                         }
                         throw e;
                     }
@@ -113,13 +111,13 @@ public final class NetworkInterceptor implements Interceptor {
 
                 //interpreting the response stream using CountingInputStream, once the counting is done, notify the event reporter that response has been received
                 responseStream = mEventReporter.interpretResponseStream(responseStream,
-                        new DefaultResponseHandler(mEventReporter, okHttpInspectorResponse));
+                        new DefaultResponseHandler(mEventReporter, okHttpInspectorRequest, okHttpInspectorResponse));
 
                 //creating new response object using the interpreted stream
                 response = response.newBuilder().body(new ForwardingResponseBody(body, responseStream)).build();
             } else {
                 //if response has content length, notify the event reporter that response has been received.
-                mEventReporter.responseReceived(okHttpInspectorResponse);
+                mEventReporter.responseReceived(okHttpInspectorRequest, okHttpInspectorResponse);
             }
         }
         return response;
