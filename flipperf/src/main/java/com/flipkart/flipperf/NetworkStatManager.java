@@ -42,48 +42,52 @@ public class NetworkStatManager implements NetworkManager {
 
     @Override
     public NetworkSpeed getNetworkSpeed() {
-        switch (mNetworkInfo.getType()) {
-            case ConnectivityManager.TYPE_WIFI:
-                return NetworkSpeed.FAST_NETWORK;
-            case ConnectivityManager.TYPE_MOBILE:
-                switch (mNetworkInfo.getSubtype()) {
-                    case TelephonyManager.NETWORK_TYPE_1xRTT:
-                        return NetworkSpeed.SLOW_NETWORK; // ~ 50-100 kbps
-                    case TelephonyManager.NETWORK_TYPE_CDMA:
-                        return NetworkSpeed.SLOW_NETWORK; // ~ 14-64 kbps
-                    case TelephonyManager.NETWORK_TYPE_EDGE:
-                        return NetworkSpeed.SLOW_NETWORK; // ~ 50-100 kbps
-                    case TelephonyManager.NETWORK_TYPE_EVDO_0:
-                        return NetworkSpeed.MEDIUM_NETWORK; // ~ 400-1000 kbps
-                    case TelephonyManager.NETWORK_TYPE_EVDO_A:
-                        return NetworkSpeed.MEDIUM_NETWORK; // ~ 600-1400 kbps
-                    case TelephonyManager.NETWORK_TYPE_GPRS:
-                        return NetworkSpeed.SLOW_NETWORK; // ~ 100 kbps
-                    case TelephonyManager.NETWORK_TYPE_HSDPA:
-                        return NetworkSpeed.FAST_NETWORK; // ~ 2-14 Mbps
-                    case TelephonyManager.NETWORK_TYPE_HSPA:
-                        return NetworkSpeed.FAST_NETWORK; // ~ 700-1700 kbps
-                    case TelephonyManager.NETWORK_TYPE_HSUPA:
-                        return NetworkSpeed.FAST_NETWORK; // ~ 1-23 Mbps
-                    case TelephonyManager.NETWORK_TYPE_UMTS:
-                        return NetworkSpeed.MEDIUM_NETWORK; // ~ 400-7000 kbps
-                    case TelephonyManager.NETWORK_TYPE_EHRPD: // API level 11
-                        return NetworkSpeed.FAST_NETWORK; // ~ 1-2 Mbps
-                    case TelephonyManager.NETWORK_TYPE_EVDO_B: // API level 9
-                        return NetworkSpeed.FAST_NETWORK; // ~ 5 Mbps
-                    case TelephonyManager.NETWORK_TYPE_HSPAP: // API level 13
-                        return NetworkSpeed.FAST_NETWORK; // ~ 10-20 Mbps
-                    case TelephonyManager.NETWORK_TYPE_IDEN: // API level 8
-                        return NetworkSpeed.FAST_NETWORK; // ~25 kbps
-                    case TelephonyManager.NETWORK_TYPE_LTE: // API level 11
-                        return NetworkSpeed.FAST_NETWORK; // ~ 10+ Mbps
-                    case TelephonyManager.NETWORK_TYPE_UNKNOWN:
-                        return NetworkSpeed.SLOW_NETWORK;
-                    default:
-                        return NetworkSpeed.SLOW_NETWORK;
-                }
-            default:
-                return NetworkSpeed.SLOW_NETWORK;
+        if (mNetworkInfo == null || !mNetworkInfo.isConnected()) {
+            return NetworkSpeed.SLOW_NETWORK;
+        } else {
+            switch (mNetworkInfo.getType()) {
+                case ConnectivityManager.TYPE_WIFI:
+                    return NetworkSpeed.FAST_NETWORK;
+                case ConnectivityManager.TYPE_MOBILE:
+                    switch (mNetworkInfo.getSubtype()) {
+                        case TelephonyManager.NETWORK_TYPE_1xRTT:
+                            return NetworkSpeed.SLOW_NETWORK; // ~ 50-100 kbps
+                        case TelephonyManager.NETWORK_TYPE_CDMA:
+                            return NetworkSpeed.SLOW_NETWORK; // ~ 14-64 kbps
+                        case TelephonyManager.NETWORK_TYPE_EDGE:
+                            return NetworkSpeed.SLOW_NETWORK; // ~ 50-100 kbps
+                        case TelephonyManager.NETWORK_TYPE_EVDO_0:
+                            return NetworkSpeed.MEDIUM_NETWORK; // ~ 400-1000 kbps
+                        case TelephonyManager.NETWORK_TYPE_EVDO_A:
+                            return NetworkSpeed.MEDIUM_NETWORK; // ~ 600-1400 kbps
+                        case TelephonyManager.NETWORK_TYPE_GPRS:
+                            return NetworkSpeed.SLOW_NETWORK; // ~ 100 kbps
+                        case TelephonyManager.NETWORK_TYPE_HSDPA:
+                            return NetworkSpeed.FAST_NETWORK; // ~ 2-14 Mbps
+                        case TelephonyManager.NETWORK_TYPE_HSPA:
+                            return NetworkSpeed.FAST_NETWORK; // ~ 700-1700 kbps
+                        case TelephonyManager.NETWORK_TYPE_HSUPA:
+                            return NetworkSpeed.FAST_NETWORK; // ~ 1-23 Mbps
+                        case TelephonyManager.NETWORK_TYPE_UMTS:
+                            return NetworkSpeed.MEDIUM_NETWORK; // ~ 400-7000 kbps
+                        case TelephonyManager.NETWORK_TYPE_EHRPD: // API level 11
+                            return NetworkSpeed.FAST_NETWORK; // ~ 1-2 Mbps
+                        case TelephonyManager.NETWORK_TYPE_EVDO_B: // API level 9
+                            return NetworkSpeed.FAST_NETWORK; // ~ 5 Mbps
+                        case TelephonyManager.NETWORK_TYPE_HSPAP: // API level 13
+                            return NetworkSpeed.FAST_NETWORK; // ~ 10-20 Mbps
+                        case TelephonyManager.NETWORK_TYPE_IDEN: // API level 8
+                            return NetworkSpeed.FAST_NETWORK; // ~25 kbps
+                        case TelephonyManager.NETWORK_TYPE_LTE: // API level 11
+                            return NetworkSpeed.FAST_NETWORK; // ~ 10+ Mbps
+                        case TelephonyManager.NETWORK_TYPE_UNKNOWN:
+                            return NetworkSpeed.SLOW_NETWORK;
+                        default:
+                            return NetworkSpeed.SLOW_NETWORK;
+                    }
+                default:
+                    return NetworkSpeed.SLOW_NETWORK;
+            }
         }
     }
 
