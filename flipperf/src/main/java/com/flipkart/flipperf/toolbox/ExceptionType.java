@@ -14,14 +14,14 @@ import java.net.UnknownServiceException;
  */
 public class ExceptionType {
 
-    private final static int SOCKET_EXCEPTION = 601;
-    private final static int PROTOCOL_EXCEPTION = 602;
-    private final static int UNKNOWN_HOST_EXCEPTION = 603;
-    private final static int UNKNOWN_SERVICE_EXCEPTION = 604;
-    private final static int SOCKET_TIMEOUT_EXCEPTION = 605;
-    private final static int MALFORMED_URL_EXCEPTION = 606;
-    private final static int HTTP_RETRY_EXCEPTION = 606;
-    private final static int UNKNOWN_EXCEPTION = -1;
+    public final static int SOCKET_EXCEPTION = 601;
+    public final static int PROTOCOL_EXCEPTION = 602;
+    public final static int UNKNOWN_HOST_EXCEPTION = 603;
+    public final static int UNKNOWN_SERVICE_EXCEPTION = 604;
+    public final static int SOCKET_TIMEOUT_EXCEPTION = 605;
+    public final static int MALFORMED_URL_EXCEPTION = 606;
+    public final static int HTTP_RETRY_EXCEPTION = 606;
+    public final static int UNKNOWN_EXCEPTION = -1;
 
     public static int getExceptionType(IOException e) {
         if (e instanceof SocketException) {
