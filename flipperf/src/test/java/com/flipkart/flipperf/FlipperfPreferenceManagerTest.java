@@ -15,11 +15,17 @@ import org.robolectric.annotation.Config;
 
 /**
  * Created by anirudh.r on 13/05/16 at 10:48 AM.
+ * Test for {@link FlipperfPreferenceManager}
  */
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class FlipperfPreferenceManagerTest {
 
+    /**
+     * Test for {@link FlipperfPreferenceManager}
+     *
+     * @throws Exception
+     */
     @Test
     public void testSharedPreference() throws Exception {
 

@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Created by anirudh.r on 05/05/16 at 7:53 PM.
+ * Test for {@link DefaultResponseHandler}
  */
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -26,12 +27,13 @@ public class DefaultResponseHandlerTest {
     public void testOnEOF() {
         NetworkEventReporter networkEventReporter = mock(NetworkEventReporter.class);
         NetworkEventReporter.InspectorResponse inspectorResponse = mock(NetworkEventReporter.InspectorResponse.class);
+        NetworkEventReporter.InspectorRequest inspectorRequest = mock(NetworkEventReporter.InspectorRequest.class);
 
-        DefaultResponseHandler defaultResponseHandler = new DefaultResponseHandler(networkEventReporter, inspectorResponse);
+        DefaultResponseHandler defaultResponseHandler = new DefaultResponseHandler(networkEventReporter, inspectorRequest, inspectorResponse);
         defaultResponseHandler.onEOF();
 
         //verify that responseDataReceived gets called once
-        verify(networkEventReporter, times(1)).responseDataReceived(inspectorResponse, 0);
+        verify(networkEventReporter, times(1)).responseDataReceived(inspectorRequest, inspectorResponse, 0);
     }
 
     /**
@@ -41,9 +43,10 @@ public class DefaultResponseHandlerTest {
     public void testOnRead() {
         NetworkEventReporter networkEventReporter = mock(NetworkEventReporter.class);
         NetworkEventReporter.InspectorResponse inspectorResponse = mock(NetworkEventReporter.InspectorResponse.class);
+        NetworkEventReporter.InspectorRequest inspectorRequest = mock(NetworkEventReporter.InspectorRequest.class);
 
         String requestId = "Hello";
-        DefaultResponseHandler defaultResponseHandler = new DefaultResponseHandler(networkEventReporter, inspectorResponse);
+        DefaultResponseHandler defaultResponseHandler = new DefaultResponseHandler(networkEventReporter, inspectorRequest, inspectorResponse);
         defaultResponseHandler.onRead(requestId.length());
     }
 }

@@ -1,5 +1,7 @@
 package com.flipkart.flipperf;
 
+import android.net.NetworkInfo;
+
 import com.flipkart.flipperf.model.RequestStats;
 
 import org.junit.Assert;
@@ -8,8 +10,11 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import static org.mockito.Mockito.mock;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -22,6 +27,8 @@ public class RequestStatsTest {
     public void testDataIntegrity() throws MalformedURLException {
         RequestStats requestStats = new RequestStats(1);
 
+        NetworkInfo networkInfo = mock(NetworkInfo.class);
+
         requestStats.setUrl(new URL("http://www.flipkart.com"));
         requestStats.setSize("20");
         requestStats.setMethodType("POST");
@@ -30,6 +37,9 @@ public class RequestStatsTest {
         requestStats.setEndTime(3);
         requestStats.setHttpStatusCode(200);
         requestStats.setHostName("flipkart.com");
+        requestStats.setException(new IOException("Hehe"));
+        requestStats.setExceptionType(1);
+        requestStats.setNetworkType(networkInfo);
 
         Assert.assertTrue(requestStats.getId() == 1);
         Assert.assertTrue(requestStats.getUrl().toString().equals("http://www.flipkart.com"));
@@ -40,5 +50,8 @@ public class RequestStatsTest {
         Assert.assertTrue(requestStats.getEndTime() == 3);
         Assert.assertTrue(requestStats.getHttpStatusCode() == 200);
         Assert.assertTrue(requestStats.getHostName().equals("flipkart.com"));
+        Assert.assertTrue(requestStats.getException().getMessage().equals("Hehe"));
+        Assert.assertTrue(requestStats.getExceptionType() == 1);
+        Assert.assertTrue(requestStats.getNetworkType() == networkInfo);
     }
 }

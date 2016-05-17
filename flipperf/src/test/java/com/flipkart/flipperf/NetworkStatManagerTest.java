@@ -18,6 +18,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Created by anirudh.r on 13/05/16 at 12:28 AM.
+ * Test for {@link NetworkStatManager}
  */
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)

@@ -40,6 +40,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Created by anirudh.r on 05/05/16 at 7:24 PM.
+ * Test for {@link NetworkInterceptor}
  */
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -104,14 +105,11 @@ public class NetworkInterceptorTest {
         //assert protocol used
         Assert.assertTrue(interceptedResponse.protocol() == Protocol.HTTP_1_1);
 
-        //verify requestToBeSent gets called once
-        verify(networkEventReporter, times(1)).requestToBeSent(any(NetworkEventReporter.InspectorRequest.class));
-
         //verify responseReceived gets called once
-        verify(networkEventReporter, times(1)).responseReceived(any(NetworkEventReporter.InspectorResponse.class));
+        verify(networkEventReporter, times(1)).responseReceived(any(NetworkEventReporter.InspectorRequest.class), any(NetworkEventReporter.InspectorResponse.class));
 
         //verify responseDataReceived does not gets called as response has content length
-        verify(networkEventReporter, times(0)).responseDataReceived(any(NetworkEventReporter.InspectorResponse.class), anyInt());
+        verify(networkEventReporter, times(0)).responseDataReceived(any(NetworkEventReporter.InspectorRequest.class), any(NetworkEventReporter.InspectorResponse.class), anyInt());
     }
 
     /**
@@ -217,7 +215,7 @@ public class NetworkInterceptorTest {
         Assert.assertTrue(interceptedResponse.body().contentLength() == 8);
 
         //verify responseReceived gets called once
-        verify(networkEventReporter, times(1)).responseReceived(any(NetworkEventReporter.InspectorResponse.class));
+        verify(networkEventReporter, times(1)).responseReceived(any(NetworkEventReporter.InspectorRequest.class), any(NetworkEventReporter.InspectorResponse.class));
     }
 
     /**
@@ -272,8 +270,6 @@ public class NetworkInterceptorTest {
         //assert request body is same
         Assert.assertTrue(interceptedRequest.body().equals(request.body()));
 
-        //verify requestToBeSent gets called once
-        verify(networkEventReporter, times(1)).requestToBeSent(any(NetworkEventReporter.InspectorRequest.class));
     }
 
     /**
@@ -311,7 +307,7 @@ public class NetworkInterceptorTest {
         response.body().string();
 
         //verify responseReceived got called once
-        verify(networkEventReporter, times(1)).responseReceived(any(NetworkEventReporter.InspectorResponse.class));
+        verify(networkEventReporter, times(1)).responseReceived(any(NetworkEventReporter.InspectorRequest.class), any(NetworkEventReporter.InspectorResponse.class));
 
         server.shutdown();
     }
@@ -403,7 +399,7 @@ public class NetworkInterceptorTest {
         Mockito.verify(networkEventReporter, times(0))
                 .interpretResponseStream(any(InputStream.class), any(ResponseHandler.class));
 
-        verify(networkEventReporter, times(1)).responseReceived(any(NetworkEventReporter.InspectorResponse.class));
+        verify(networkEventReporter, times(1)).responseReceived(any(NetworkEventReporter.InspectorRequest.class), any(NetworkEventReporter.InspectorResponse.class));
 
         server.shutdown();
     }

@@ -20,6 +20,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Created by anirudh.r on 05/05/16 at 7:32 PM.
+ * Test for {@link CountingInputStream}
  */
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
