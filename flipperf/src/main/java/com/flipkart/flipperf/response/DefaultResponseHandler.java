@@ -5,14 +5,14 @@ import com.flipkart.flipperf.NetworkEventReporter;
 
 public class DefaultResponseHandler implements ResponseHandler {
     private final NetworkEventReporter mEventReporter;
-    private final NetworkEventReporter.InspectorResponse inspectorResponse;
-    private final NetworkEventReporter.InspectorRequest inspectorRequest;
+    private final NetworkEventReporter.InspectorResponse mInspectorResponse;
+    private final NetworkEventReporter.InspectorRequest mInspectorRequest;
     private int mBytesRead = 0;
 
     public DefaultResponseHandler(NetworkEventReporter eventReporter, NetworkEventReporter.InspectorRequest inspectorRequest, NetworkEventReporter.InspectorResponse inspectorResponse) {
         this.mEventReporter = eventReporter;
-        this.inspectorResponse = inspectorResponse;
-        this.inspectorRequest = inspectorRequest;
+        this.mInspectorResponse = inspectorResponse;
+        this.mInspectorRequest = inspectorRequest;
     }
 
     @Override
@@ -22,6 +22,6 @@ public class DefaultResponseHandler implements ResponseHandler {
 
     @Override
     public void onEOF() {
-        mEventReporter.responseDataReceived(inspectorRequest, inspectorResponse, mBytesRead);
+        mEventReporter.responseDataReceived(mInspectorRequest, mInspectorResponse, mBytesRead);
     }
 }

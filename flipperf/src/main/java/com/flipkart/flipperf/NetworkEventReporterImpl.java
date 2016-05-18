@@ -76,7 +76,6 @@ public class NetworkEventReporterImpl implements NetworkEventReporter {
         this.mHandler.post(new Runnable() {
             @Override
             public void run() {
-                //check if request associated exists in the sparsearray
                 mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
 
                 RequestStats requestStats = new RequestStats(requestId);
