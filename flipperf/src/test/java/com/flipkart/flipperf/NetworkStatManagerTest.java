@@ -42,7 +42,7 @@ public class NetworkStatManagerTest {
     }
 
     /**
-     * Test for {@link NetworkStatManager#unregisterListener(OnResponseReceivedListener)}
+     * Test for {@link NetworkStatManager#removeListener(OnResponseReceivedListener)}
      *
      * @throws Exception
      */
@@ -57,7 +57,7 @@ public class NetworkStatManagerTest {
         //assert size is 1
         Assert.assertTrue(networkStatManager.getOnResponseReceivedListenerList().size() == 1);
 
-        networkStatManager.unregisterListener(onResponseReceivedListener);
+        networkStatManager.removeListener(onResponseReceivedListener);
 
         //assert size is 0
         Assert.assertTrue(networkStatManager.getOnResponseReceivedListenerList().size() == 0);

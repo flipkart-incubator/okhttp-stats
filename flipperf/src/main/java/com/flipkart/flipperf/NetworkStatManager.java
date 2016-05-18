@@ -29,10 +29,12 @@ public class NetworkStatManager implements NetworkManager {
     private int mResponseCount = 0;
     private NetworkInfo mNetworkInfo;
     private int MAX_SIZE;
+    private List<RequestStats> mRequestStatsList;
 
     public NetworkStatManager(Context context) {
         this.mFlipperfPreferenceManager = new FlipperfPreferenceManager(context);
         this.MAX_SIZE = DEFAULT_MAX_SIZE;
+        this.mRequestStatsList = new ArrayList<>();
     }
 
     @Override
@@ -104,7 +106,7 @@ public class NetworkStatManager implements NetworkManager {
     }
 
     @Override
-    public void unregisterListener(OnResponseReceivedListener onResponseReceivedListener) {
+    public void removeListener(OnResponseReceivedListener onResponseReceivedListener) {
         if (mOnResponseReceivedListenerList != null) {
             mOnResponseReceivedListenerList.remove(onResponseReceivedListener);
         }
@@ -140,14 +142,10 @@ public class NetworkStatManager implements NetworkManager {
 
         //save to shared prefs if condition is satisfied
         if (mResponseCount >= MAX_SIZE) {
-            if (mLogger.isDebugEnabled()) {
-                mLogger.debug("Response Count reached, Saved to shared preference , Avg Speed : {}", NetworkStat.getAverageSpeed());
-            }
             saveToSharedPreference();
         }
 
-        //adding response to list
-        NetworkStat.addResponseData(requestStats);
+        mRequestStatsList.add(requestStats);
     }
 
     @Override
@@ -176,12 +174,12 @@ public class NetworkStatManager implements NetworkManager {
 
     private void saveToSharedPreference() {
         if (mLogger.isDebugEnabled()) {
-            mLogger.debug("avg speed", "saveToSharedPreference: " + NetworkStat.getAverageSpeed());
+            mLogger.debug("avg speed", "saveToSharedPreference: " + NetworkStat.getAverageSpeed(mRequestStatsList));
         }
         float olAvgSpeed = mFlipperfPreferenceManager.getAverageSpeed(mNetworkInfo.getTypeName());
-        float newAvgSpeed = NetworkStat.getAverageSpeed();
-        mFlipperfPreferenceManager.setAverageSpeed(mNetworkInfo.getTypeName(), (olAvgSpeed + newAvgSpeed) / 2);
-        NetworkStat.reset();
+        double newAvgSpeed = NetworkStat.getAverageSpeed(mRequestStatsList);
+        mFlipperfPreferenceManager.setAverageSpeed(mNetworkInfo.getTypeName(), (float) ((olAvgSpeed + newAvgSpeed) / 2));
+        mRequestStatsList.clear();
         mResponseCount = 0;
     }
 }

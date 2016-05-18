@@ -15,9 +15,9 @@ public interface NetworkManager {
 
     void onResponseInputStreamError(RequestStats requestStats);
 
-    void addListener(OnResponseReceivedListener networkManager);
+    void addListener(OnResponseReceivedListener onResponseReceivedListener);
 
-    void unregisterListener(OnResponseReceivedListener networkManager);
+    void removeListener(OnResponseReceivedListener onResponseReceivedListener);
 
     void setNetworkType(NetworkInfo networkType);
 
