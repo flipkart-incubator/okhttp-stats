@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         onResponseReceived = new OnResponseReceived();
         networkManager = new NetworkStatManager(getApplication());
         networkManager.addListener(onResponseReceived);
-        networkManager.setMaxSize(5);
+        networkManager.setMaxSize(10);
 
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
                 .setEventReporter(new NetworkEventReporterImpl())
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        networkManager.unregisterListener(onResponseReceived);
+        networkManager.removeListener(onResponseReceived);
         super.onDestroy();
     }
 
@@ -153,12 +153,10 @@ public class MainActivity extends AppCompatActivity {
                     + "\nHost : " + requestStats.getHostName()
                     + "\nRequest Size : " + requestStats.getSize()
                     + "\nResponse Size : " + requestStats.getResponseSize()
-                    + "\nStart Time : " + requestStats.getStartTime()
-                    + "\nEnd Time : " + requestStats.getEndTime()
+                    + "\nTime Taken: " + (requestStats.getEndTime() - requestStats.getStartTime())
                     + "\nStatus Code : " + requestStats.getHttpStatusCode()
                     + "\nException  : " + requestStats.getException()
-                    + "\nException Type : " + requestStats.getExceptionType()
-                    + "\nNetwork Type : " + requestStats.getNetworkType());
+                    + "\nException Type : " + requestStats.getExceptionType());
         }
     }
 }
