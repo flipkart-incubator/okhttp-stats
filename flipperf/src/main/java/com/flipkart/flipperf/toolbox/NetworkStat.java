@@ -2,7 +2,6 @@ package com.flipkart.flipperf.toolbox;
 
 import com.flipkart.flipperf.model.RequestStats;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,30 +9,16 @@ import java.util.List;
  */
 public final class NetworkStat {
 
-    private static float mTotalSize;
-    private static float mTotalTime;
-    private static List<RequestStats> mRequestStatsList = new ArrayList<>();
-    private static float totalApiTime;
-
     private NetworkStat() {
     }
 
-    public static float getAverageSpeed() {
-        for (RequestStats requestStats : mRequestStatsList) {
-            mTotalSize = Float.parseFloat(requestStats.getResponseSize());
-            mTotalTime = (requestStats.getEndTime() - requestStats.getStartTime());
-            totalApiTime += (mTotalSize / mTotalTime);
+    public static double getAverageSpeed(List<RequestStats> requestStatList) {
+        double size, time, totalApiTime = 0;
+        for (RequestStats requestStats : requestStatList) {
+            size = Double.parseDouble(requestStats.getResponseSize());
+            time = (requestStats.getEndTime() - requestStats.getStartTime());
+            totalApiTime += (size / time);
         }
-        return totalApiTime / mRequestStatsList.size();
-    }
-
-    public static void reset() {
-        mTotalSize = 0F;
-        mTotalTime = 0F;
-        mRequestStatsList.clear();
-    }
-
-    public synchronized static void addResponseData(RequestStats requestStats) {
-        mRequestStatsList.add(requestStats);
+        return totalApiTime / requestStatList.size();
     }
 }
