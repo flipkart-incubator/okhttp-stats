@@ -6,10 +6,10 @@ import android.net.NetworkInfo;
 import android.support.annotation.VisibleForTesting;
 import android.telephony.TelephonyManager;
 
-import com.flipkart.flipperf.model.RequestStats;
-import com.flipkart.flipperf.toolbox.FlipperfPreferenceManager;
-import com.flipkart.flipperf.toolbox.NetworkSpeed;
-import com.flipkart.flipperf.toolbox.NetworkStat;
+import com.flipkart.flipperf.newlib.model.RequestStats;
+import com.flipkart.flipperf.newlib.toolbox.FlipperfPreferenceManager;
+import com.flipkart.flipperf.newlib.toolbox.NetworkSpeed;
+import com.flipkart.flipperf.newlib.toolbox.NetworkStat;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

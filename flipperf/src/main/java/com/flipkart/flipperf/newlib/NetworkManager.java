@@ -2,8 +2,8 @@ package com.flipkart.flipperf.newlib;
 
 import android.net.NetworkInfo;
 
-import com.flipkart.flipperf.model.RequestStats;
-import com.flipkart.flipperf.toolbox.NetworkSpeed;
+import com.flipkart.flipperf.newlib.model.RequestStats;
+import com.flipkart.flipperf.newlib.toolbox.NetworkSpeed;
 
 /**
  * Created by anirudh.r on 11/05/16 at 3:41 PM.

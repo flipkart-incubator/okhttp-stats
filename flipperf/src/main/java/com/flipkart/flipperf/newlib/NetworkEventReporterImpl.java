@@ -6,10 +6,10 @@ import android.net.NetworkInfo;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 
-import com.flipkart.flipperf.model.RequestStats;
-import com.flipkart.flipperf.response.CountingInputStream;
-import com.flipkart.flipperf.response.ResponseHandler;
-import com.flipkart.flipperf.toolbox.ExceptionType;
+import com.flipkart.flipperf.newlib.model.RequestStats;
+import com.flipkart.flipperf.newlib.response.CountingInputStream;
+import com.flipkart.flipperf.newlib.response.ResponseHandler;
+import com.flipkart.flipperf.newlib.toolbox.ExceptionType;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.ResponseBody;
 

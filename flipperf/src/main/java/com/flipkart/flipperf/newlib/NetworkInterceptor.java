@@ -5,7 +5,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.VisibleForTesting;
 
-import com.flipkart.flipperf.response.DefaultResponseHandler;
+import com.flipkart.flipperf.newlib.response.DefaultResponseHandler;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.Request;

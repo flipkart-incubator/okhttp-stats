@@ -5,8 +5,8 @@ import android.content.Context;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 
-import com.flipkart.flipperf.response.DefaultResponseHandler;
-import com.flipkart.flipperf.response.ResponseHandler;
+import com.flipkart.flipperf.newlib.response.DefaultResponseHandler;
+import com.flipkart.flipperf.newlib.response.ResponseHandler;
 
 import java.io.IOException;
 import java.io.InputStream;

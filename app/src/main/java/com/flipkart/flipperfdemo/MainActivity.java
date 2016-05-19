@@ -18,12 +18,12 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
 import com.flipkart.fkvolley.toolbox.OkHttp2Stack;
-import com.flipkart.flipperf.NetworkEventReporterImpl;
-import com.flipkart.flipperf.NetworkInterceptor;
-import com.flipkart.flipperf.NetworkManager;
-import com.flipkart.flipperf.NetworkStatManager;
-import com.flipkart.flipperf.OnResponseReceivedListener;
-import com.flipkart.flipperf.model.RequestStats;
+import com.flipkart.flipperf.newlib.NetworkEventReporterImpl;
+import com.flipkart.flipperf.newlib.NetworkInterceptor;
+import com.flipkart.flipperf.newlib.NetworkManager;
+import com.flipkart.flipperf.newlib.NetworkStatManager;
+import com.flipkart.flipperf.newlib.OnResponseReceivedListener;
+import com.flipkart.flipperf.newlib.model.RequestStats;
 
 import java.util.ArrayList;
 import java.util.Random;
