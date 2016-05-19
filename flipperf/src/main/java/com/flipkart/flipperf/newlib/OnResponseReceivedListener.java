@@ -1,4 +1,4 @@
-package com.flipkart.flipperf;
+package com.flipkart.flipperf.newlib;
 
 import com.flipkart.flipperf.model.RequestStats;
 

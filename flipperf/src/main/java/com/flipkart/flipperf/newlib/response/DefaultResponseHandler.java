@@ -1,7 +1,7 @@
-package com.flipkart.flipperf.response;
+package com.flipkart.flipperf.newlib.response;
 
 
-import com.flipkart.flipperf.NetworkEventReporter;
+import com.flipkart.flipperf.newlib.NetworkEventReporter;
 
 public class DefaultResponseHandler implements ResponseHandler {
     private final NetworkEventReporter mEventReporter;

@@ -1,4 +1,4 @@
-package com.flipkart.flipperf;
+package com.flipkart.flipperf.newlib;
 
 import android.content.Context;
 import android.os.Handler;
@@ -37,7 +37,7 @@ public final class NetworkInterceptor implements Interceptor {
     private NetworkInterceptor(Context context, Builder builder) {
         Handler handler = builder.mHandler;
 
-        //if handler given by client is null, create a new handler
+        //if handler given by client is null, create a newlib handler
         if (handler == null) {
             HandlerThread handlerThread = new HandlerThread(HANDLER_THREAD_NAME);
             handlerThread.start();
@@ -113,7 +113,7 @@ public final class NetworkInterceptor implements Interceptor {
                 responseStream = mEventReporter.interpretResponseStream(responseStream,
                         new DefaultResponseHandler(mEventReporter, okHttpInspectorRequest, okHttpInspectorResponse));
 
-                //creating new response object using the interpreted stream
+                //creating newlib response object using the interpreted stream
                 response = response.newBuilder().body(new ForwardingResponseBody(body, responseStream)).build();
             } else {
                 //if response has content length, notify the event reporter that response has been received.
@@ -124,7 +124,7 @@ public final class NetworkInterceptor implements Interceptor {
     }
 
     /**
-     * Implementation of {@link com.flipkart.flipperf.NetworkEventReporter.InspectorRequest}
+     * Implementation of {@link NetworkEventReporter.InspectorRequest}
      */
     @VisibleForTesting
     public static class OkHttpInspectorRequest implements NetworkEventReporter.InspectorRequest {
@@ -169,7 +169,7 @@ public final class NetworkInterceptor implements Interceptor {
     }
 
     /**
-     * Implementation of {@link com.flipkart.flipperf.NetworkEventReporter.InspectorResponse}
+     * Implementation of {@link NetworkEventReporter.InspectorResponse}
      */
     @VisibleForTesting
     public static class OkHttpInspectorResponse implements NetworkEventReporter.InspectorResponse {

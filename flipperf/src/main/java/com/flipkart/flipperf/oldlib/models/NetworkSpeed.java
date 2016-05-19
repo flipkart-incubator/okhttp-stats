@@ -1,7 +1,7 @@
-package com.flipkart.flipperf.toolbox;
+package com.flipkart.flipperf.oldlib.models;
 
 /**
- * Created by anirudh.r on 14/05/16 at 10:25 AM.
+ * Created by nikhil.n on 03/02/15.
  */
 public enum NetworkSpeed {
     SLOW_NETWORK,

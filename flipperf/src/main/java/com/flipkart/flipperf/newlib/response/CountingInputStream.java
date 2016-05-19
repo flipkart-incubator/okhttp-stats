@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.flipkart.flipperf.response;
+package com.flipkart.flipperf.newlib.response;
 
 import android.support.annotation.NonNull;
 

@@ -1,6 +1,6 @@
-package com.flipkart.flipperf.response;
+package com.flipkart.flipperf.newlib.response;
 
-import com.flipkart.flipperf.NetworkEventReporter;
+import com.flipkart.flipperf.newlib.NetworkEventReporter;
 
 public interface ResponseHandler {
     /**

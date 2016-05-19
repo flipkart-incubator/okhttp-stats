@@ -1,4 +1,4 @@
-package com.flipkart.flipperf.model;
+package com.flipkart.flipperf.newlib.model;
 
 import android.net.NetworkInfo;
 import android.support.annotation.Nullable;
