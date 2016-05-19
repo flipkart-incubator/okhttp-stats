@@ -1,5 +1,7 @@
 package com.flipkart.flipperf.oldlib.models;
 
+import com.flipkart.flipperf.NetworkSpeed;
+
 /**
  * Created by nikhil.n on 15/01/15.
  */
