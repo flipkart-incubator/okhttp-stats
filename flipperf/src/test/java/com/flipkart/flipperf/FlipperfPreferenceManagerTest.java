@@ -4,7 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.flipkart.flipperf.toolbox.FlipperfPreferenceManager;
+import com.flipkart.flipperf.newlib.toolbox.FlipperfPreferenceManager;
 
 import org.junit.Assert;
 import org.junit.Test;

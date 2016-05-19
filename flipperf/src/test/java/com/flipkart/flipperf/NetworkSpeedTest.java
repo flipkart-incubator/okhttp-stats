@@ -1,6 +1,6 @@
 package com.flipkart.flipperf;
 
-import com.flipkart.flipperf.toolbox.NetworkSpeed;
+import com.flipkart.flipperf.newlib.toolbox.NetworkSpeed;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

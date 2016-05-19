@@ -1,7 +1,7 @@
 package com.flipkart.flipperf;
 
-import com.flipkart.flipperf.model.RequestStats;
-import com.flipkart.flipperf.toolbox.NetworkStat;
+import com.flipkart.flipperf.newlib.model.RequestStats;
+import com.flipkart.flipperf.newlib.toolbox.NetworkStat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

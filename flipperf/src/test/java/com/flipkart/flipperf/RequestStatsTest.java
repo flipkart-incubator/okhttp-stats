@@ -2,7 +2,7 @@ package com.flipkart.flipperf;
 
 import android.net.NetworkInfo;
 
-import com.flipkart.flipperf.model.RequestStats;
+import com.flipkart.flipperf.newlib.model.RequestStats;
 
 import org.junit.Assert;
 import org.junit.Test;

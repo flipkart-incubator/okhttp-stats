@@ -3,7 +3,10 @@ package com.flipkart.flipperf;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
-import com.flipkart.flipperf.response.ResponseHandler;
+import com.flipkart.flipperf.newlib.NetworkEventReporter;
+import com.flipkart.flipperf.newlib.NetworkInterceptor;
+import com.flipkart.flipperf.newlib.NetworkManager;
+import com.flipkart.flipperf.newlib.response.ResponseHandler;
 import com.squareup.okhttp.Connection;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.MediaType;

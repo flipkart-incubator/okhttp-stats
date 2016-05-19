@@ -5,7 +5,10 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 
-import com.flipkart.flipperf.model.RequestStats;
+import com.flipkart.flipperf.newlib.model.RequestStats;
+import com.flipkart.flipperf.newlib.NetworkEventReporter;
+import com.flipkart.flipperf.newlib.NetworkEventReporterImpl;
+import com.flipkart.flipperf.newlib.NetworkManager;
 
 import org.junit.Assert;
 import org.junit.Test;
