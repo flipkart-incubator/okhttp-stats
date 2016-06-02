@@ -24,23 +24,15 @@ public class NetworkStatTest {
         requestStats.setStartTime(1);
         requestStats.setEndTime(2);
 
-        NetworkStat.addResponseData(requestStats);
-
         RequestStats requestStats1 = new RequestStats(1);
         requestStats.setResponseSize("20");
         requestStats.setStartTime(1);
         requestStats.setEndTime(2);
 
-        NetworkStat.addResponseData(requestStats1);
-
         RequestStats requestStats2 = new RequestStats(1);
         requestStats.setResponseSize("20");
         requestStats.setStartTime(1);
         requestStats.setEndTime(2);
-
-        NetworkStat.addResponseData(requestStats2);
-
-//        Assert.assertTrue(NetworkStat.getAverageSpeed() == 20);
 
     }
 }
