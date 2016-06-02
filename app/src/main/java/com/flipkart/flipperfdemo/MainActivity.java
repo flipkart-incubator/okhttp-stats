@@ -17,13 +17,14 @@ import android.view.View;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
-import com.flipkart.fkvolley.toolbox.OkHttp2Stack;
+import com.flipkart.fkvolley.toolbox.OkHttpStack2;
 import com.flipkart.flipperf.newlib.NetworkEventReporterImpl;
 import com.flipkart.flipperf.newlib.NetworkInterceptor;
 import com.flipkart.flipperf.newlib.NetworkManager;
 import com.flipkart.flipperf.newlib.NetworkStatManager;
 import com.flipkart.flipperf.newlib.OnResponseReceivedListener;
 import com.flipkart.flipperf.newlib.model.RequestStats;
+import com.squareup.okhttp.OkHttpClient;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -40,26 +41,29 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        ImageLoader.ImageCache imageCache = new BitmapLruCache();
-        final ImageLoader imageLoader = new ImageLoader(Volley.newRequestQueue(this, new OkHttp2Stack(), -1), imageCache);
-
-        HandlerThread handlerThread = new HandlerThread("background");
+        HandlerThread handlerThread = new HandlerThread("back");
         handlerThread.start();
         Handler handler = new Handler(handlerThread.getLooper());
 
         onResponseReceived = new OnResponseReceived();
-        networkManager = new NetworkStatManager(getApplication());
+        networkManager = new NetworkStatManager(this);
         networkManager.addListener(onResponseReceived);
-        networkManager.setMaxSize(10);
+        networkManager.setMaxSizeForPersistence(10);
 
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
                 .setEventReporter(new NetworkEventReporterImpl())
                 .setNetworkManager(networkManager)
                 .setReporterEnabled(true)
                 .setHandler(handler)
-                .build(getApplication());
+                .build(this);
 
-        OkHttp2Stack.setInterceptor(networkInterceptor);
+        OkHttpClient okHttpClient = new OkHttpClient();
+        okHttpClient.networkInterceptors().add(networkInterceptor);
+        OkHttpStack2 okHttpStack2 = new OkHttpStack2(okHttpClient);
+
+        ImageLoader.ImageCache imageCache = new BitmapLruCache();
+        final ImageLoader imageLoader = new ImageLoader(Volley.newRequestQueue(this, okHttpStack2, -1), imageCache);
+
 
         final NetworkImageView networkImageView = (NetworkImageView) findViewById(R.id.img);
         assert networkImageView != null;
