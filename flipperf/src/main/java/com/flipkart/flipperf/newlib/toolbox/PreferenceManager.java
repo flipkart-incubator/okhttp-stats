@@ -6,13 +6,13 @@ import android.content.SharedPreferences;
 /**
  * Created by anirudh.r on 12/05/16 at 3:24 PM.
  */
-public class FlipperfPreferenceManager {
+public class PreferenceManager {
 
-    private static final String FLIPPERF_PREFERENCES = "FLIPPERF_PREFERENCES";
+    private static final String PREFERENCES = "PREFERENCES";
     private final SharedPreferences mSharedPreferences;
 
-    public FlipperfPreferenceManager(Context context) {
-        this.mSharedPreferences = context.getSharedPreferences(FLIPPERF_PREFERENCES, Context.MODE_PRIVATE);
+    public PreferenceManager(Context context) {
+        this.mSharedPreferences = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
     }
 
     public void setAverageSpeed(String networkType, float avgSpeed) {
@@ -23,5 +23,9 @@ public class FlipperfPreferenceManager {
 
     public float getAverageSpeed(String networkType) {
         return this.mSharedPreferences.getFloat(networkType, 0F);
+    }
+
+    public boolean hasAvgSpeed(String networkType) {
+        return mSharedPreferences.contains(networkType);
     }
 }

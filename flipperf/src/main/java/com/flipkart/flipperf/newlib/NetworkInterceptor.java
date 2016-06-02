@@ -29,8 +29,9 @@ import okio.Okio;
 public final class NetworkInterceptor implements Interceptor {
 
     private Logger logger = LoggerFactory.getLogger(NetworkInterceptor.class);
-    private static final String HANDLER_THREAD_NAME = " com.flipkart.flipperf.networkInterceptor";
+    private static final String HANDLER_THREAD_NAME = NetworkInterceptor.class.getName();
     private static final String CONTENT_LENGTH = "Content-Length";
+    private static final String HOST_NAME = "HOST";
     private final NetworkEventReporter mEventReporter;
     private final AtomicInteger mNextRequestId = new AtomicInteger(1);
 
@@ -65,7 +66,7 @@ public final class NetworkInterceptor implements Interceptor {
         OkHttpInspectorRequest okHttpInspectorRequest = null;
 
         if (mEventReporter.isReporterEnabled()) {
-            okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url(), request.method(), request.header(CONTENT_LENGTH), request.header("HOST"));
+            okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url(), request.method(), request.header(CONTENT_LENGTH), request.header(HOST_NAME));
         }
 
         long mStartTime, mEndTime;
@@ -252,7 +253,7 @@ public final class NetworkInterceptor implements Interceptor {
      * Builder Pattern for {@link NetworkInterceptor}
      */
     public static class Builder {
-        private boolean mEnabled;
+        private boolean mEnabled = true;
         private Handler mHandler;
         private NetworkEventReporter mNetworkEventReporter;
         private NetworkManager mNetworkManager;

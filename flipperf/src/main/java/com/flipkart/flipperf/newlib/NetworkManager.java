@@ -25,7 +25,7 @@ public interface NetworkManager {
 
     NetworkSpeed getNetworkSpeed();
 
-    void setMaxSize(int size);
+    void setMaxSizeForPersistence(int size);
 
     float getAverageNetworkSpeed();
 }

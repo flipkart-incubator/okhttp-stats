@@ -3,13 +3,15 @@ package com.flipkart.flipperf.newlib;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.support.annotation.VisibleForTesting;
 import android.telephony.TelephonyManager;
 
 import com.flipkart.flipperf.NetworkSpeed;
 import com.flipkart.flipperf.newlib.model.RequestStats;
-import com.flipkart.flipperf.newlib.toolbox.FlipperfPreferenceManager;
 import com.flipkart.flipperf.newlib.toolbox.NetworkStat;
+import com.flipkart.flipperf.newlib.toolbox.PreferenceManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,18 +25,23 @@ import java.util.List;
 public class NetworkStatManager implements NetworkManager {
 
     private static final int DEFAULT_MAX_SIZE = 10;
-    private final FlipperfPreferenceManager mFlipperfPreferenceManager;
+    private static final String WIFI_NETWORK = "WIFI";
+    private static final String MOBILE_NETWORK = "mobile";
+    private static final String UNKNOWN_NETWORK = "unknown";
+    private final PreferenceManager mPreferenceManager;
     private Logger mLogger = LoggerFactory.getLogger(NetworkStatManager.class);
     private List<OnResponseReceivedListener> mOnResponseReceivedListenerList = new ArrayList<>();
     private int mResponseCount = 0;
     private NetworkInfo mNetworkInfo;
     private int MAX_SIZE;
     private List<RequestStats> mRequestStatsList;
+    private WifiManager mWifiManager;
 
     public NetworkStatManager(Context context) {
-        this.mFlipperfPreferenceManager = new FlipperfPreferenceManager(context);
+        this.mPreferenceManager = new PreferenceManager(context);
         this.MAX_SIZE = DEFAULT_MAX_SIZE;
         this.mRequestStatsList = new ArrayList<>();
+        this.mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
     }
 
     @Override
@@ -118,13 +125,17 @@ public class NetworkStatManager implements NetworkManager {
     }
 
     @Override
-    public void setMaxSize(int size) {
+    public void setMaxSizeForPersistence(int size) {
         this.MAX_SIZE = size;
     }
 
     @Override
     public float getAverageNetworkSpeed() {
-        return this.mFlipperfPreferenceManager.getAverageSpeed(mNetworkInfo.getTypeName());
+        if (mNetworkInfo != null) {
+            return mPreferenceManager.getAverageSpeed(getNetworkKey(mNetworkInfo));
+        } else {
+            return 0;
+        }
     }
 
     @Override
@@ -176,10 +187,30 @@ public class NetworkStatManager implements NetworkManager {
         if (mLogger.isDebugEnabled()) {
             mLogger.debug("avg speed", "saveToSharedPreference: " + NetworkStat.getAverageSpeed(mRequestStatsList));
         }
-        float olAvgSpeed = mFlipperfPreferenceManager.getAverageSpeed(mNetworkInfo.getTypeName());
+        double oldAvgSpeed = mPreferenceManager.getAverageSpeed(getNetworkKey(mNetworkInfo));
         double newAvgSpeed = NetworkStat.getAverageSpeed(mRequestStatsList);
-        mFlipperfPreferenceManager.setAverageSpeed(mNetworkInfo.getTypeName(), (float) ((olAvgSpeed + newAvgSpeed) / 2));
+        float avgSpeed = (float) ((oldAvgSpeed + newAvgSpeed) / 2);
+
+        mPreferenceManager.setAverageSpeed(getNetworkKey(mNetworkInfo), avgSpeed);
         mRequestStatsList.clear();
         mResponseCount = 0;
+    }
+
+    private String getNetworkKey(NetworkInfo networkInfo) {
+        if (networkInfo != null) {
+            if (networkInfo.getTypeName().equals(WIFI_NETWORK)) {
+                return WIFI_NETWORK + "_" + getWifiSSID();
+            } else if (networkInfo.getTypeName().equals(MOBILE_NETWORK)) {
+                return MOBILE_NETWORK + "_" + networkInfo.getSubtypeName();
+            }
+            return UNKNOWN_NETWORK;
+        } else {
+            return UNKNOWN_NETWORK;
+        }
+    }
+
+    private int getWifiSSID() {
+        WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
+        return wifiInfo.getSSID().hashCode();
     }
 }
