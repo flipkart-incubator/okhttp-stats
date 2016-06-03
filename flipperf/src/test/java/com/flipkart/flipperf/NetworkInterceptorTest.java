@@ -3,10 +3,11 @@ package com.flipkart.flipperf;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
-import com.flipkart.flipperf.newlib.NetworkEventReporter;
 import com.flipkart.flipperf.newlib.NetworkInterceptor;
-import com.flipkart.flipperf.newlib.NetworkManager;
-import com.flipkart.flipperf.newlib.response.ResponseHandler;
+import com.flipkart.flipperf.newlib.interpreter.DefaultInterpreter;
+import com.flipkart.flipperf.newlib.interpreter.NetworkInterpreter;
+import com.flipkart.flipperf.newlib.reporter.NetworkEventReporter;
+import com.flipkart.flipperf.newlib.toolbox.Utils;
 import com.squareup.okhttp.Connection;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.MediaType;
@@ -22,6 +23,7 @@ import com.squareup.okhttp.mockwebserver.MockWebServer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
@@ -29,17 +31,14 @@ import org.robolectric.annotation.Config;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.zip.GZIPOutputStream;
 
 import okio.Buffer;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by anirudh.r on 05/05/16 at 7:24 PM.
@@ -65,17 +64,12 @@ public class NetworkInterceptorTest {
     @Test
     public void testInterceptedResponse() throws IOException {
         NetworkEventReporter networkEventReporter = mock(NetworkEventReporter.class);
-        NetworkManager networkManager = mock(NetworkManager.class);
+        NetworkInterpreter networkInterpreter = new DefaultInterpreter(networkEventReporter);
 
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
-                .setReporterEnabled(true)
-                .setHandler(null)
-                .setNetworkManager(networkManager)
-                .setEventReporter(networkEventReporter)
+                .setEnabled(true)
+                .setNetworkInterpreter(networkInterpreter)
                 .build(RuntimeEnvironment.application);
-
-        //return true whenever networkEventReporter.isReporterEnabled() is called
-        when(networkEventReporter.isReporterEnabled()).thenReturn(true);
 
         Uri requestUri = Uri.parse("http://www.flipkart.com");
         String requestText = "Test Request";
@@ -110,29 +104,22 @@ public class NetworkInterceptorTest {
 
         //verify responseReceived gets called once
         verify(networkEventReporter, times(1)).responseReceived(any(NetworkEventReporter.InspectorRequest.class), any(NetworkEventReporter.InspectorResponse.class));
-
-        //verify responseDataReceived does not gets called as response has content length
-        verify(networkEventReporter, times(0)).responseDataReceived(any(NetworkEventReporter.InspectorRequest.class), any(NetworkEventReporter.InspectorResponse.class), anyInt());
     }
 
     /**
-     * Test to verify {@link NetworkInterceptor.ForwardingResponseBody}
+     * Test to verify {@link com.flipkart.flipperf.newlib.interpreter.DefaultInterpreter.ForwardingResponseBody}
      *
      * @throws IOException
      */
     @Test
     public void testResponseBody() throws IOException {
         NetworkEventReporter networkEventReporter = mock(NetworkEventReporter.class);
-        NetworkManager networkManager = mock(NetworkManager.class);
+        NetworkInterpreter networkInterpreter = new DefaultInterpreter(networkEventReporter);
 
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
-                .setReporterEnabled(true)
-                .setHandler(null)
-                .setNetworkManager(networkManager)
-                .setEventReporter(networkEventReporter)
+                .setEnabled(true)
+                .setNetworkInterpreter(networkInterpreter)
                 .build(RuntimeEnvironment.application);
-
-        when(networkEventReporter.isReporterEnabled()).thenReturn(true);
 
         Uri requestUri = Uri.parse("http://www.flipkart.com");
         String requestText = "Test Request";
@@ -157,7 +144,7 @@ public class NetworkInterceptorTest {
 
         //intercepted request object
         Response interceptedResponse = customChain.proceed(request);
-        NetworkInterceptor.ForwardingResponseBody forwardingResponseBody = new NetworkInterceptor.ForwardingResponseBody(interceptedResponse.body(), interceptedResponse.body().byteStream());
+        DefaultInterpreter.ForwardingResponseBody forwardingResponseBody = new DefaultInterpreter.ForwardingResponseBody(interceptedResponse.body(), interceptedResponse.body().byteStream());
 
         interceptedResponse = interceptedResponse.newBuilder().body(forwardingResponseBody).build();
 
@@ -179,16 +166,13 @@ public class NetworkInterceptorTest {
     @Test
     public void testInterceptedResponseWithContentLength() throws IOException {
         NetworkEventReporter networkEventReporter = mock(NetworkEventReporter.class);
-        NetworkManager networkManager = mock(NetworkManager.class);
+        NetworkInterpreter networkInterpreter = new DefaultInterpreter(networkEventReporter);
 
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
-                .setReporterEnabled(true)
-                .setHandler(null)
-                .setNetworkManager(networkManager)
-                .setEventReporter(networkEventReporter)
+                .setEnabled(true)
+                .setNetworkInterpreter(networkInterpreter)
                 .build(RuntimeEnvironment.application);
 
-        when(networkEventReporter.isReporterEnabled()).thenReturn(true);
 
         Uri requestUri = Uri.parse("http://www.flipkart.com");
         String requestText = "Test Request";
@@ -229,14 +213,11 @@ public class NetworkInterceptorTest {
     @Test
     public void testInterceptedRequest() throws IOException {
         NetworkEventReporter networkEventReporter = mock(NetworkEventReporter.class);
-        NetworkManager networkManager = mock(NetworkManager.class);
-        when(networkEventReporter.isReporterEnabled()).thenReturn(true);
+        NetworkInterpreter networkInterpreter = new DefaultInterpreter(networkEventReporter);
 
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
-                .setReporterEnabled(true)
-                .setHandler(null)
-                .setNetworkManager(networkManager)
-                .setEventReporter(networkEventReporter)
+                .setEnabled(true)
+                .setNetworkInterpreter(networkInterpreter)
                 .build(RuntimeEnvironment.application);
 
         Uri requestUri = Uri.parse("http://www.flipkart.com");
@@ -260,9 +241,6 @@ public class NetworkInterceptorTest {
         CustomChain customChain = new CustomChain(request, response, null);
         networkInterceptor.intercept(customChain);
 
-        //assert network event reported is enabled
-        Assert.assertTrue(networkEventReporter.isReporterEnabled());
-
         //intercepted request object
         Request interceptedRequest = customChain.request();
 
@@ -276,20 +254,18 @@ public class NetworkInterceptorTest {
     }
 
     /**
-     * Test the request object using {@link MockWebServer}
+     * Test the request object using {@link com.squareup.okhttp.mockwebserver.MockWebServer}
      *
      * @throws IOException
      */
     @Test
     public void testRequest() throws IOException {
-        NetworkManager networkManager = mock(NetworkManager.class);
         NetworkEventReporter networkEventReporter = mock(NetworkEventReporter.class);
-        Mockito.when(networkEventReporter.isReporterEnabled()).thenReturn(true);
+        NetworkInterpreter networkInterpreter = new DefaultInterpreter(networkEventReporter);
 
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
-                .setEventReporter(networkEventReporter)
-                .setNetworkManager(networkManager)
-                .setReporterEnabled(true)
+                .setNetworkInterpreter(networkInterpreter)
+                .setEnabled(true)
                 .build(RuntimeEnvironment.application);
 
         OkHttpClient okHttpClient = new OkHttpClient();
@@ -322,15 +298,12 @@ public class NetworkInterceptorTest {
      */
     @Test
     public void testResponseWithoutContentLength() throws IOException {
-        NetworkManager networkManager = mock(NetworkManager.class);
         NetworkEventReporter networkEventReporter = mock(NetworkEventReporter.class);
-        Mockito.when(networkEventReporter.isReporterEnabled()).thenReturn(true);
-        NetworkInterceptor.ForwardingResponseBody forwardingResponseBody;
+        NetworkInterpreter networkInterpreter = new DefaultInterpreter(networkEventReporter);
 
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
-                .setEventReporter(networkEventReporter)
-                .setNetworkManager(networkManager)
-                .setReporterEnabled(true)
+                .setNetworkInterpreter(networkInterpreter)
+                .setEnabled(true)
                 .build(RuntimeEnvironment.application);
 
         OkHttpClient okHttpClient = new OkHttpClient();
@@ -344,8 +317,7 @@ public class NetworkInterceptorTest {
 
         //removing content length from the response header
         server.enqueue(new MockResponse()
-                .setBody(new Buffer().write(compressedData))
-                .removeHeader("Content-Length"));
+                .setChunkedBody(new Buffer().write(compressedData),3));
 
         Request request = new Request.Builder()
                 .url(server.url("/"))
@@ -354,59 +326,22 @@ public class NetworkInterceptorTest {
         //catching this exception due to ForwardingResponseBody
         try {
             Response response = okHttpClient.newCall(request).execute();
+            response.body().bytes();
         } catch (IllegalArgumentException ignored) {
         }
 
-        // Verify that interpretResponseStream gets called once
+        ArgumentCaptor<NetworkEventReporter.InspectorResponse> responseArgumentCaptor = ArgumentCaptor.forClass(NetworkEventReporter.InspectorResponse.class);
         Mockito.verify(networkEventReporter, times(1))
-                .interpretResponseStream(any(InputStream.class), any(ResponseHandler.class));
+                .responseReceived(any(NetworkEventReporter.InspectorRequest.class), responseArgumentCaptor.capture());
+        Assert.assertTrue(responseArgumentCaptor.getValue().responseSize()==compressedData.length);
 
         server.shutdown();
     }
+
 
     /**
-     * Test to verify {@link Response} with content length using {@link MockWebServer}
-     *
-     * @throws IOException
+     * Tests setter and getter of {@link com.flipkart.flipperf.newlib.interpreter.DefaultInterpreter.OkHttpInspectorRequest}
      */
-    @Test
-    public void testResponseWithContentLength() throws IOException {
-        NetworkManager networkManager = mock(NetworkManager.class);
-        NetworkEventReporter networkEventReporter = mock(NetworkEventReporter.class);
-        Mockito.when(networkEventReporter.isReporterEnabled()).thenReturn(true);
-        NetworkInterceptor.ForwardingResponseBody forwardingResponseBody;
-
-        NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
-                .setEventReporter(networkEventReporter)
-                .setNetworkManager(networkManager)
-                .setReporterEnabled(true)
-                .build(RuntimeEnvironment.application);
-
-        OkHttpClient okHttpClient = new OkHttpClient();
-        okHttpClient.networkInterceptors().add(networkInterceptor);
-
-        byte[] uncompressedData = "Dummy Value".getBytes();
-
-        MockWebServer server = new MockWebServer();
-        server.start();
-        server.enqueue(new MockResponse()
-                .setBody(new Buffer().write(uncompressedData)));
-
-        Request request = new Request.Builder()
-                .url(server.url("/"))
-                .build();
-
-        Response response = okHttpClient.newCall(request).execute();
-
-        // Verify that interpretResponseStream does not gets called since response had content length
-        Mockito.verify(networkEventReporter, times(0))
-                .interpretResponseStream(any(InputStream.class), any(ResponseHandler.class));
-
-        verify(networkEventReporter, times(1)).responseReceived(any(NetworkEventReporter.InspectorRequest.class), any(NetworkEventReporter.InspectorResponse.class));
-
-        server.shutdown();
-    }
-
     @Test
     public void testOkHttpInspectorRequest() throws Exception {
 
@@ -420,29 +355,32 @@ public class NetworkInterceptorTest {
                 .addHeader("HOST", "flipkart")
                 .build();
 
-        NetworkInterceptor.OkHttpInspectorRequest okHttpInspectorRequest = new NetworkInterceptor.OkHttpInspectorRequest(1, request.url(), request.method(), request.header("Content-Length"), request.header("HOST"));
+        DefaultInterpreter.OkHttpInspectorRequest okHttpInspectorRequest = new DefaultInterpreter.OkHttpInspectorRequest(1, request.url(), request.method(), Utils.getContentLength(request), request.header("HOST"));
 
         //assert id is same
         Assert.assertTrue(okHttpInspectorRequest.requestId() == 1);
         //assert url is same
         Assert.assertTrue(okHttpInspectorRequest.url().equals(request.url()));
         //assert content length is same
-        Assert.assertTrue(okHttpInspectorRequest.requestSize().equals(request.header("Content-Length")));
+        Assert.assertTrue(okHttpInspectorRequest.requestSize() == Utils.getContentLength(request));
         //assert hostname is same
         Assert.assertTrue(okHttpInspectorRequest.hostName().equals(request.header("HOST")));
         //assert method is same
         Assert.assertTrue(okHttpInspectorRequest.method().equals(request.method()));
     }
 
+    /**
+     * Tests setter and getter of {@link com.flipkart.flipperf.newlib.interpreter.DefaultInterpreter.OkHttpInspectorResponse}
+     */
     @Test
     public void testOkHttpInspectorResponse() throws Exception {
 
-        NetworkInterceptor.OkHttpInspectorResponse okHttpInspectorResponse = new NetworkInterceptor.OkHttpInspectorResponse(1, 200, "20", 2, 3);
+        DefaultInterpreter.OkHttpInspectorResponse okHttpInspectorResponse = new DefaultInterpreter.OkHttpInspectorResponse(1, 200, 20, 2, 3);
 
         //assert id is same
         Assert.assertTrue(okHttpInspectorResponse.requestId() == 1);
         //assert content length is same
-        Assert.assertTrue(okHttpInspectorResponse.responseSize().equals("20"));
+        Assert.assertTrue(okHttpInspectorResponse.responseSize() == 20);
         //assert response time is same
         Assert.assertTrue(okHttpInspectorResponse.startTime() == 2);
         //assert statuscode is same

@@ -10,7 +10,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -30,28 +29,22 @@ public class RequestStatsTest {
         NetworkInfo networkInfo = mock(NetworkInfo.class);
 
         requestStats.setUrl(new URL("http://www.flipkart.com"));
-        requestStats.setSize("20");
+        requestStats.setRequestSize(20);
         requestStats.setMethodType("POST");
-        requestStats.setResponseSize("40");
+        requestStats.setResponseSize(40);
         requestStats.setStartTime(2);
         requestStats.setEndTime(3);
-        requestStats.setHttpStatusCode(200);
+        requestStats.setStatusCode(200);
         requestStats.setHostName("flipkart.com");
-        requestStats.setException(new IOException("Hehe"));
-        requestStats.setExceptionType(1);
-        requestStats.setNetworkType(networkInfo);
 
         Assert.assertTrue(requestStats.getId() == 1);
         Assert.assertTrue(requestStats.getUrl().toString().equals("http://www.flipkart.com"));
-        Assert.assertTrue(requestStats.getSize().equals("20"));
+        Assert.assertTrue(requestStats.getRequestSize() == 20);
         Assert.assertTrue(requestStats.getMethodType().equals("POST"));
-        Assert.assertTrue(requestStats.getResponseSize().equals("40"));
+        Assert.assertTrue(requestStats.getResponseSize() == 40);
         Assert.assertTrue(requestStats.getStartTime() == 2);
         Assert.assertTrue(requestStats.getEndTime() == 3);
-        Assert.assertTrue(requestStats.getHttpStatusCode() == 200);
+        Assert.assertTrue(requestStats.getStatusCode() == 200);
         Assert.assertTrue(requestStats.getHostName().equals("flipkart.com"));
-        Assert.assertTrue(requestStats.getException().getMessage().equals("Hehe"));
-        Assert.assertTrue(requestStats.getExceptionType() == 1);
-        Assert.assertTrue(requestStats.getNetworkType() == networkInfo);
     }
 }

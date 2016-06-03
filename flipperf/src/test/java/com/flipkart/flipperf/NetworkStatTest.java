@@ -20,17 +20,17 @@ public class NetworkStatTest {
     public void testNetworkStat() throws Exception {
 
         RequestStats requestStats = new RequestStats(1);
-        requestStats.setResponseSize("20");
+        requestStats.setResponseSize(20);
         requestStats.setStartTime(1);
         requestStats.setEndTime(2);
 
         RequestStats requestStats1 = new RequestStats(1);
-        requestStats.setResponseSize("20");
+        requestStats.setResponseSize(20);
         requestStats.setStartTime(1);
         requestStats.setEndTime(2);
 
         RequestStats requestStats2 = new RequestStats(1);
-        requestStats.setResponseSize("20");
+        requestStats.setResponseSize(20);
         requestStats.setStartTime(1);
         requestStats.setEndTime(2);
 

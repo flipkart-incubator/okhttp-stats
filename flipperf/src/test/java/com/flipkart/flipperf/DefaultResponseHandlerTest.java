@@ -1,6 +1,5 @@
 package com.flipkart.flipperf;
 
-import com.flipkart.flipperf.newlib.NetworkEventReporter;
 import com.flipkart.flipperf.newlib.response.DefaultResponseHandler;
 import com.flipkart.flipperf.newlib.response.ResponseHandler;
 
@@ -26,28 +25,15 @@ public class DefaultResponseHandlerTest {
      */
     @Test
     public void testOnEOF() {
-        NetworkEventReporter networkEventReporter = mock(NetworkEventReporter.class);
-        NetworkEventReporter.InspectorResponse inspectorResponse = mock(NetworkEventReporter.InspectorResponse.class);
-        NetworkEventReporter.InspectorRequest inspectorRequest = mock(NetworkEventReporter.InspectorRequest.class);
 
-        DefaultResponseHandler defaultResponseHandler = new DefaultResponseHandler(networkEventReporter, inspectorRequest, inspectorResponse);
+        DefaultResponseHandler.ResponseCallback responseCallback = mock(DefaultResponseHandler.ResponseCallback.class);
+        DefaultResponseHandler defaultResponseHandler = new DefaultResponseHandler(responseCallback);
+        defaultResponseHandler.onRead(10);
+        defaultResponseHandler.onRead(10);
         defaultResponseHandler.onEOF();
-
         //verify that responseDataReceived gets called once
-        verify(networkEventReporter, times(1)).responseDataReceived(inspectorRequest, inspectorResponse, 0);
+        verify(responseCallback,times(1)).onEOF(20);
     }
 
-    /**
-     * Test for {@link ResponseHandler#onRead(int)}
-     */
-    @Test
-    public void testOnRead() {
-        NetworkEventReporter networkEventReporter = mock(NetworkEventReporter.class);
-        NetworkEventReporter.InspectorResponse inspectorResponse = mock(NetworkEventReporter.InspectorResponse.class);
-        NetworkEventReporter.InspectorRequest inspectorRequest = mock(NetworkEventReporter.InspectorRequest.class);
 
-        String requestId = "Hello";
-        DefaultResponseHandler defaultResponseHandler = new DefaultResponseHandler(networkEventReporter, inspectorRequest, inspectorResponse);
-        defaultResponseHandler.onRead(requestId.length());
-    }
 }

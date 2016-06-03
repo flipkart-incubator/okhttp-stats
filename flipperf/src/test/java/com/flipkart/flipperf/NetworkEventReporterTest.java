@@ -1,20 +1,17 @@
 package com.flipkart.flipperf;
 
-import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 
+import com.flipkart.flipperf.newlib.handler.NetworkRequestStatsHandler;
 import com.flipkart.flipperf.newlib.model.RequestStats;
-import com.flipkart.flipperf.newlib.NetworkEventReporter;
-import com.flipkart.flipperf.newlib.NetworkEventReporterImpl;
-import com.flipkart.flipperf.newlib.NetworkManager;
+import com.flipkart.flipperf.newlib.reporter.NetworkEventReporter;
+import com.flipkart.flipperf.newlib.reporter.NetworkEventReporterImpl;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.internal.ShadowExtractor;
 import org.robolectric.shadows.ShadowLooper;
@@ -35,50 +32,6 @@ import static org.mockito.Mockito.verify;
 public class NetworkEventReporterTest {
 
     /**
-     * Test for {@link NetworkEventReporter#onInitialized(Context, Handler, NetworkManager)}
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testOnInitialized() throws Exception {
-
-        HandlerThread handlerThread = new HandlerThread("back");
-        handlerThread.start();
-        Looper looper = handlerThread.getLooper();
-        Handler handler = new Handler(looper);
-        ShadowLooper shadowLooper = (ShadowLooper) ShadowExtractor.extract(looper);
-
-        NetworkManager networkManager = mock(NetworkManager.class);
-
-        NetworkEventReporter networkEventReporter = new NetworkEventReporterImpl();
-        networkEventReporter.onInitialized(RuntimeEnvironment.application, handler, networkManager);
-    }
-
-    /**
-     * Test for {@link NetworkEventReporter#isReporterEnabled()}
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testIsEnabled() throws Exception {
-        HandlerThread handlerThread = new HandlerThread("back");
-        handlerThread.start();
-        Looper looper = handlerThread.getLooper();
-        Handler handler = new Handler(looper);
-        ShadowLooper shadowLooper = (ShadowLooper) ShadowExtractor.extract(looper);
-
-        NetworkManager networkManager = mock(NetworkManager.class);
-
-        NetworkEventReporter networkEventReporter = new NetworkEventReporterImpl();
-        networkEventReporter.onInitialized(RuntimeEnvironment.application, handler, networkManager);
-
-        networkEventReporter.setEnabled(true);
-
-        //assert that reporter is enabled
-        Assert.assertTrue(networkEventReporter.isReporterEnabled());
-    }
-
-    /**
      * Test for {@link NetworkEventReporter#responseReceived(NetworkEventReporter.InspectorRequest, NetworkEventReporter.InspectorResponse)}
      *
      * @throws Exception
@@ -91,10 +44,9 @@ public class NetworkEventReporterTest {
         Handler handler = new Handler(looper);
         ShadowLooper shadowLooper = (ShadowLooper) ShadowExtractor.extract(looper);
 
-        NetworkManager networkManager = mock(NetworkManager.class);
+        NetworkRequestStatsHandler networkRequestStatsHandler = mock(NetworkRequestStatsHandler.class);
 
-        NetworkEventReporter networkEventReporter = new NetworkEventReporterImpl();
-        networkEventReporter.onInitialized(RuntimeEnvironment.application, handler, networkManager);
+        NetworkEventReporter networkEventReporter = new NetworkEventReporterImpl(networkRequestStatsHandler);
 
         NetworkEventReporter.InspectorRequest inspectorRequest = mock(NetworkEventReporter.InspectorRequest.class);
         NetworkEventReporter.InspectorResponse inspectorResponse = mock(NetworkEventReporter.InspectorResponse.class);
@@ -103,7 +55,7 @@ public class NetworkEventReporterTest {
         shadowLooper.runToEndOfTasks();
 
         //verify onResponseReceived gets called once
-        verify(networkManager, times(1)).onResponseReceived(any(RequestStats.class));
+        verify(networkRequestStatsHandler, times(1)).onResponseReceived(any(RequestStats.class));
     }
 
     /**
@@ -119,10 +71,9 @@ public class NetworkEventReporterTest {
         Handler handler = new Handler(looper);
         ShadowLooper shadowLooper = (ShadowLooper) ShadowExtractor.extract(looper);
 
-        NetworkManager networkManager = mock(NetworkManager.class);
+        NetworkRequestStatsHandler networkRequestStatsHandler = mock(NetworkRequestStatsHandler.class);
 
-        NetworkEventReporter networkEventReporter = new NetworkEventReporterImpl();
-        networkEventReporter.onInitialized(RuntimeEnvironment.application, handler, networkManager);
+        NetworkEventReporter networkEventReporter = new NetworkEventReporterImpl(networkRequestStatsHandler);
 
         NetworkEventReporter.InspectorRequest inspectorRequest = mock(NetworkEventReporter.InspectorRequest.class);
 
@@ -130,36 +81,9 @@ public class NetworkEventReporterTest {
         shadowLooper.runToEndOfTasks();
 
         //verify onHttpExchangeError gets called once
-        verify(networkManager, times(1)).onHttpExchangeError(any(RequestStats.class));
+        verify(networkRequestStatsHandler, times(1)).onHttpExchangeError(any(RequestStats.class), any(IOException.class));
     }
 
-    /**
-     * Test for {@link NetworkEventReporter#responseDataReceived(NetworkEventReporter.InspectorRequest, NetworkEventReporter.InspectorResponse, int)}
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testResponseDataReceived() throws Exception {
-        HandlerThread handlerThread = new HandlerThread("back");
-        handlerThread.start();
-        Looper looper = handlerThread.getLooper();
-        Handler handler = new Handler(looper);
-        ShadowLooper shadowLooper = (ShadowLooper) ShadowExtractor.extract(looper);
-
-        NetworkManager networkManager = mock(NetworkManager.class);
-
-        NetworkEventReporter networkEventReporter = new NetworkEventReporterImpl();
-        networkEventReporter.onInitialized(RuntimeEnvironment.application, handler, networkManager);
-
-        NetworkEventReporter.InspectorRequest inspectorRequest = mock(NetworkEventReporter.InspectorRequest.class);
-        NetworkEventReporter.InspectorResponse inspectorResponse = mock(NetworkEventReporter.InspectorResponse.class);
-
-        networkEventReporter.responseDataReceived(inspectorRequest, inspectorResponse, 10);
-        shadowLooper.runToEndOfTasks();
-
-        //verify onResponseReceived gets called once
-        verify(networkManager, times(1)).onResponseReceived(any(RequestStats.class));
-    }
 
     /**
      * Test for {@link NetworkEventReporter#responseInputStreamError(NetworkEventReporter.InspectorRequest, NetworkEventReporter.InspectorResponse, IOException)}
@@ -174,10 +98,9 @@ public class NetworkEventReporterTest {
         Handler handler = new Handler(looper);
         ShadowLooper shadowLooper = (ShadowLooper) ShadowExtractor.extract(looper);
 
-        NetworkManager networkManager = mock(NetworkManager.class);
+        NetworkRequestStatsHandler networkRequestStatsHandler = mock(NetworkRequestStatsHandler.class);
 
-        NetworkEventReporter networkEventReporter = new NetworkEventReporterImpl();
-        networkEventReporter.onInitialized(RuntimeEnvironment.application, handler, networkManager);
+        NetworkEventReporter networkEventReporter = new NetworkEventReporterImpl(networkRequestStatsHandler);
 
         NetworkEventReporter.InspectorRequest inspectorRequest = mock(NetworkEventReporter.InspectorRequest.class);
         NetworkEventReporter.InspectorResponse inspectorResponse = mock(NetworkEventReporter.InspectorResponse.class);
@@ -186,6 +109,6 @@ public class NetworkEventReporterTest {
         shadowLooper.runToEndOfTasks();
 
         //verify onResponseInputStreamError gets called once
-        verify(networkManager, times(1)).onResponseInputStreamError(any(RequestStats.class));
+        verify(networkRequestStatsHandler, times(1)).onResponseInputStreamError(any(RequestStats.class), any(IOException.class));
     }
 }
