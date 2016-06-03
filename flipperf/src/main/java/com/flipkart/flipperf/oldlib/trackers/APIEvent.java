@@ -1,8 +1,9 @@
-package com.flipkart.flipperf.trackers;
+package com.flipkart.flipperf.oldlib.trackers;
 
 import android.content.Context;
 
 import com.flipkart.flipperf.oldlib.models.NetworkType;
+import com.flipkart.flipperf.trackers.Event;
 
 /**
  * Created by nikhil.n on 15/01/15.
