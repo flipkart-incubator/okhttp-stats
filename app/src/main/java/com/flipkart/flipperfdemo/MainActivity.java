@@ -1,6 +1,7 @@
 package com.flipkart.flipperfdemo;
 
 import android.graphics.Bitmap;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -18,21 +19,24 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
 import com.flipkart.fkvolley.toolbox.OkHttpStack2;
-import com.flipkart.flipperf.newlib.NetworkEventReporterImpl;
 import com.flipkart.flipperf.newlib.NetworkInterceptor;
-import com.flipkart.flipperf.newlib.NetworkManager;
-import com.flipkart.flipperf.newlib.NetworkStatManager;
-import com.flipkart.flipperf.newlib.OnResponseReceivedListener;
+import com.flipkart.flipperf.newlib.handler.OnResponseReceivedListener;
+import com.flipkart.flipperf.newlib.handler.PersistentStatsHandler;
+import com.flipkart.flipperf.newlib.interpreter.DefaultInterpreter;
+import com.flipkart.flipperf.newlib.interpreter.NetworkInterpreter;
 import com.flipkart.flipperf.newlib.model.RequestStats;
+import com.flipkart.flipperf.newlib.reporter.NetworkEventReporterImpl;
+import com.flipkart.flipperf.newlib.toolbox.ExceptionType;
 import com.squareup.okhttp.OkHttpClient;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
     private OnResponseReceived onResponseReceived;
-    private NetworkManager networkManager;
+    private PersistentStatsHandler networkRequestStatsHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,15 +50,14 @@ public class MainActivity extends AppCompatActivity {
         Handler handler = new Handler(handlerThread.getLooper());
 
         onResponseReceived = new OnResponseReceived();
-        networkManager = new NetworkStatManager(this);
-        networkManager.addListener(onResponseReceived);
-        networkManager.setMaxSizeForPersistence(10);
+        networkRequestStatsHandler = new PersistentStatsHandler(this, handler);
+        networkRequestStatsHandler.addListener(onResponseReceived);
+        networkRequestStatsHandler.setMaxSizeForPersistence(10);
+        NetworkInterpreter networkInterpreter = new DefaultInterpreter(new NetworkEventReporterImpl(networkRequestStatsHandler));
 
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
-                .setEventReporter(new NetworkEventReporterImpl())
-                .setNetworkManager(networkManager)
-                .setReporterEnabled(true)
-                .setHandler(handler)
+                .setEnabled(true)
+                .setNetworkInterpreter(networkInterpreter)
                 .build(this);
 
         OkHttpClient okHttpClient = new OkHttpClient();
@@ -86,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        networkManager.removeListener(onResponseReceived);
+        networkRequestStatsHandler.removeListener(onResponseReceived);
         super.onDestroy();
     }
 
@@ -149,18 +152,31 @@ public class MainActivity extends AppCompatActivity {
     private class OnResponseReceived implements OnResponseReceivedListener {
 
         @Override
-        public void onResponseReceived(RequestStats requestStats) {
-            Log.d("Response Received", "onResponseReceived : "
+        public void onResponseSuccess(NetworkInfo info, RequestStats requestStats) {
+            Log.d(MainActivity.class.getName(), "onResponseSuccessReceived : "
                     + "\nId : " + requestStats.getId()
                     + "\nUrl : " + requestStats.getUrl()
                     + "\nMethod : " + requestStats.getMethodType()
                     + "\nHost : " + requestStats.getHostName()
-                    + "\nRequest Size : " + requestStats.getSize()
+                    + "\nRequest Size : " + requestStats.getRequestSize()
                     + "\nResponse Size : " + requestStats.getResponseSize()
                     + "\nTime Taken: " + (requestStats.getEndTime() - requestStats.getStartTime())
-                    + "\nStatus Code : " + requestStats.getHttpStatusCode()
-                    + "\nException  : " + requestStats.getException()
-                    + "\nException Type : " + requestStats.getExceptionType());
+                    + "\nStatus Code : " + requestStats.getStatusCode());
+        }
+
+        @Override
+        public void onResponseError(NetworkInfo info, RequestStats requestStats, IOException e) {
+            Log.d(MainActivity.class.getName(), "onResponseErrorReceived : "
+                    + "\nId : " + requestStats.getId()
+                    + "\nUrl : " + requestStats.getUrl()
+                    + "\nMethod : " + requestStats.getMethodType()
+                    + "\nHost : " + requestStats.getHostName()
+                    + "\nRequest Size : " + requestStats.getRequestSize()
+                    + "\nResponse Size : " + requestStats.getResponseSize()
+                    + "\nTime Taken: " + (requestStats.getEndTime() - requestStats.getStartTime())
+                    + "\nStatus Code : " + requestStats.getStatusCode()
+                    + "\nException Type : " + ExceptionType.getExceptionType(e)
+                    + "\nException : " + e.getMessage());
         }
     }
 }
