@@ -1,9 +1,5 @@
 package com.flipkart.flipperf.newlib.model;
 
-import android.net.NetworkInfo;
-import android.support.annotation.Nullable;
-
-import java.io.IOException;
 import java.net.URL;
 
 /**
@@ -13,57 +9,25 @@ import java.net.URL;
 public class RequestStats {
 
     private final int mId;
-    private String mMethodType;
-    private String mSize;
     private URL mUrl;
-    private String mResponseSize;
+    private String mMethodType;
+    private long mRequestSize;
+    private long mResponseSize;
     private String mHostName;
-    private int mHttpStatusCode;
+    private int mStatusCode;
     private long mStartTime;
     private long mEndTime;
-    private NetworkInfo mNetworkType;
-    @Nullable
-    private IOException mException;
-    /**
-     * -1 if none
-     */
-    private int mExceptionType = -1;
 
     public RequestStats(int requestId) {
         this.mId = requestId;
     }
 
-    public int getExceptionType() {
-        return mExceptionType;
+    public int getStatusCode() {
+        return mStatusCode;
     }
 
-    public void setExceptionType(int mExceptionType) {
-        this.mExceptionType = mExceptionType;
-    }
-
-    @Nullable
-    public IOException getException() {
-        return mException;
-    }
-
-    public void setException(@Nullable IOException mException) {
-        this.mException = mException;
-    }
-
-    public int getHttpStatusCode() {
-        return mHttpStatusCode;
-    }
-
-    public void setHttpStatusCode(int mHttpStatusCode) {
-        this.mHttpStatusCode = mHttpStatusCode;
-    }
-
-    public NetworkInfo getNetworkType() {
-        return mNetworkType;
-    }
-
-    public void setNetworkType(NetworkInfo mNetworkType) {
-        this.mNetworkType = mNetworkType;
+    public void setStatusCode(int mHttpStatusCode) {
+        this.mStatusCode = mHttpStatusCode;
     }
 
     public String getHostName() {
@@ -86,12 +50,12 @@ public class RequestStats {
         this.mMethodType = mMethodType;
     }
 
-    public String getSize() {
-        return mSize;
+    public long getRequestSize() {
+        return mRequestSize;
     }
 
-    public void setSize(String mSize) {
-        this.mSize = mSize;
+    public void setRequestSize(long mSize) {
+        this.mRequestSize = mSize;
     }
 
     public URL getUrl() {
@@ -102,11 +66,11 @@ public class RequestStats {
         this.mUrl = mUrl;
     }
 
-    public String getResponseSize() {
+    public long getResponseSize() {
         return mResponseSize;
     }
 
-    public void setResponseSize(String mResponseSize) {
+    public void setResponseSize(long mResponseSize) {
         this.mResponseSize = mResponseSize;
     }
 
