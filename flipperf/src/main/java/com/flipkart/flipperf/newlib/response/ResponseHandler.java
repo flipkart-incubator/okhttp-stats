@@ -1,14 +1,7 @@
 package com.flipkart.flipperf.newlib.response;
 
-import com.flipkart.flipperf.newlib.NetworkEventReporter;
-
 public interface ResponseHandler {
-    /**
-     * Signal that data has been read from the response stream.
-     *
-     * @param numBytes Bytes read from the network stack's stream as established by
-     *                 {@link NetworkEventReporter#interpretResponseStream}.
-     */
+
     void onRead(int numBytes);
 
     /**

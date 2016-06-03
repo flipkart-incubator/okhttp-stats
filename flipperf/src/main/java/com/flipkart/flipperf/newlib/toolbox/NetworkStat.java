@@ -2,34 +2,57 @@ package com.flipkart.flipperf.newlib.toolbox;
 
 import com.flipkart.flipperf.newlib.model.RequestStats;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * Created by anirudh.r on 08/05/16 at 1:17 AM.
  */
 public final class NetworkStat {
 
-    private static Logger mLogger = LoggerFactory.getLogger(NetworkStat.class.getName());
+    private static final int MAX_QUEUE_SIZE = 5;
+    private double mPeakSpeed = 0;
+    private Queue<RequestStats> mRequestStatQueue;
+    private double mTotalSize = 0;
+    private double mCurrentAvgSpeed = 0;
 
-    private NetworkStat() {
+    public NetworkStat() {
+        mRequestStatQueue = new LinkedList<>();
     }
 
-    public static double getAverageSpeed(List<RequestStats> requestStatList) {
-        double size, time, totalApiTime = 0;
-        for (RequestStats requestStats : requestStatList) {
-            size = Double.parseDouble(requestStats.getResponseSize());
-            time = (requestStats.getEndTime() - requestStats.getStartTime());
-            try {
-                totalApiTime += (size / time);
-            } catch (ArithmeticException e) {
-                if (mLogger.isDebugEnabled()) {
-                    mLogger.debug(e.getMessage());
-                }
+    public double getCurrentAvgSpeed() {
+        return mCurrentAvgSpeed;
+    }
+
+    public synchronized void addRequestStat(final RequestStats requestStats) {
+        if (requestStats != null) {
+            long apiSpeed = 0;
+            if (requestStats.getEndTime() > requestStats.getStartTime()) {
+                apiSpeed = requestStats.getResponseSize() / (requestStats.getEndTime() - requestStats.getStartTime());
             }
+            if (apiSpeed > mPeakSpeed) {
+                mPeakSpeed = apiSpeed;
+            }
+            mRequestStatQueue.add(requestStats);
+            mTotalSize += requestStats.getResponseSize();
+            if (mRequestStatQueue.size() > MAX_QUEUE_SIZE) {
+                RequestStats requestStat = mRequestStatQueue.poll();
+                mTotalSize -= requestStat.getResponseSize();
+            }
+            calculateAvgSpeed();
         }
-        return totalApiTime / requestStatList.size();
+    }
+
+    private void calculateAvgSpeed() {
+        double newAvgSpeed = 0;
+        for (RequestStats requestStats : mRequestStatQueue) {
+            long apiSpeed = 0;
+            if (requestStats.getEndTime() > requestStats.getStartTime()) {
+                apiSpeed = requestStats.getResponseSize() / (requestStats.getEndTime() - requestStats.getStartTime());
+            }
+            double proportion = requestStats.getResponseSize()/ mTotalSize;
+            newAvgSpeed += apiSpeed * proportion;
+        }
+        mCurrentAvgSpeed = newAvgSpeed;
     }
 }

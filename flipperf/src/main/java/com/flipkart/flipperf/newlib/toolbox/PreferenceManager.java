@@ -24,8 +24,4 @@ public class PreferenceManager {
     public float getAverageSpeed(String networkType) {
         return this.mSharedPreferences.getFloat(networkType, 0F);
     }
-
-    public boolean hasAvgSpeed(String networkType) {
-        return mSharedPreferences.contains(networkType);
-    }
 }

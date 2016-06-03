@@ -24,20 +24,24 @@ public class ExceptionType {
     public final static int UNKNOWN_EXCEPTION = -1;
 
     public static int getExceptionType(IOException e) {
-        if (e instanceof SocketException) {
-            return SOCKET_EXCEPTION;
-        } else if (e instanceof ProtocolException) {
-            return PROTOCOL_EXCEPTION;
-        } else if (e instanceof UnknownHostException) {
-            return UNKNOWN_HOST_EXCEPTION;
-        } else if (e instanceof UnknownServiceException) {
-            return UNKNOWN_SERVICE_EXCEPTION;
-        } else if (e instanceof SocketTimeoutException) {
-            return SOCKET_TIMEOUT_EXCEPTION;
-        } else if (e instanceof MalformedURLException) {
-            return MALFORMED_URL_EXCEPTION;
-        } else if (e instanceof HttpRetryException) {
-            return HTTP_RETRY_EXCEPTION;
+        if (e != null) {
+            if (e instanceof SocketException) {
+                return SOCKET_EXCEPTION;
+            } else if (e instanceof ProtocolException) {
+                return PROTOCOL_EXCEPTION;
+            } else if (e instanceof UnknownHostException) {
+                return UNKNOWN_HOST_EXCEPTION;
+            } else if (e instanceof UnknownServiceException) {
+                return UNKNOWN_SERVICE_EXCEPTION;
+            } else if (e instanceof SocketTimeoutException) {
+                return SOCKET_TIMEOUT_EXCEPTION;
+            } else if (e instanceof MalformedURLException) {
+                return MALFORMED_URL_EXCEPTION;
+            } else if (e instanceof HttpRetryException) {
+                return HTTP_RETRY_EXCEPTION;
+            } else {
+                return UNKNOWN_EXCEPTION;
+            }
         } else {
             return UNKNOWN_EXCEPTION;
         }

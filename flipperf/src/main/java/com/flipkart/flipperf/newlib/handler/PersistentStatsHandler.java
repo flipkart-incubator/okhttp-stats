@@ -1,10 +1,11 @@
-package com.flipkart.flipperf.newlib;
+package com.flipkart.flipperf.newlib.handler;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Handler;
 import android.support.annotation.VisibleForTesting;
 import android.telephony.TelephonyManager;
 
@@ -16,49 +17,62 @@ import com.flipkart.flipperf.newlib.toolbox.PreferenceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by anirudh.r on 10/05/16 at 11:59 AM.
- */
-public class NetworkStatManager implements NetworkManager {
+public class PersistentStatsHandler implements NetworkRequestStatsHandler {
 
     private static final int DEFAULT_MAX_SIZE = 10;
     private static final String WIFI_NETWORK = "WIFI";
     private static final String MOBILE_NETWORK = "mobile";
     private static final String UNKNOWN_NETWORK = "unknown";
     private final PreferenceManager mPreferenceManager;
-    private Logger mLogger = LoggerFactory.getLogger(NetworkStatManager.class);
+    private Logger mLogger = LoggerFactory.getLogger(PersistentStatsHandler.class);
     private List<OnResponseReceivedListener> mOnResponseReceivedListenerList = new ArrayList<>();
     private int mResponseCount = 0;
-    private NetworkInfo mNetworkInfo;
     private int MAX_SIZE;
-    private List<RequestStats> mRequestStatsList;
     private WifiManager mWifiManager;
+    private NetworkStat mNetworkStat;
+    private float mCurrentAvgSpeed = 0;
+    private ConnectivityManager mConnectivityManager;
+    private Handler mHandler;
 
-    public NetworkStatManager(Context context) {
+    public PersistentStatsHandler(Context context, Handler handler) {
+        this.mHandler = handler;
         this.mPreferenceManager = new PreferenceManager(context);
         this.MAX_SIZE = DEFAULT_MAX_SIZE;
-        this.mRequestStatsList = new ArrayList<>();
         this.mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        this.mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        this.mNetworkStat = new NetworkStat();
+        this.mCurrentAvgSpeed = mPreferenceManager.getAverageSpeed(getNetworkKey(getActiveNetworkInfo()));
     }
 
-    @Override
-    public NetworkInfo getNetworkInfo() {
-        return mNetworkInfo;
+    @VisibleForTesting
+    public PersistentStatsHandler(Context context, Handler handler, NetworkInfo networkInfo) {
+        this.mHandler = handler;
+        this.mPreferenceManager = new PreferenceManager(context);
+        this.MAX_SIZE = DEFAULT_MAX_SIZE;
+        this.mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        this.mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        this.mNetworkStat = new NetworkStat();
+        this.mCurrentAvgSpeed = mPreferenceManager.getAverageSpeed(getNetworkKey(networkInfo));
     }
 
-    @Override
+    private NetworkInfo getActiveNetworkInfo() {
+        return mConnectivityManager.getActiveNetworkInfo();
+    }
+
     public NetworkSpeed getNetworkSpeed() {
-        if (mNetworkInfo == null || !mNetworkInfo.isConnected()) {
+        NetworkInfo activeNetworkInfo = getActiveNetworkInfo();
+        if (activeNetworkInfo == null || !activeNetworkInfo.isConnected()) {
             return NetworkSpeed.SLOW_NETWORK;
         } else {
-            switch (mNetworkInfo.getType()) {
+            switch (activeNetworkInfo.getType()) {
                 case ConnectivityManager.TYPE_WIFI:
                     return NetworkSpeed.FAST_NETWORK;
                 case ConnectivityManager.TYPE_MOBILE:
-                    switch (mNetworkInfo.getSubtype()) {
+                    switch (activeNetworkInfo.getSubtype()) {
                         case TelephonyManager.NETWORK_TYPE_1xRTT:
                             return NetworkSpeed.SLOW_NETWORK; // ~ 50-100 kbps
                         case TelephonyManager.NETWORK_TYPE_CDMA:
@@ -105,41 +119,28 @@ public class NetworkStatManager implements NetworkManager {
         return mOnResponseReceivedListenerList;
     }
 
-    @Override
     public void addListener(OnResponseReceivedListener onResponseReceivedListener) {
         if (mOnResponseReceivedListenerList != null) {
             mOnResponseReceivedListenerList.add(onResponseReceivedListener);
         }
     }
 
-    @Override
     public void removeListener(OnResponseReceivedListener onResponseReceivedListener) {
         if (mOnResponseReceivedListenerList != null) {
             mOnResponseReceivedListenerList.remove(onResponseReceivedListener);
         }
     }
 
-    @Override
-    public void setNetworkType(NetworkInfo networkType) {
-        this.mNetworkInfo = networkType;
-    }
-
-    @Override
     public void setMaxSizeForPersistence(int size) {
         this.MAX_SIZE = size;
     }
 
-    @Override
     public float getAverageNetworkSpeed() {
-        if (mNetworkInfo != null) {
-            return mPreferenceManager.getAverageSpeed(getNetworkKey(mNetworkInfo));
-        } else {
-            return 0;
-        }
+        return mCurrentAvgSpeed;
     }
 
     @Override
-    public void onResponseReceived(RequestStats requestStats) {
+    public void onResponseReceived(final RequestStats requestStats) {
         mResponseCount += 1;
         if (mLogger.isDebugEnabled()) {
             mLogger.debug("Response Received : {}", requestStats);
@@ -147,69 +148,74 @@ public class NetworkStatManager implements NetworkManager {
 
         for (OnResponseReceivedListener onResponseReceivedListener : mOnResponseReceivedListenerList) {
             if (onResponseReceivedListener != null) {
-                onResponseReceivedListener.onResponseReceived(requestStats);
+                onResponseReceivedListener.onResponseSuccess(getActiveNetworkInfo(), requestStats);
             }
         }
 
-        //save to shared prefs if condition is satisfied
-        if (mResponseCount >= MAX_SIZE) {
-            saveToSharedPreference();
-        }
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                //save to shared prefs if condition is satisfied
+                if (mResponseCount >= MAX_SIZE) {
+                    saveToSharedPreference(mCurrentAvgSpeed);
+                }
 
-        mRequestStatsList.add(requestStats);
+                mNetworkStat.addRequestStat(requestStats);
+            }
+        });
     }
 
     @Override
-    public void onHttpExchangeError(RequestStats requestStats) {
+    public void onHttpExchangeError(RequestStats requestStats, IOException e) {
         if (mLogger.isDebugEnabled()) {
             mLogger.debug("Response Received With Http Exchange Error : {}", requestStats);
         }
+
         for (OnResponseReceivedListener onResponseReceivedListener : mOnResponseReceivedListenerList) {
             if (onResponseReceivedListener != null) {
-                onResponseReceivedListener.onResponseReceived(requestStats);
+                onResponseReceivedListener.onResponseError(getActiveNetworkInfo(), requestStats, e);
             }
         }
     }
 
     @Override
-    public void onResponseInputStreamError(RequestStats requestStats) {
+    public void onResponseInputStreamError(RequestStats requestStats, IOException e) {
         if (mLogger.isDebugEnabled()) {
             mLogger.debug("Response Received With InputStream Error : {}", requestStats);
         }
+
         for (OnResponseReceivedListener onResponseReceivedListener : mOnResponseReceivedListenerList) {
             if (onResponseReceivedListener != null) {
-                onResponseReceivedListener.onResponseReceived(requestStats);
+                onResponseReceivedListener.onResponseError(getActiveNetworkInfo(), requestStats, e);
             }
         }
     }
 
-    private void saveToSharedPreference() {
+    private void saveToSharedPreference(float currentAvgSpeed) {
         if (mLogger.isDebugEnabled()) {
-            mLogger.debug("avg speed", "saveToSharedPreference: " + NetworkStat.getAverageSpeed(mRequestStatsList));
+            mLogger.debug("avg speed", "saveToSharedPreference: " + mNetworkStat.getCurrentAvgSpeed());
         }
-        double oldAvgSpeed = mPreferenceManager.getAverageSpeed(getNetworkKey(mNetworkInfo));
-        double newAvgSpeed = NetworkStat.getAverageSpeed(mRequestStatsList);
-        float avgSpeed = (float) ((oldAvgSpeed + newAvgSpeed) / 2);
 
-        mPreferenceManager.setAverageSpeed(getNetworkKey(mNetworkInfo), avgSpeed);
-        mRequestStatsList.clear();
+        String networkKey = getNetworkKey(getActiveNetworkInfo());
+        double newAvgSpeed = mNetworkStat.getCurrentAvgSpeed();
+        currentAvgSpeed = (float) ((currentAvgSpeed + newAvgSpeed) / 2);
+        mPreferenceManager.setAverageSpeed(networkKey, currentAvgSpeed);
         mResponseCount = 0;
     }
 
-    private String getNetworkKey(NetworkInfo networkInfo) {
-        if (networkInfo != null) {
+    public String getNetworkKey(NetworkInfo networkInfo) {
+        if (networkInfo != null && networkInfo.getTypeName() != null) {
             if (networkInfo.getTypeName().equals(WIFI_NETWORK)) {
                 return WIFI_NETWORK + "_" + getWifiSSID();
             } else if (networkInfo.getTypeName().equals(MOBILE_NETWORK)) {
                 return MOBILE_NETWORK + "_" + networkInfo.getSubtypeName();
             }
             return UNKNOWN_NETWORK;
-        } else {
-            return UNKNOWN_NETWORK;
         }
+        return UNKNOWN_NETWORK;
     }
 
-    private int getWifiSSID() {
+    public int getWifiSSID() {
         WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
         return wifiInfo.getSSID().hashCode();
     }

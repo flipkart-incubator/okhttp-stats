@@ -1,18 +1,12 @@
 package com.flipkart.flipperf.newlib.response;
 
 
-import com.flipkart.flipperf.newlib.NetworkEventReporter;
-
 public class DefaultResponseHandler implements ResponseHandler {
-    private final NetworkEventReporter mEventReporter;
-    private final NetworkEventReporter.InspectorResponse mInspectorResponse;
-    private final NetworkEventReporter.InspectorRequest mInspectorRequest;
+    private final ResponseCallback mResponseCallback;
     private int mBytesRead = 0;
 
-    public DefaultResponseHandler(NetworkEventReporter eventReporter, NetworkEventReporter.InspectorRequest inspectorRequest, NetworkEventReporter.InspectorResponse inspectorResponse) {
-        this.mEventReporter = eventReporter;
-        this.mInspectorResponse = inspectorResponse;
-        this.mInspectorRequest = inspectorRequest;
+    public DefaultResponseHandler(ResponseCallback responseCallback) {
+        mResponseCallback = responseCallback;
     }
 
     @Override
@@ -22,6 +16,10 @@ public class DefaultResponseHandler implements ResponseHandler {
 
     @Override
     public void onEOF() {
-        mEventReporter.responseDataReceived(mInspectorRequest, mInspectorResponse, mBytesRead);
+        mResponseCallback.onEOF(mBytesRead);
+    }
+
+    public interface ResponseCallback {
+        void onEOF(long bytesRead);
     }
 }
