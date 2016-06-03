@@ -7,7 +7,6 @@ import com.flipkart.flipperf.newlib.NetworkInterceptor;
 import com.flipkart.flipperf.newlib.interpreter.DefaultInterpreter;
 import com.flipkart.flipperf.newlib.interpreter.NetworkInterpreter;
 import com.flipkart.flipperf.newlib.reporter.NetworkEventReporter;
-import com.flipkart.flipperf.newlib.toolbox.Utils;
 import com.squareup.okhttp.Connection;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.MediaType;
@@ -17,6 +16,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
+import com.squareup.okhttp.internal.http.OkHeaders;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 
@@ -355,14 +355,14 @@ public class NetworkInterceptorTest {
                 .addHeader("HOST", "flipkart")
                 .build();
 
-        DefaultInterpreter.OkHttpInspectorRequest okHttpInspectorRequest = new DefaultInterpreter.OkHttpInspectorRequest(1, request.url(), request.method(), Utils.getContentLength(request), request.header("HOST"));
+        DefaultInterpreter.OkHttpInspectorRequest okHttpInspectorRequest = new DefaultInterpreter.OkHttpInspectorRequest(1, request.url(), request.method(), OkHeaders.contentLength(request), request.header("HOST"));
 
         //assert id is same
         Assert.assertTrue(okHttpInspectorRequest.requestId() == 1);
         //assert url is same
         Assert.assertTrue(okHttpInspectorRequest.url().equals(request.url()));
         //assert content length is same
-        Assert.assertTrue(okHttpInspectorRequest.requestSize() == Utils.getContentLength(request));
+        Assert.assertTrue(okHttpInspectorRequest.requestSize() == OkHeaders.contentLength(request));
         //assert hostname is same
         Assert.assertTrue(okHttpInspectorRequest.hostName().equals(request.header("HOST")));
         //assert method is same

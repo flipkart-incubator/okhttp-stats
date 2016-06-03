@@ -10,6 +10,7 @@ import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
+import com.squareup.okhttp.internal.http.OkHeaders;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ import okio.Okio;
 
 public class DefaultInterpreter implements NetworkInterpreter {
     private static final String HOST_NAME = "HOST";
+    private static final String CONTENT_LENGTH = "Content-Length";
     private Logger logger = LoggerFactory.getLogger(DefaultInterpreter.class);
     private NetworkEventReporter mEventReporter;
 
@@ -32,11 +34,11 @@ public class DefaultInterpreter implements NetworkInterpreter {
 
     @Override
     public Response interpretResponseStream(int requestId, NetworkInterceptor.TimeInfo timeInfo, Request request, Response response) throws IOException {
-        final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url(), request.method(), request.header("Content-Length"), request.header(HOST_NAME));
-        final OkHttpInspectorResponse okHttpInspectorResponse = new OkHttpInspectorResponse(requestId, response.code(), response.header("Content-Length"), timeInfo.mStartTime, timeInfo.mEndTime);
+        final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url(), request.method(), OkHeaders.contentLength(request), request.header(HOST_NAME));
+        final OkHttpInspectorResponse okHttpInspectorResponse = new OkHttpInspectorResponse(requestId, response.code(), OkHeaders.contentLength(response), timeInfo.mStartTime, timeInfo.mEndTime);
 
         //if response does not have content length, using CountingInputStream to read its bytes
-        if (response.header("Content-Length") == null) {
+        if (response.header(CONTENT_LENGTH) == null) {
             final ResponseBody body = response.body();
             InputStream responseStream = null;
             if (body != null) {
@@ -57,7 +59,7 @@ public class DefaultInterpreter implements NetworkInterpreter {
             responseStream = new CountingInputStream(responseStream, new DefaultResponseHandler(new DefaultResponseHandler.ResponseCallback() {
                 @Override
                 public void onEOF(long bytesRead) {
-                    okHttpInspectorResponse.mResponseSize = String.valueOf(bytesRead);
+                    okHttpInspectorResponse.mResponseSize = bytesRead;
                     mEventReporter.responseReceived(okHttpInspectorRequest, okHttpInspectorResponse);
                 }
             }));
@@ -76,7 +78,7 @@ public class DefaultInterpreter implements NetworkInterpreter {
         if (logger.isDebugEnabled()) {
             logger.debug("Error received while proceeding response {}", e.getMessage());
         }
-        final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url(), request.method(), request.header("Content-Length"), request.header(HOST_NAME));
+        final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url(), request.method(), OkHeaders.contentLength(request), request.header(HOST_NAME));
         mEventReporter.httpExchangeError(okHttpInspectorRequest, e);
     }
 
@@ -88,10 +90,10 @@ public class DefaultInterpreter implements NetworkInterpreter {
         private final int mRequestId;
         private final URL mRequestUrl;
         private final String mMethodType;
-        private final String mContentLength;
+        private final long mContentLength;
         private final String mHostName;
 
-        public OkHttpInspectorRequest(int requestId, URL requestUrl, String methodType, String contentLength, String hostName) {
+        public OkHttpInspectorRequest(int requestId, URL requestUrl, String methodType, long contentLength, String hostName) {
             this.mRequestId = requestId;
             this.mRequestUrl = requestUrl;
             this.mMethodType = methodType;
@@ -115,7 +117,7 @@ public class DefaultInterpreter implements NetworkInterpreter {
         }
 
         @Override
-        public String requestSize() {
+        public long requestSize() {
             return mContentLength;
         }
 
@@ -134,9 +136,9 @@ public class DefaultInterpreter implements NetworkInterpreter {
         private long mStartTime;
         private long mEndTime;
         private int mStatusCode;
-        private String mResponseSize;
+        private long mResponseSize;
 
-        public OkHttpInspectorResponse(int requestId, int statusCode, String responseSize, long startTime, long endTime) {
+        public OkHttpInspectorResponse(int requestId, int statusCode, long responseSize, long startTime, long endTime) {
             this.mRequestId = requestId;
             this.mStatusCode = statusCode;
             this.mResponseSize = responseSize;
@@ -155,7 +157,7 @@ public class DefaultInterpreter implements NetworkInterpreter {
         }
 
         @Override
-        public String responseSize() {
+        public long responseSize() {
             return mResponseSize;
         }
 
