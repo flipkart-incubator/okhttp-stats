@@ -1,9 +1,9 @@
-package com.flipkart.flipperf.oldlib;
+package com.flipkart.flipperf;
 
 import android.content.Context;
 import android.util.Log;
 
-import com.flipkart.flipperf.oldlib.trackers.Event;
+import com.flipkart.flipperf.trackers.Event;
 
 import java.util.HashMap;
 import java.util.Map;

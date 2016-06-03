@@ -8,9 +8,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.ByteArrayPool;
 import com.android.volley.toolbox.HttpStack;
+import com.flipkart.flipperf.FlipperfEventManager;
 import com.flipkart.flipperf.oldlib.models.NetworkType;
-import com.flipkart.flipperf.oldlib.trackers.APIEvent;
-import com.flipkart.flipperf.oldlib.trackers.FlipperfNetworkStatManager;
+import com.flipkart.flipperf.trackers.APIEvent;
+import com.flipkart.flipperf.trackers.FlipperfNetworkStatManager;
 
 /**
  * Created by nikhil.n on 19/01/15.

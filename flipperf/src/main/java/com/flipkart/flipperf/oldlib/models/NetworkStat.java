@@ -4,7 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import com.flipkart.flipperf.oldlib.trackers.APIEvent;
+import com.flipkart.flipperf.trackers.APIEvent;
 
 import java.util.LinkedList;
 import java.util.Queue;
