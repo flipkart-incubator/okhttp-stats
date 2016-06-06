@@ -5,7 +5,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.Handler;
 import android.support.annotation.VisibleForTesting;
 import android.telephony.TelephonyManager;
 
@@ -36,27 +35,14 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     private NetworkStat mNetworkStat;
     private float mCurrentAvgSpeed = 0;
     private ConnectivityManager mConnectivityManager;
-    private Handler mHandler;
 
-    public PersistentStatsHandler(Context context, Handler handler) {
-        this.mHandler = handler;
+    public PersistentStatsHandler(Context context) {
         this.mPreferenceManager = new PreferenceManager(context);
         this.MAX_SIZE = DEFAULT_MAX_SIZE;
         this.mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         this.mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         this.mNetworkStat = new NetworkStat();
         this.mCurrentAvgSpeed = mPreferenceManager.getAverageSpeed(getNetworkKey(getActiveNetworkInfo()));
-    }
-
-    @VisibleForTesting
-    public PersistentStatsHandler(Context context, Handler handler, NetworkInfo networkInfo) {
-        this.mHandler = handler;
-        this.mPreferenceManager = new PreferenceManager(context);
-        this.MAX_SIZE = DEFAULT_MAX_SIZE;
-        this.mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        this.mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        this.mNetworkStat = new NetworkStat();
-        this.mCurrentAvgSpeed = mPreferenceManager.getAverageSpeed(getNetworkKey(networkInfo));
     }
 
     private NetworkInfo getActiveNetworkInfo() {
@@ -152,17 +138,12 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
             }
         }
 
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                //save to shared prefs if condition is satisfied
-                if (mResponseCount >= MAX_SIZE) {
-                    saveToSharedPreference(mCurrentAvgSpeed);
-                }
+        //save to shared prefs if condition is satisfied
+        if (mResponseCount >= MAX_SIZE) {
+            saveToSharedPreference(mCurrentAvgSpeed);
+        }
 
-                mNetworkStat.addRequestStat(requestStats);
-            }
-        });
+        mNetworkStat.addRequestStat(requestStats);
     }
 
     @Override
@@ -199,6 +180,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
         String networkKey = getNetworkKey(getActiveNetworkInfo());
         double newAvgSpeed = mNetworkStat.getCurrentAvgSpeed();
         currentAvgSpeed = (float) ((currentAvgSpeed + newAvgSpeed) / 2);
+        mCurrentAvgSpeed = currentAvgSpeed;
         mPreferenceManager.setAverageSpeed(networkKey, currentAvgSpeed);
         mResponseCount = 0;
     }
