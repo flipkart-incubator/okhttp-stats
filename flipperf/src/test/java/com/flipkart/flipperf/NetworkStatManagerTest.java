@@ -57,7 +57,7 @@ public class NetworkStatManagerTest {
         HandlerThread handlerThread = new HandlerThread("Test");
         handlerThread.start();
         Handler handler = new Handler(handlerThread.getLooper());
-        PersistentStatsHandler networkStatManager = new PersistentStatsHandler(RuntimeEnvironment.application, handler, shadowConnectivityManager.getActiveNetworkInfo());
+        PersistentStatsHandler networkStatManager = new PersistentStatsHandler(RuntimeEnvironment.application);
         networkStatManager.addListener(onResponseReceivedListener);
 
         //assert size is 1
@@ -79,7 +79,7 @@ public class NetworkStatManagerTest {
         HandlerThread handlerThread = new HandlerThread("Test");
         handlerThread.start();
         Handler handler = new Handler(handlerThread.getLooper());
-        PersistentStatsHandler networkStatManager = new PersistentStatsHandler(RuntimeEnvironment.application, handler);
+        PersistentStatsHandler networkStatManager = new PersistentStatsHandler(RuntimeEnvironment.application);
         networkStatManager.addListener(onResponseReceivedListener);
 
         //assert size is 1
@@ -107,7 +107,7 @@ public class NetworkStatManagerTest {
         HandlerThread handlerThread = new HandlerThread("Test");
         handlerThread.start();
         Handler handler = new Handler(handlerThread.getLooper());
-        PersistentStatsHandler networkStatManager = new PersistentStatsHandler(RuntimeEnvironment.application, handler);
+        PersistentStatsHandler networkStatManager = new PersistentStatsHandler(RuntimeEnvironment.application);
         networkStatManager.addListener(onResponseReceivedListener);
 
         //assert size is 1
@@ -148,7 +148,7 @@ public class NetworkStatManagerTest {
         HandlerThread handlerThread = new HandlerThread("Test");
         handlerThread.start();
         Handler handler = new Handler(handlerThread.getLooper());
-        PersistentStatsHandler networkStatManager = new PersistentStatsHandler(RuntimeEnvironment.application, handler);
+        PersistentStatsHandler networkStatManager = new PersistentStatsHandler(RuntimeEnvironment.application);
         networkStatManager.addListener(onResponseReceivedListener);
 
         //assert size is 1
@@ -188,7 +188,7 @@ public class NetworkStatManagerTest {
         HandlerThread handlerThread = new HandlerThread("Test");
         handlerThread.start();
         Handler handler = new Handler(handlerThread.getLooper());
-        PersistentStatsHandler networkStatManager = new PersistentStatsHandler(RuntimeEnvironment.application, handler);
+        PersistentStatsHandler networkStatManager = new PersistentStatsHandler(RuntimeEnvironment.application);
         networkStatManager.addListener(onResponseReceivedListener);
 
         //assert size is 1
