@@ -11,7 +11,7 @@ import android.os.Build;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 
-import com.flipkart.fk_android_batchnetworking.Connectivity;
+import com.flipkart.flipperf.oldlib.Connectivity;
 import com.flipkart.flipperf.oldlib.Flipperf;
 import com.google.gson.annotations.SerializedName;
 

@@ -7,7 +7,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
 
-import com.flipkart.fk_android_batchnetworking.Connectivity;
+import com.flipkart.flipperf.oldlib.Connectivity;
 import com.flipkart.flipperf.oldlib.models.NetworkStat;
 import com.flipkart.flipperf.oldlib.models.NetworkType;
 

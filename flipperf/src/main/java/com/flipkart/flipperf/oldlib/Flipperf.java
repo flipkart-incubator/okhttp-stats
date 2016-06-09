@@ -7,9 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
-
-import com.flipkart.fk_android_batchnetworking.BatchNetworking;
-import com.flipkart.fk_android_batchnetworking.JSONDataHandler;
 import com.flipkart.flipperf.oldlib.models.PerfContext;
 import com.flipkart.flipperf.oldlib.models.PerfDataSet;
 import com.google.gson.Gson;
@@ -77,8 +74,6 @@ public class Flipperf {
 		// read the default settings from the XML
 		readSettings(applicationContext);
 
-		// initialize Batchnetworking and other stuff for Flipperf
-		initialize(applicationContext);
 	}
 
 	private void readSettings(Context applicationContext) {
@@ -144,23 +139,6 @@ public class Flipperf {
 
 	public static void setAutoConnectionPerformanceLogging(boolean log) {
 		AUTO_CONNECTION_PERFORMANCE_LOGGING = log;
-	}
-
-	private void initialize(Context applicationContext) {
-		// Do lazy initialization of BatchNetworking as the application context
-		// is not available when flipperf is initialized
-		if (!isBatchNetworkingInitialized && applicationContext != null
-				&& perfPushURL != null) {
-			isBatchNetworkingInitialized = true;
-			BatchNetworking.getDefaultInstance().initialize(
-					getApplicationContext());
-			try {
-				BatchNetworking.getDefaultInstance().setGroupDataHandler(
-						new JSONDataHandler(PERFORMANCE_EVENTS, perfPushURL));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
 	}
 
 	private PerfContext context = new PerfContext();
@@ -270,9 +248,6 @@ public class Flipperf {
 						}
 					}
 					elementData.startTime = startTime;
-
-					BatchNetworking.getDefaultInstance().pushDataForGroupId(
-							gson.toJsonTree(element), PERFORMANCE_EVENTS);
 
 				} catch (Exception ex) {
 					ex.printStackTrace();
