@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         Handler handler = new Handler(handlerThread.getLooper());
 
         onResponseReceived = new OnResponseReceived();
-        networkRequestStatsHandler = new PersistentStatsHandler(this, handler);
+        networkRequestStatsHandler = new PersistentStatsHandler(this);
         networkRequestStatsHandler.addListener(onResponseReceived);
         networkRequestStatsHandler.setMaxSizeForPersistence(10);
         NetworkInterpreter networkInterpreter = new DefaultInterpreter(new NetworkEventReporterImpl(networkRequestStatsHandler));
