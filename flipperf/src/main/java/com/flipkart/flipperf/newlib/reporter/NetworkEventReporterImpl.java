@@ -29,7 +29,7 @@ public class NetworkEventReporterImpl implements NetworkEventReporter {
 
     @Override
     public void responseReceived(final InspectorRequest inspectorRequest, final InspectorResponse inspectorResponse) {
-        if (inspectorRequest != null && inspectorRequest != null) {
+        if (inspectorRequest != null && inspectorResponse != null) {
             final int requestId = inspectorResponse.requestId();
             RequestStats requestStats = new RequestStats(requestId);
             requestStats.setRequestSize(inspectorRequest.requestSize());
