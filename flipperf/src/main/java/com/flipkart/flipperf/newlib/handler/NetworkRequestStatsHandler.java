@@ -7,6 +7,7 @@ import com.flipkart.flipperf.newlib.model.RequestStats;
 import java.io.IOException;
 
 public interface NetworkRequestStatsHandler {
+
     /**
      * Indicates a successful response was received.
      *

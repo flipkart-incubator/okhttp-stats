@@ -105,6 +105,11 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
         return mOnResponseReceivedListenerList;
     }
 
+    /**
+     * Client can add listeners to listen for the callbacks.
+     *
+     * @param onResponseReceivedListener : {@link OnResponseReceivedListener}
+     */
     public void addListener(OnResponseReceivedListener onResponseReceivedListener) {
         if (mOnResponseReceivedListenerList != null) {
             mOnResponseReceivedListenerList.add(onResponseReceivedListener);
@@ -172,6 +177,11 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
         }
     }
 
+    /**
+     * Saves the network avg speed in the Shared Pref
+     *
+     * @param currentAvgSpeed : float
+     */
     private void saveToSharedPreference(float currentAvgSpeed) {
         if (mLogger.isDebugEnabled()) {
             mLogger.debug("avg speed", "saveToSharedPreference: " + mNetworkStat.getCurrentAvgSpeed());
@@ -185,6 +195,12 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
         mResponseCount = 0;
     }
 
+    /**
+     * Generates the network key based on the type of network
+     *
+     * @param networkInfo {@link NetworkInfo}
+     * @return string
+     */
     public String getNetworkKey(NetworkInfo networkInfo) {
         if (networkInfo != null && networkInfo.getTypeName() != null) {
             if (networkInfo.getTypeName().equals(WIFI_NETWORK)) {

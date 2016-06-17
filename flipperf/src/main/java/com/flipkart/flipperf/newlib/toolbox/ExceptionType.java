@@ -9,9 +9,6 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.net.UnknownServiceException;
 
-/**
- * Created by anirudh.r on 13/05/16 at 12:31 PM.
- */
 public class ExceptionType {
 
     public final static int SOCKET_EXCEPTION = 601;

@@ -4,9 +4,8 @@ package com.flipkart.flipperf.newlib.reporter;
 import java.io.IOException;
 import java.net.URL;
 
-
 /**
- *
+ * Interface to report events in case of response or any errors.
  */
 public interface NetworkEventReporter {
 

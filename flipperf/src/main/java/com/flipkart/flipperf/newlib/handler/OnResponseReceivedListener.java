@@ -6,10 +6,13 @@ import com.flipkart.flipperf.newlib.model.RequestStats;
 
 import java.io.IOException;
 
+/**
+ * This interface to be consumed by the client, to get callbacks on success/failure cases
+ */
 public interface OnResponseReceivedListener {
 
     /**
-     * To be implemented by client, gets a callback for a successful request
+     * This callback includes response with 2XX, 3XX, 4XX, 5XX status codes
      *
      * @param info         {@link NetworkInfo}
      * @param requestStats {@link RequestStats}
@@ -17,7 +20,7 @@ public interface OnResponseReceivedListener {
     void onResponseSuccess(NetworkInfo info, RequestStats requestStats);
 
     /**
-     * To be implemented by client, gets a callback for a failure request
+     * This callback includes failure request cases, in cases when there are no response such as NoInternet and more
      *
      * @param info         {@link NetworkInfo}
      * @param requestStats {@link RequestStats}
