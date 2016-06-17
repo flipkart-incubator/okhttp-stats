@@ -1,10 +1,9 @@
 package com.flipkart.flipperfdemo;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.util.LruCache;
@@ -15,9 +14,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.NetworkImageView;
-import com.android.volley.toolbox.Volley;
+import com.android.volley.Network;
+import com.android.volley.toolbox.BasicNetwork;
+import com.flipkart.fkvolley.RequestQueue;
+import com.flipkart.fkvolley.toolbox.ImageLoader;
+import com.flipkart.fkvolley.toolbox.OkHttpStack;
 import com.flipkart.fkvolley.toolbox.OkHttpStack2;
 import com.flipkart.flipperf.newlib.NetworkInterceptor;
 import com.flipkart.flipperf.newlib.handler.OnResponseReceivedListener;
@@ -27,6 +28,7 @@ import com.flipkart.flipperf.newlib.interpreter.NetworkInterpreter;
 import com.flipkart.flipperf.newlib.model.RequestStats;
 import com.flipkart.flipperf.newlib.reporter.NetworkEventReporterImpl;
 import com.flipkart.flipperf.newlib.toolbox.ExceptionType;
+import com.flipkart.flipperf.oldlib.FlipperfNetwork;
 import com.squareup.okhttp.OkHttpClient;
 
 import java.io.IOException;
@@ -37,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
 
     private OnResponseReceived onResponseReceived;
     private PersistentStatsHandler networkRequestStatsHandler;
+    private boolean isNewFlipperf = false;
+    private ImageLoader imageLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,30 +49,70 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        HandlerThread handlerThread = new HandlerThread("back");
-        handlerThread.start();
-        Handler handler = new Handler(handlerThread.getLooper());
+        if (isNewFlipperf) {
+            onResponseReceived = new OnResponseReceived();
+            networkRequestStatsHandler = new PersistentStatsHandler(this);
+            networkRequestStatsHandler.addListener(onResponseReceived);
+            NetworkInterpreter networkInterpreter = new DefaultInterpreter(new NetworkEventReporterImpl(networkRequestStatsHandler));
 
-        onResponseReceived = new OnResponseReceived();
-        networkRequestStatsHandler = new PersistentStatsHandler(this);
-        networkRequestStatsHandler.addListener(onResponseReceived);
-        networkRequestStatsHandler.setMaxSizeForPersistence(10);
-        NetworkInterpreter networkInterpreter = new DefaultInterpreter(new NetworkEventReporterImpl(networkRequestStatsHandler));
+            NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
+                    .setNetworkInterpreter(networkInterpreter)
+                    .setEnabled(true)
+                    .build(this);
 
-        NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
-                .setEnabled(true)
-                .setNetworkInterpreter(networkInterpreter)
-                .build(this);
+            OkHttpClient okHttpClient = new OkHttpClient();
+            okHttpClient.networkInterceptors().add(networkInterceptor);
+            OkHttpStack2 okHttpStack2 = new OkHttpStack2(okHttpClient);
+            imageLoader = new ImageLoader(initializeVolleyQueue(this, new BasicNetwork(okHttpStack2)), new ImageLoader.ImageCache() {
+                private final LruCache<String, Bitmap> mCache = new LruCache<String, Bitmap>(
+                        10);
 
-        OkHttpClient okHttpClient = new OkHttpClient();
-        okHttpClient.networkInterceptors().add(networkInterceptor);
-        OkHttpStack2 okHttpStack2 = new OkHttpStack2(okHttpClient);
+                public void putBitmap(String url, Bitmap bitmap) {
+                    mCache.put(url, bitmap);
+                }
 
-        ImageLoader.ImageCache imageCache = new BitmapLruCache();
-        final ImageLoader imageLoader = new ImageLoader(Volley.newRequestQueue(this, okHttpStack2, -1), imageCache);
+                public Bitmap getBitmap(String url) {
+                    return mCache.get(url);
+                }
+            }, new ImageLoader.ImageCache() {
+                private final LruCache<String, Bitmap> mCache = new LruCache<String, Bitmap>(
+                        10);
 
+                public void putBitmap(String url, Bitmap bitmap) {
+                    mCache.put(url, bitmap);
+                }
 
-        final NetworkImageView networkImageView = (NetworkImageView) findViewById(R.id.img);
+                public Bitmap getBitmap(String url) {
+                    return mCache.get(url);
+                }
+            });
+        } else {
+            imageLoader = new ImageLoader(initializeVolleyQueue(this, new FlipperfNetwork(new OkHttpStack(), this)), new ImageLoader.ImageCache() {
+                private final LruCache<String, Bitmap> mCache = new LruCache<String, Bitmap>(
+                        10);
+
+                public void putBitmap(String url, Bitmap bitmap) {
+                    mCache.put(url, bitmap);
+                }
+
+                public Bitmap getBitmap(String url) {
+                    return mCache.get(url);
+                }
+            }, new ImageLoader.ImageCache() {
+                private final LruCache<String, Bitmap> mCache = new LruCache<String, Bitmap>(
+                        10);
+
+                public void putBitmap(String url, Bitmap bitmap) {
+                    mCache.put(url, bitmap);
+                }
+
+                public Bitmap getBitmap(String url) {
+                    return mCache.get(url);
+                }
+            });
+        }
+
+        final com.flipkart.fkvolley.toolbox.NetworkImageView networkImageView = (com.flipkart.fkvolley.toolbox.NetworkImageView) findViewById(R.id.img);
         assert networkImageView != null;
 
         final ArrayList<String> image_list = ResourceList.getResourceList();
@@ -84,7 +128,10 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+    }
 
+    private RequestQueue initializeVolleyQueue(Context context, Network network) {
+        return com.flipkart.fkvolley.toolbox.Volley.newRequestQueue(context, network, 2);
     }
 
     @Override
@@ -113,40 +160,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    public static class BitmapLruCache
-            extends LruCache<String, Bitmap>
-            implements ImageLoader.ImageCache {
-
-        public BitmapLruCache() {
-            this(getDefaultLruCacheSize());
-        }
-
-        public BitmapLruCache(int sizeInKiloBytes) {
-            super(sizeInKiloBytes);
-        }
-
-        public static int getDefaultLruCacheSize() {
-            final int maxMemory =
-                    (int) (Runtime.getRuntime().maxMemory() / 1024);
-            return maxMemory / 8;
-        }
-
-        @Override
-        protected int sizeOf(String key, Bitmap value) {
-            return value.getRowBytes() * value.getHeight() / 1024;
-        }
-
-        @Override
-        public Bitmap getBitmap(String url) {
-            return get(url);
-        }
-
-        @Override
-        public void putBitmap(String url, Bitmap bitmap) {
-            put(url, bitmap);
-        }
     }
 
     private class OnResponseReceived implements OnResponseReceivedListener {
