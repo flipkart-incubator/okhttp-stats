@@ -3,7 +3,6 @@ package com.flipkart.flipperf.newlib.model;
 import java.net.URL;
 
 /**
- * Created by anirudh.r on 09/05/16 at 12:32 PM.
  * P.O.J.O for RequestStats
  */
 public class RequestStats {

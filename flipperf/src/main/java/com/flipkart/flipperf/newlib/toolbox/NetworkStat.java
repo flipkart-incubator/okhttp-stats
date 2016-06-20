@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- * Created by anirudh.r on 08/05/16 at 1:17 AM.
+ * Utility class to calculate the average network speed
  */
 public final class NetworkStat {
 
@@ -50,7 +50,7 @@ public final class NetworkStat {
             if (requestStats.getEndTime() > requestStats.getStartTime()) {
                 apiSpeed = requestStats.getResponseSize() / (requestStats.getEndTime() - requestStats.getStartTime());
             }
-            double proportion = requestStats.getResponseSize()/ mTotalSize;
+            double proportion = requestStats.getResponseSize() / mTotalSize;
             newAvgSpeed += apiSpeed * proportion;
         }
         mCurrentAvgSpeed = newAvgSpeed;

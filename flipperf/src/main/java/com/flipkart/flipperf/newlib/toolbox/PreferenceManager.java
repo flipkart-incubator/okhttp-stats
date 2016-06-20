@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 /**
- * Created by anirudh.r on 12/05/16 at 3:24 PM.
+ * Preference Manager to store network speed
  */
 public class PreferenceManager {
 
