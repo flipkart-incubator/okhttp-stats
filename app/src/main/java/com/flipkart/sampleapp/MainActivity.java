@@ -11,6 +11,8 @@ import com.flipkart.fkvolley.RequestQueue;
 import com.flipkart.fkvolley.toolbox.OkHttpStack;
 import com.flipkart.fkvolley.toolbox.Volley;
 import com.flipkart.flipperf.FlipperfNetwork;
+import com.flipkart.flipperf.models.NetworkType;
+import com.flipkart.flipperf.trackers.FlipperfNetworkStatManager;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -35,8 +37,13 @@ public class MainActivity extends ActionBarActivity {
             public void onErrorResponse(VolleyError error) {
                 VolleyError e = error;
             }
+
+
+
         });
         req.add(com1);
+        NetworkType networkType  =FlipperfNetworkStatManager.getInstance(getApplicationContext()).getCurrentNetworkType();
+        System.out.println("Nertwork Speed === " + networkType.getNetworkSpeed());
     }
 
 
@@ -60,5 +67,11 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        FlipperfNetworkStatManager.getInstance(getApplicationContext()).destroy();
+        super.onDestroy();
     }
 }

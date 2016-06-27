@@ -1,6 +1,8 @@
 package com.flipkart.flipperf.trackers;
 
+
 import android.content.Context;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
@@ -19,17 +21,46 @@ public class FlipperfNetworkStatManager {
 
     private Map<NetworkType, NetworkStat> networkStatMap;
     private final double MIN_RESPONSE_SIZE = 3000;
+    private NetworkType currentNetworkType;
+    private Context context;
+    private static final String TAG = FlipperfNetworkStatManager.class.getSimpleName();
+
+    // Receiver to monitor connectivity change
+    private ConnectivityChangeReceiver receiver;
 
     private static FlipperfNetworkStatManager flipperfNetworkStatManager;
 
-    private FlipperfNetworkStatManager() {
+    private FlipperfNetworkStatManager(Context context) {
         networkStatMap = new HashMap<NetworkType, NetworkStat>();
+
+        // registering connectivity change receiver.
+        this.context  = context;
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        receiver = new ConnectivityChangeReceiver();
+        context.registerReceiver(receiver, filter);
     }
 
-    public static synchronized FlipperfNetworkStatManager getInstance() {
+    public NetworkType getCurrentNetworkType(){
+        if(currentNetworkType == null){
+            currentNetworkType =getNetworkType(context);
+        }
+        return currentNetworkType;
+    }
+
+    public void setCurrentNetworkType(NetworkType networkType){
+        currentNetworkType = networkType;
+    }
+
+
+    public static synchronized FlipperfNetworkStatManager getInstance(Context context){
         if(flipperfNetworkStatManager == null)
-            flipperfNetworkStatManager = new FlipperfNetworkStatManager();
+            flipperfNetworkStatManager = new FlipperfNetworkStatManager(context);
         return flipperfNetworkStatManager;
+    }
+
+    public NetworkStat getNetworkStatData(NetworkType networkType){
+        return networkStatMap.get(networkType);
     }
 
     public NetworkStat getNetworkStatData(Context context) {
@@ -169,4 +200,23 @@ public class FlipperfNetworkStatManager {
         }
     }
 
+    @Override
+    protected void finalize() throws Throwable {
+        /*
+         * Incase the receiver was attached, unregister the same.
+         */
+        if(context != null && receiver != null){
+            context.unregisterReceiver(receiver);
+        }
+        super.finalize();
+    }
+
+    /**
+     * Destroy any references held.
+     */
+    public void destroy(){
+        if(context != null && receiver != null){
+            context.unregisterReceiver(receiver);
+        }
+    }
 }

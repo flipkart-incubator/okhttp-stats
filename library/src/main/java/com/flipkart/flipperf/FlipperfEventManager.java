@@ -1,5 +1,6 @@
 package com.flipkart.flipperf;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.flipkart.flipperf.trackers.Event;
@@ -15,14 +16,16 @@ public class FlipperfEventManager<T> {
     private final String TAG = FlipperfEventManager.class.getName();
     private Map<T, Event> eventMap;
     private static FlipperfEventManager flipperfEventManager;
+    private Context context;
 
-    private FlipperfEventManager() {
+    private FlipperfEventManager(Context context) {
         eventMap = new HashMap<T, Event>();
+        this.context = context;
     }
 
-    public static synchronized FlipperfEventManager getInstance() {
+    public static synchronized FlipperfEventManager getInstance(Context context) {
         if(flipperfEventManager == null)
-            flipperfEventManager = new FlipperfEventManager();
+            flipperfEventManager = new FlipperfEventManager(context);
         return flipperfEventManager;
     }
 
