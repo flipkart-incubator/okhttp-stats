@@ -132,7 +132,6 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
 
     @Override
     public void onResponseReceived(final RequestStats requestStats) {
-        mResponseCount += 1;
         if (mLogger.isDebugEnabled()) {
             mLogger.debug("Response Received : {}", requestStats);
         }
@@ -144,11 +143,22 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
         }
 
         //save to shared prefs if condition is satisfied
-        if (mResponseCount >= MAX_SIZE) {
-            saveToSharedPreference(mCurrentAvgSpeed);
+        synchronized (this) {
+            mResponseCount += 1;
+            if (mResponseCount >= MAX_SIZE) {
+                mCurrentAvgSpeed = calculateNewSpeed(mCurrentAvgSpeed);
+                saveToSharedPreference(mCurrentAvgSpeed);
+                mResponseCount = 0;
+            }
         }
 
         mNetworkStat.addRequestStat(requestStats);
+    }
+
+    private float calculateNewSpeed(float currentAvgSpeed) {
+        double newAvgSpeed = mNetworkStat.getCurrentAvgSpeed();
+        currentAvgSpeed = (float) ((currentAvgSpeed + newAvgSpeed) / 2);
+        return currentAvgSpeed;
     }
 
     @Override
@@ -165,7 +175,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     }
 
     @Override
-    public void onResponseInputStreamError(RequestStats requestStats, IOException e) {
+    public void onResponseInputStreamError(RequestStats requestStats, Exception e) {
         if (mLogger.isDebugEnabled()) {
             mLogger.debug("Response Received With InputStream Error : {}", requestStats);
         }
@@ -186,13 +196,8 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
         if (mLogger.isDebugEnabled()) {
             mLogger.debug("avg speed", "saveToSharedPreference: " + mNetworkStat.getCurrentAvgSpeed());
         }
-
         String networkKey = getNetworkKey(getActiveNetworkInfo());
-        double newAvgSpeed = mNetworkStat.getCurrentAvgSpeed();
-        currentAvgSpeed = (float) ((currentAvgSpeed + newAvgSpeed) / 2);
-        mCurrentAvgSpeed = currentAvgSpeed;
         mPreferenceManager.setAverageSpeed(networkKey, currentAvgSpeed);
-        mResponseCount = 0;
     }
 
     /**

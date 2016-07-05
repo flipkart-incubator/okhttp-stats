@@ -6,11 +6,6 @@ import com.flipkart.flipperf.newlib.NetworkInterceptor;
 import com.flipkart.flipperf.newlib.reporter.NetworkEventReporter;
 import com.flipkart.flipperf.newlib.response.CountingInputStream;
 import com.flipkart.flipperf.newlib.response.DefaultResponseHandler;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.ResponseBody;
-import com.squareup.okhttp.internal.http.OkHeaders;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +14,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okhttp3.internal.http.OkHeaders;
 import okio.BufferedSource;
 import okio.Okio;
 
@@ -34,7 +34,7 @@ public class DefaultInterpreter implements NetworkInterpreter {
 
     @Override
     public Response interpretResponseStream(int requestId, NetworkInterceptor.TimeInfo timeInfo, Request request, Response response) throws IOException {
-        final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url(), request.method(), OkHeaders.contentLength(request), request.header(HOST_NAME));
+        final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url().url(), request.method(), OkHeaders.contentLength(request), request.header(HOST_NAME));
         final OkHttpInspectorResponse okHttpInspectorResponse = new OkHttpInspectorResponse(requestId, response.code(), OkHeaders.contentLength(response), timeInfo.mStartTime, timeInfo.mEndTime);
 
         //if response does not have content length, using CountingInputStream to read its bytes
@@ -44,7 +44,7 @@ public class DefaultInterpreter implements NetworkInterpreter {
             if (body != null) {
                 try {
                     responseStream = body.byteStream();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     if (logger.isDebugEnabled()) {
                         logger.debug("Error received while reading input stream {}", e.getMessage());
                     }
@@ -78,7 +78,7 @@ public class DefaultInterpreter implements NetworkInterpreter {
         if (logger.isDebugEnabled()) {
             logger.debug("Error received while proceeding response {}", e.getMessage());
         }
-        final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url(), request.method(), OkHeaders.contentLength(request), request.header(HOST_NAME));
+        final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url().url(), request.method(), OkHeaders.contentLength(request), request.header(HOST_NAME));
         mEventReporter.httpExchangeError(okHttpInspectorRequest, e);
     }
 
@@ -192,7 +192,7 @@ public class DefaultInterpreter implements NetworkInterpreter {
         }
 
         @Override
-        public long contentLength() throws IOException {
+        public long contentLength() {
             return mBody.contentLength();
         }
 
