@@ -26,5 +26,5 @@ public interface OnResponseReceivedListener {
      * @param requestStats {@link RequestStats}
      * @param e            {@link IOException}
      */
-    void onResponseError(NetworkInfo info, RequestStats requestStats, IOException e);
+    void onResponseError(NetworkInfo info, RequestStats requestStats, Exception e);
 }

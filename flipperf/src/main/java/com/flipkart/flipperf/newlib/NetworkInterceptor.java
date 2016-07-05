@@ -3,12 +3,13 @@ package com.flipkart.flipperf.newlib;
 import android.content.Context;
 
 import com.flipkart.flipperf.newlib.interpreter.NetworkInterpreter;
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import okhttp3.Interceptor;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * This class is the entry point for this library.
@@ -32,7 +33,7 @@ public final class NetworkInterceptor implements Interceptor {
     /**
      * Method to intercept all the network calls.
      *
-     * @param chain {@link com.squareup.okhttp.Interceptor.Chain}
+     * @param chain {@link Interceptor.Chain}
      * @return {@link Response}
      * @throws IOException
      */

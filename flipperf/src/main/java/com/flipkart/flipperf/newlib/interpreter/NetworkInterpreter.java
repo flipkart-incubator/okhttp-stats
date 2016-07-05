@@ -1,10 +1,12 @@
 package com.flipkart.flipperf.newlib.interpreter;
 
 import com.flipkart.flipperf.newlib.NetworkInterceptor;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 import java.io.IOException;
+
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 /**
  * Implementations are supposed to interpret the input stream and call either the success of failure methods
@@ -12,7 +14,7 @@ import java.io.IOException;
 public interface NetworkInterpreter {
 
     /**
-     * Interpret the input stream received from the {@link com.squareup.okhttp.ResponseBody}
+     * Interpret the input stream received from the {@link ResponseBody}
      *
      * @param requestId requestId
      * @param timeInfo  timeInfo

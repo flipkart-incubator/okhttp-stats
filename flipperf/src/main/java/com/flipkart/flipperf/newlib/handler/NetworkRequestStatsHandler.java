@@ -30,5 +30,5 @@ public interface NetworkRequestStatsHandler {
      * @param requestStats {@link RequestStats}
      * @param e            {@link IOException}
      */
-    void onResponseInputStreamError(RequestStats requestStats, @Nullable IOException e);
+    void onResponseInputStreamError(RequestStats requestStats, @Nullable Exception e);
 }
