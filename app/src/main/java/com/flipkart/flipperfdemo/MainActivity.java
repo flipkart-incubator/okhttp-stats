@@ -18,8 +18,7 @@ import com.android.volley.Network;
 import com.android.volley.toolbox.BasicNetwork;
 import com.flipkart.fkvolley.RequestQueue;
 import com.flipkart.fkvolley.toolbox.ImageLoader;
-import com.flipkart.fkvolley.toolbox.OkHttpStack;
-import com.flipkart.fkvolley.toolbox.OkHttpStack2;
+import com.flipkart.fkvolley.toolbox.OkHttp3Stack;
 import com.flipkart.flipperf.newlib.NetworkInterceptor;
 import com.flipkart.flipperf.newlib.handler.OnResponseReceivedListener;
 import com.flipkart.flipperf.newlib.handler.PersistentStatsHandler;
@@ -27,19 +26,17 @@ import com.flipkart.flipperf.newlib.interpreter.DefaultInterpreter;
 import com.flipkart.flipperf.newlib.interpreter.NetworkInterpreter;
 import com.flipkart.flipperf.newlib.model.RequestStats;
 import com.flipkart.flipperf.newlib.reporter.NetworkEventReporterImpl;
-import com.flipkart.flipperf.newlib.toolbox.ExceptionType;
-import com.flipkart.flipperf.oldlib.FlipperfNetwork;
-import com.squareup.okhttp.OkHttpClient;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+
+import okhttp3.OkHttpClient;
 
 public class MainActivity extends AppCompatActivity {
 
     private OnResponseReceived onResponseReceived;
     private PersistentStatsHandler networkRequestStatsHandler;
-    private boolean isNewFlipperf = false;
+    private boolean isNewFlipperf = true;
     private ImageLoader imageLoader;
 
     @Override
@@ -60,34 +57,11 @@ public class MainActivity extends AppCompatActivity {
                     .setEnabled(true)
                     .build(this);
 
-            OkHttpClient okHttpClient = new OkHttpClient();
-            okHttpClient.networkInterceptors().add(networkInterceptor);
-            OkHttpStack2 okHttpStack2 = new OkHttpStack2(okHttpClient);
-            imageLoader = new ImageLoader(initializeVolleyQueue(this, new BasicNetwork(okHttpStack2)), new ImageLoader.ImageCache() {
-                private final LruCache<String, Bitmap> mCache = new LruCache<String, Bitmap>(
-                        10);
-
-                public void putBitmap(String url, Bitmap bitmap) {
-                    mCache.put(url, bitmap);
-                }
-
-                public Bitmap getBitmap(String url) {
-                    return mCache.get(url);
-                }
-            }, new ImageLoader.ImageCache() {
-                private final LruCache<String, Bitmap> mCache = new LruCache<String, Bitmap>(
-                        10);
-
-                public void putBitmap(String url, Bitmap bitmap) {
-                    mCache.put(url, bitmap);
-                }
-
-                public Bitmap getBitmap(String url) {
-                    return mCache.get(url);
-                }
-            });
-        } else {
-            imageLoader = new ImageLoader(initializeVolleyQueue(this, new FlipperfNetwork(new OkHttpStack(), this)), new ImageLoader.ImageCache() {
+            OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
+                    .addInterceptor(networkInterceptor)
+                    .build();
+            OkHttp3Stack okHttp3Stack = new OkHttp3Stack(okHttpClient);
+            imageLoader = new ImageLoader(initializeVolleyQueue(this, new BasicNetwork(okHttp3Stack)), new ImageLoader.ImageCache() {
                 private final LruCache<String, Bitmap> mCache = new LruCache<String, Bitmap>(
                         10);
 
@@ -178,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onResponseError(NetworkInfo info, RequestStats requestStats, IOException e) {
+        public void onResponseError(NetworkInfo info, RequestStats requestStats, Exception e) {
             Log.d(MainActivity.class.getName(), "onResponseErrorReceived : "
                     + "\nId : " + requestStats.getId()
                     + "\nUrl : " + requestStats.getUrl()
@@ -188,7 +162,6 @@ public class MainActivity extends AppCompatActivity {
                     + "\nResponse Size : " + requestStats.getResponseSize()
                     + "\nTime Taken: " + (requestStats.getEndTime() - requestStats.getStartTime())
                     + "\nStatus Code : " + requestStats.getStatusCode()
-                    + "\nException Type : " + ExceptionType.getExceptionType(e)
                     + "\nException : " + e.getMessage());
         }
     }
