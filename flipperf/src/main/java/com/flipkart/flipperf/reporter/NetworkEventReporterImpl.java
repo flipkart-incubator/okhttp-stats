@@ -1,7 +1,7 @@
-package com.flipkart.flipperf.newlib.reporter;
+package com.flipkart.flipperf.reporter;
 
-import com.flipkart.flipperf.newlib.handler.NetworkRequestStatsHandler;
-import com.flipkart.flipperf.newlib.model.RequestStats;
+import com.flipkart.flipperf.handler.NetworkRequestStatsHandler;
+import com.flipkart.flipperf.model.RequestStats;
 
 import java.io.IOException;
 

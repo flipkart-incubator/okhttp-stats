@@ -1,4 +1,4 @@
-package com.flipkart.flipperf.newlib.handler;
+package com.flipkart.flipperf.handler;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -9,10 +9,10 @@ import android.support.annotation.VisibleForTesting;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
-import com.flipkart.flipperf.NetworkSpeed;
-import com.flipkart.flipperf.newlib.model.RequestStats;
-import com.flipkart.flipperf.newlib.toolbox.NetworkStat;
-import com.flipkart.flipperf.newlib.toolbox.PreferenceManager;
+import com.flipkart.flipperf.toolbox.NetworkSpeed;
+import com.flipkart.flipperf.model.RequestStats;
+import com.flipkart.flipperf.toolbox.NetworkStat;
+import com.flipkart.flipperf.toolbox.PreferenceManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

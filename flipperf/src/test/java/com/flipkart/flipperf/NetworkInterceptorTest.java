@@ -3,23 +3,9 @@ package com.flipkart.flipperf;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
-import com.flipkart.flipperf.newlib.NetworkInterceptor;
-import com.flipkart.flipperf.newlib.interpreter.DefaultInterpreter;
-import com.flipkart.flipperf.newlib.interpreter.NetworkInterpreter;
-import com.flipkart.flipperf.newlib.reporter.NetworkEventReporter;
-import com.squareup.okhttp.Connection;
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Protocol;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.ResponseBody;
-import com.squareup.okhttp.internal.http.OkHeaders;
-import com.squareup.okhttp.mockwebserver.MockResponse;
-import com.squareup.okhttp.mockwebserver.MockWebServer;
-
+import com.flipkart.flipperf.interpreter.DefaultInterpreter;
+import com.flipkart.flipperf.interpreter.NetworkInterpreter;
+import com.flipkart.flipperf.reporter.NetworkEventReporter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +19,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.zip.GZIPOutputStream;
 
+import okhttp3.Connection;
+import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okhttp3.internal.http.OkHeaders;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 import okio.Buffer;
 
 import static org.mockito.Matchers.any;
@@ -107,7 +105,7 @@ public class NetworkInterceptorTest {
     }
 
     /**
-     * Test to verify {@link com.flipkart.flipperf.newlib.interpreter.DefaultInterpreter.ForwardingResponseBody}
+     * Test to verify {@link com.flipkart.flipperf.interpreter.DefaultInterpreter.ForwardingResponseBody}
      *
      * @throws IOException
      */
@@ -247,14 +245,14 @@ public class NetworkInterceptorTest {
         //assert method is same
         Assert.assertTrue(interceptedRequest.method().equals(request.method()));
         //assert url is same
-        Assert.assertTrue(interceptedRequest.urlString().equals(request.urlString()));
+        Assert.assertTrue(interceptedRequest.url().toString().equals(request.url().toString()));
         //assert request body is same
         Assert.assertTrue(interceptedRequest.body().equals(request.body()));
 
     }
 
     /**
-     * Test the request object using {@link com.squareup.okhttp.mockwebserver.MockWebServer}
+     * Test the request object using {@link MockWebServer}
      *
      * @throws IOException
      */
@@ -278,7 +276,7 @@ public class NetworkInterceptorTest {
         final byte[] bytes = "Dummy Value".getBytes();
         RequestBody requestBody = RequestBody.create(MediaType.parse("text/plain"), bytes);
 
-        Request request = new Request.Builder().url(server.getUrl("/"))
+        Request request = new Request.Builder().url(server.url("/"))
                 .post(requestBody)
                 .build();
 
@@ -340,7 +338,7 @@ public class NetworkInterceptorTest {
 
 
     /**
-     * Tests setter and getter of {@link com.flipkart.flipperf.newlib.interpreter.DefaultInterpreter.OkHttpInspectorRequest}
+     * Tests setter and getter of {@link com.flipkart.flipperf.interpreter.DefaultInterpreter.OkHttpInspectorRequest}
      */
     @Test
     public void testOkHttpInspectorRequest() throws Exception {
@@ -355,7 +353,7 @@ public class NetworkInterceptorTest {
                 .addHeader("HOST", "flipkart")
                 .build();
 
-        DefaultInterpreter.OkHttpInspectorRequest okHttpInspectorRequest = new DefaultInterpreter.OkHttpInspectorRequest(1, request.url(), request.method(), OkHeaders.contentLength(request), request.header("HOST"));
+        DefaultInterpreter.OkHttpInspectorRequest okHttpInspectorRequest = new DefaultInterpreter.OkHttpInspectorRequest(1, request.url().url(), request.method(), OkHeaders.contentLength(request), request.header("HOST"));
 
         //assert id is same
         Assert.assertTrue(okHttpInspectorRequest.requestId() == 1);
@@ -370,7 +368,7 @@ public class NetworkInterceptorTest {
     }
 
     /**
-     * Tests setter and getter of {@link com.flipkart.flipperf.newlib.interpreter.DefaultInterpreter.OkHttpInspectorResponse}
+     * Tests setter and getter of {@link com.flipkart.flipperf.interpreter.DefaultInterpreter.OkHttpInspectorResponse}
      */
     @Test
     public void testOkHttpInspectorResponse() throws Exception {

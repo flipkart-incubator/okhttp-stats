@@ -1,8 +1,8 @@
-package com.flipkart.flipperf.newlib.handler;
+package com.flipkart.flipperf.handler;
 
 import android.support.annotation.Nullable;
 
-import com.flipkart.flipperf.newlib.model.RequestStats;
+import com.flipkart.flipperf.model.RequestStats;
 
 import java.io.IOException;
 

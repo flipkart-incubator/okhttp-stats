@@ -1,5 +1,7 @@
 package com.flipkart.flipperf;
 
+import com.flipkart.flipperf.toolbox.NetworkSpeed;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;

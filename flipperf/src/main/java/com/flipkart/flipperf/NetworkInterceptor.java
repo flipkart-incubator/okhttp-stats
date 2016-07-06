@@ -1,8 +1,8 @@
-package com.flipkart.flipperf.newlib;
+package com.flipkart.flipperf;
 
 import android.content.Context;
 
-import com.flipkart.flipperf.newlib.interpreter.NetworkInterpreter;
+import com.flipkart.flipperf.interpreter.NetworkInterpreter;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;

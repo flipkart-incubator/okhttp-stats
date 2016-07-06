@@ -1,4 +1,4 @@
-package com.flipkart.flipperf.newlib.response;
+package com.flipkart.flipperf.response;
 
 /**
  * Implementations are to read the number of bytes in case the response header do not have content-length

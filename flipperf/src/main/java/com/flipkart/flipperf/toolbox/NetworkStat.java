@@ -1,6 +1,6 @@
-package com.flipkart.flipperf.newlib.toolbox;
+package com.flipkart.flipperf.toolbox;
 
-import com.flipkart.flipperf.newlib.model.RequestStats;
+import com.flipkart.flipperf.model.RequestStats;
 
 import java.util.LinkedList;
 import java.util.Queue;

@@ -1,7 +1,7 @@
 package com.flipkart.flipperf;
 
-import com.flipkart.flipperf.newlib.response.DefaultResponseHandler;
-import com.flipkart.flipperf.newlib.response.ResponseHandler;
+import com.flipkart.flipperf.response.DefaultResponseHandler;
+import com.flipkart.flipperf.response.ResponseHandler;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,8 +32,6 @@ public class DefaultResponseHandlerTest {
         defaultResponseHandler.onRead(10);
         defaultResponseHandler.onEOF();
         //verify that responseDataReceived gets called once
-        verify(responseCallback,times(1)).onEOF(20);
+        verify(responseCallback, times(1)).onEOF(20);
     }
-
-
 }

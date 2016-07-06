@@ -1,4 +1,4 @@
-package com.flipkart.flipperf.newlib.model;
+package com.flipkart.flipperf.model;
 
 import java.net.URL;
 

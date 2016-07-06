@@ -1,4 +1,4 @@
-package com.flipkart.flipperf;
+package com.flipkart.flipperf.toolbox;
 
 /**
  * Created by nikhil.n on 03/02/15.

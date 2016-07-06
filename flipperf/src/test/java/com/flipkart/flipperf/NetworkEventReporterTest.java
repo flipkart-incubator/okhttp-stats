@@ -4,10 +4,10 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 
-import com.flipkart.flipperf.newlib.handler.NetworkRequestStatsHandler;
-import com.flipkart.flipperf.newlib.model.RequestStats;
-import com.flipkart.flipperf.newlib.reporter.NetworkEventReporter;
-import com.flipkart.flipperf.newlib.reporter.NetworkEventReporterImpl;
+import com.flipkart.flipperf.handler.NetworkRequestStatsHandler;
+import com.flipkart.flipperf.model.RequestStats;
+import com.flipkart.flipperf.reporter.NetworkEventReporter;
+import com.flipkart.flipperf.reporter.NetworkEventReporterImpl;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -86,7 +86,7 @@ public class NetworkEventReporterTest {
 
 
     /**
-     * Test for {@link NetworkEventReporter#responseInputStreamError(NetworkEventReporter.InspectorRequest, NetworkEventReporter.InspectorResponse, IOException)}
+     * Test for {@link NetworkEventReporter#responseInputStreamError(NetworkEventReporter.InspectorRequest, NetworkEventReporter.InspectorResponse, Exception)}
      *
      * @throws Exception
      */

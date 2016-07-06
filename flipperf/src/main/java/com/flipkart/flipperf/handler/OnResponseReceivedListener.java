@@ -1,8 +1,8 @@
-package com.flipkart.flipperf.newlib.handler;
+package com.flipkart.flipperf.handler;
 
 import android.net.NetworkInfo;
 
-import com.flipkart.flipperf.newlib.model.RequestStats;
+import com.flipkart.flipperf.model.RequestStats;
 
 import java.io.IOException;
 

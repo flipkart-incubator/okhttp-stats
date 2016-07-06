@@ -1,11 +1,11 @@
-package com.flipkart.flipperf.newlib.interpreter;
+package com.flipkart.flipperf.interpreter;
 
 import android.support.annotation.VisibleForTesting;
 
-import com.flipkart.flipperf.newlib.NetworkInterceptor;
-import com.flipkart.flipperf.newlib.reporter.NetworkEventReporter;
-import com.flipkart.flipperf.newlib.response.CountingInputStream;
-import com.flipkart.flipperf.newlib.response.DefaultResponseHandler;
+import com.flipkart.flipperf.NetworkInterceptor;
+import com.flipkart.flipperf.reporter.NetworkEventReporter;
+import com.flipkart.flipperf.response.CountingInputStream;
+import com.flipkart.flipperf.response.DefaultResponseHandler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
