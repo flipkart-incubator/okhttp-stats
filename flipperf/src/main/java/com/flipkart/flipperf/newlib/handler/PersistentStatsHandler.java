@@ -7,6 +7,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.support.annotation.VisibleForTesting;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 
 import com.flipkart.flipperf.NetworkSpeed;
 import com.flipkart.flipperf.newlib.model.RequestStats;
@@ -220,6 +221,12 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
 
     public int getWifiSSID() {
         WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
-        return wifiInfo.getSSID().hashCode();
+        if (wifiInfo != null) {
+            String ssid = wifiInfo.getSSID();
+            if (!TextUtils.isEmpty(ssid)) {
+                return ssid.hashCode();
+            }
+        }
+        return -1;
     }
 }
