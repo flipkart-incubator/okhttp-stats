@@ -1,4 +1,4 @@
-package com.flipkart.flipperf.newlib.response;
+package com.flipkart.flipperf.response;
 
 public class DefaultResponseHandler implements ResponseHandler {
     private final ResponseCallback mResponseCallback;

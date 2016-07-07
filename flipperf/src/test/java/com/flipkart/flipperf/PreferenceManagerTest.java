@@ -4,8 +4,8 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.flipkart.flipperf.newlib.handler.PersistentStatsHandler;
-import com.flipkart.flipperf.newlib.toolbox.PreferenceManager;
+import com.flipkart.flipperf.handler.PersistentStatsHandler;
+import com.flipkart.flipperf.toolbox.PreferenceManager;
 
 import org.junit.Assert;
 import org.junit.Test;

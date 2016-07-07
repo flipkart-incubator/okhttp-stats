@@ -1,6 +1,6 @@
-package com.flipkart.flipperf.newlib.interpreter;
+package com.flipkart.flipperf.interpreter;
 
-import com.flipkart.flipperf.newlib.NetworkInterceptor;
+import com.flipkart.flipperf.NetworkInterceptor;
 
 import java.io.IOException;
 

@@ -1,7 +1,7 @@
 package com.flipkart.flipperf;
 
-import com.flipkart.flipperf.newlib.response.CountingInputStream;
-import com.flipkart.flipperf.newlib.response.ResponseHandler;
+import com.flipkart.flipperf.response.CountingInputStream;
+import com.flipkart.flipperf.response.ResponseHandler;
 
 import org.junit.Assert;
 import org.junit.Test;

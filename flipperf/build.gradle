@@ -28,12 +28,12 @@ apply plugin: 'android-maven'
 apply plugin: 'net.ltgt.errorprone'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "24.0.0 rc2"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.0"
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 23
+        targetSdkVersion 24
         versionCode 1
         versionName "1.0"
     }
@@ -51,15 +51,15 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:support-annotations:23.4.0'
-    compile 'com.flipkart.android.fkvolley:library:2.1.5'
+    compile 'com.android.support:support-annotations:24.0.0'
     compile 'org.slf4j:slf4j-api:1.7.6'
     compile 'com.google.code.gson:gson:2.4'
+    compile 'com.squareup.okhttp3:okhttp:3.3.1'
 
     testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:1.10.19'
-    testCompile 'com.squareup.okhttp:mockwebserver:2.7.5'
-    testCompile 'org.robolectric:robolectric:3.0'
+    testCompile 'org.mockito:mockito-core:1.+'
+    testCompile 'com.squareup.okhttp3:mockwebserver:3.2.0'
+    testCompile 'org.robolectric:robolectric:3.1'
 }
 
 configurations {

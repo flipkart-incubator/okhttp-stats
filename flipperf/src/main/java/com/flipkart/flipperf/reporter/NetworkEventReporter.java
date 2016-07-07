@@ -1,4 +1,4 @@
-package com.flipkart.flipperf.newlib.reporter;
+package com.flipkart.flipperf.reporter;
 
 
 import java.io.IOException;

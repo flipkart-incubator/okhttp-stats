@@ -1,6 +1,6 @@
 package com.flipkart.flipperf;
 
-import com.flipkart.flipperf.newlib.toolbox.ExceptionType;
+import com.flipkart.flipperf.toolbox.ExceptionType;
 
 import org.junit.Assert;
 import org.junit.Test;
