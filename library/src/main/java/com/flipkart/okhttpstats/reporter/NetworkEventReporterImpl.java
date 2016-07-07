@@ -11,14 +11,12 @@ import okhttp3.ResponseBody;
 
 /**
  * Created by anirudh.r on 09/05/16 at 12:32 PM.
- * <p/>
- * Whenever we receive {@link NetworkEventReporterImpl#responseReceived(InspectorRequest, InspectorResponse)} callback
- * <p/>
+ * Default implementation of {@link NetworkEventReporter}
+ * <p>
  * In case of any {@link IOException} during the {@link Interceptor.Chain#proceed(Request)})},
  * {@link NetworkEventReporter#httpExchangeError(InspectorRequest, IOException)} gets called with appropriate error message.
  * <p/>
- * In case of any {@link IOException} during the {@link ResponseBody#byteStream()}, {@link NetworkEventReporter#responseInputStreamError(InspectorRequest, InspectorResponse, Exception)}
- * <p/>
+ * In case of any {@link Exception} during the {@link ResponseBody#byteStream()}, {@link NetworkEventReporter#responseInputStreamError(InspectorRequest, InspectorResponse, Exception)}
  * <p/>
  */
 public class NetworkEventReporterImpl implements NetworkEventReporter {
