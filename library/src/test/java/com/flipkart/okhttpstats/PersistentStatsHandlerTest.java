@@ -8,7 +8,6 @@ import android.telephony.TelephonyManager;
 import com.flipkart.okhttpstats.handler.OnResponseReceivedListener;
 import com.flipkart.okhttpstats.handler.PersistentStatsHandler;
 import com.flipkart.okhttpstats.model.RequestStats;
-import com.flipkart.okhttpstats.toolbox.NetworkSpeed;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -211,90 +210,5 @@ public class PersistentStatsHandlerTest {
 
         PersistentStatsHandler persistentStatsHandler = new PersistentStatsHandler(RuntimeEnvironment.application);
         Assert.assertTrue(persistentStatsHandler.getNetworkKey(shadowConnectivityManager.getActiveNetworkInfo()) != null);
-    }
-
-    /**
-     * Test for {@link PersistentStatsHandler#getNetworkSpeed()}
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testGetNetworkSpeed() throws Exception {
-        ConnectivityManager connectivityManager = (ConnectivityManager) RuntimeEnvironment.application.getSystemService(Context.CONNECTIVITY_SERVICE);
-        ShadowConnectivityManager shadowConnectivityManager = (ShadowConnectivityManager) ShadowExtractor.extract(connectivityManager);
-        ShadowNetworkInfo shadowOfActiveNetworkInfo = (ShadowNetworkInfo) ShadowExtractor.extract(connectivityManager.getActiveNetworkInfo());
-        shadowOfActiveNetworkInfo.setConnectionType(ConnectivityManager.TYPE_WIFI);
-        shadowConnectivityManager.setNetworkInfo(ConnectivityManager.TYPE_WIFI, connectivityManager.getActiveNetworkInfo());
-
-        PersistentStatsHandler persistentStatsHandler = new PersistentStatsHandler(RuntimeEnvironment.application);
-
-        //assert that TYPE_WIFI is fast network
-        Assert.assertTrue(persistentStatsHandler.getNetworkSpeed().equals(NetworkSpeed.FAST_NETWORK));
-
-        shadowOfActiveNetworkInfo.setConnectionType(ConnectivityManager.TYPE_MOBILE);
-        shadowConnectivityManager.setNetworkInfo(ConnectivityManager.TYPE_MOBILE, connectivityManager.getActiveNetworkInfo());
-        shadowOfActiveNetworkInfo.setSubType(TelephonyManager.NETWORK_TYPE_CDMA);
-        //assert that NETWORK_TYPE_CDMA is slow network
-        Assert.assertTrue(persistentStatsHandler.getNetworkSpeed().equals(NetworkSpeed.SLOW_NETWORK));
-
-        shadowOfActiveNetworkInfo.setSubType(TelephonyManager.NETWORK_TYPE_1xRTT);
-        //assert that NETWORK_TYPE_1xRTT is slow network
-        Assert.assertTrue(persistentStatsHandler.getNetworkSpeed().equals(NetworkSpeed.SLOW_NETWORK));
-
-        shadowOfActiveNetworkInfo.setSubType(TelephonyManager.NETWORK_TYPE_EDGE);
-        //assert that NETWORK_TYPE_EDGE is slow network
-        Assert.assertTrue(persistentStatsHandler.getNetworkSpeed().equals(NetworkSpeed.SLOW_NETWORK));
-
-        shadowOfActiveNetworkInfo.setSubType(TelephonyManager.NETWORK_TYPE_EVDO_0);
-        //assert that NETWORK_TYPE_EVDO_0 is medium network
-        Assert.assertTrue(persistentStatsHandler.getNetworkSpeed().equals(NetworkSpeed.MEDIUM_NETWORK));
-
-        shadowOfActiveNetworkInfo.setSubType(TelephonyManager.NETWORK_TYPE_EVDO_A);
-        //assert that NETWORK_TYPE_EVDO_A is medium network
-        Assert.assertTrue(persistentStatsHandler.getNetworkSpeed().equals(NetworkSpeed.MEDIUM_NETWORK));
-
-        shadowOfActiveNetworkInfo.setSubType(TelephonyManager.NETWORK_TYPE_GPRS);
-        //assert that NETWORK_TYPE_GPRS is slow network
-        Assert.assertTrue(persistentStatsHandler.getNetworkSpeed().equals(NetworkSpeed.SLOW_NETWORK));
-
-        shadowOfActiveNetworkInfo.setSubType(TelephonyManager.NETWORK_TYPE_HSDPA);
-        //assert that NETWORK_TYPE_HSDPA is fast network
-        Assert.assertTrue(persistentStatsHandler.getNetworkSpeed().equals(NetworkSpeed.FAST_NETWORK));
-
-        shadowOfActiveNetworkInfo.setSubType(TelephonyManager.NETWORK_TYPE_HSPA);
-        //assert that NETWORK_TYPE_HSPA is fast network
-        Assert.assertTrue(persistentStatsHandler.getNetworkSpeed().equals(NetworkSpeed.FAST_NETWORK));
-
-        shadowOfActiveNetworkInfo.setSubType(TelephonyManager.NETWORK_TYPE_HSUPA);
-        //assert that NETWORK_TYPE_HSUPA is fast network
-        Assert.assertTrue(persistentStatsHandler.getNetworkSpeed().equals(NetworkSpeed.FAST_NETWORK));
-
-        shadowOfActiveNetworkInfo.setSubType(TelephonyManager.NETWORK_TYPE_UMTS);
-        //assert that NETWORK_TYPE_UMTS is medium network
-        Assert.assertTrue(persistentStatsHandler.getNetworkSpeed().equals(NetworkSpeed.MEDIUM_NETWORK));
-
-        shadowOfActiveNetworkInfo.setSubType(TelephonyManager.NETWORK_TYPE_EHRPD);
-        //assert that NETWORK_TYPE_EHRPD is fast network
-        Assert.assertTrue(persistentStatsHandler.getNetworkSpeed().equals(NetworkSpeed.FAST_NETWORK));
-
-        shadowOfActiveNetworkInfo.setSubType(TelephonyManager.NETWORK_TYPE_EVDO_B);
-        //assert that NETWORK_TYPE_EVDO_B is fast network
-        Assert.assertTrue(persistentStatsHandler.getNetworkSpeed().equals(NetworkSpeed.FAST_NETWORK));
-
-        shadowOfActiveNetworkInfo.setSubType(TelephonyManager.NETWORK_TYPE_HSPAP);
-        //assert that NETWORK_TYPE_HSPAP is fast network
-        Assert.assertTrue(persistentStatsHandler.getNetworkSpeed().equals(NetworkSpeed.FAST_NETWORK));
-
-        shadowOfActiveNetworkInfo.setSubType(TelephonyManager.NETWORK_TYPE_IDEN);
-        //assert that NETWORK_TYPE_IDEN is fast network
-        Assert.assertTrue(persistentStatsHandler.getNetworkSpeed().equals(NetworkSpeed.FAST_NETWORK));
-
-        shadowOfActiveNetworkInfo.setSubType(TelephonyManager.NETWORK_TYPE_LTE);
-        //assert that NETWORK_TYPE_LTE is fast network
-        Assert.assertTrue(persistentStatsHandler.getNetworkSpeed().equals(NetworkSpeed.FAST_NETWORK));
-
-        shadowOfActiveNetworkInfo.setSubType(TelephonyManager.NETWORK_TYPE_UNKNOWN);
-        //assert that NETWORK_TYPE_UNKNOWN is slow network
-        Assert.assertTrue(persistentStatsHandler.getNetworkSpeed().equals(NetworkSpeed.SLOW_NETWORK));
     }
 }
