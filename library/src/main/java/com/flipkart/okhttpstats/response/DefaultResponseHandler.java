@@ -1,5 +1,8 @@
 package com.flipkart.okhttpstats.response;
 
+/**
+ * Default implementation of {@link ResponseHandler}
+ */
 public class DefaultResponseHandler implements ResponseHandler {
     private final ResponseCallback mResponseCallback;
     private int mBytesRead = 0;

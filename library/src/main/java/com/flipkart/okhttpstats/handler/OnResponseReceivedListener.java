@@ -8,8 +8,12 @@ import java.io.IOException;
 
 /**
  * This interface to be consumed by the client, to get callbacks on success/failure cases
+ * It is more of a generic listener, where if server gives back any response {@link OnResponseReceivedListener#onResponseSuccess(NetworkInfo, RequestStats)} gets called, independent of the status code.
+ * When there is no response, or any error before server responds {@link OnResponseReceivedListener#onResponseError(NetworkInfo, RequestStats, Exception)} gets called
+ * <p>
+ * If the client wants callback more specific to server status code such as 2XX, 3XX,4XX and 5XX, implement the {@link OnServerResponseReceivedListener}
  */
-public interface OnResponseReceivedListener {
+interface OnResponseReceivedListener {
 
     /**
      * This callback includes response with 2XX, 3XX, 4XX, 5XX status codes

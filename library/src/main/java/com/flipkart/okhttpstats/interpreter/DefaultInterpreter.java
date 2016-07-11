@@ -22,6 +22,9 @@ import okhttp3.ResponseBody;
 import okio.BufferedSource;
 import okio.Okio;
 
+/**
+ * Default implementation of {@link NetworkInterpreter}
+ */
 public class DefaultInterpreter implements NetworkInterpreter {
     private static final String HOST_NAME = "HOST";
     private static final String CONTENT_LENGTH = "Content-Length";
