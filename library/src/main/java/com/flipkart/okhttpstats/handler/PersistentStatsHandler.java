@@ -10,7 +10,6 @@ import android.text.TextUtils;
 
 import com.flipkart.okhttpstats.model.RequestStats;
 import com.flipkart.okhttpstats.toolbox.HTTPStatusCode;
-import com.flipkart.okhttpstats.toolbox.NetworkSpeed;
 import com.flipkart.okhttpstats.toolbox.NetworkStat;
 import com.flipkart.okhttpstats.toolbox.PreferenceManager;
 

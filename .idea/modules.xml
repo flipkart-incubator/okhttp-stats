@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/FlipperfDemo.iml" filepath="$PROJECT_DIR$/FlipperfDemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/flipperf/flipperf.iml" filepath="$PROJECT_DIR$/flipperf/flipperf.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/okhttp-stats.iml" filepath="$PROJECT_DIR$/okhttp-stats.iml" />
     </modules>
   </component>
 </project>
