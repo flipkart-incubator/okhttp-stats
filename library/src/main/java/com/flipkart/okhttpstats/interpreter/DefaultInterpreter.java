@@ -6,6 +6,7 @@ import com.flipkart.okhttpstats.NetworkInterceptor;
 import com.flipkart.okhttpstats.reporter.NetworkEventReporter;
 import com.flipkart.okhttpstats.response.CountingInputStream;
 import com.flipkart.okhttpstats.response.DefaultResponseHandler;
+import com.flipkart.okhttpstats.toolbox.Utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,6 @@ import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import okhttp3.internal.http.OkHeaders;
 import okio.BufferedSource;
 import okio.Okio;
 
@@ -34,8 +34,8 @@ public class DefaultInterpreter implements NetworkInterpreter {
 
     @Override
     public Response interpretResponseStream(int requestId, NetworkInterceptor.TimeInfo timeInfo, Request request, Response response) throws IOException {
-        final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url().url(), request.method(), OkHeaders.contentLength(request), request.header(HOST_NAME));
-        final OkHttpInspectorResponse okHttpInspectorResponse = new OkHttpInspectorResponse(requestId, response.code(), OkHeaders.contentLength(response), timeInfo.mStartTime, timeInfo.mEndTime);
+        final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url().url(), request.method(), Utils.contentLength(request), request.header(HOST_NAME));
+        final OkHttpInspectorResponse okHttpInspectorResponse = new OkHttpInspectorResponse(requestId, response.code(), Utils.contentLength(response), timeInfo.mStartTime, timeInfo.mEndTime);
 
         //if response does not have content length, using CountingInputStream to read its bytes
         if (response.header(CONTENT_LENGTH) == null) {
@@ -78,7 +78,7 @@ public class DefaultInterpreter implements NetworkInterpreter {
         if (logger.isDebugEnabled()) {
             logger.debug("Error received while proceeding response {}", e.getMessage());
         }
-        final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url().url(), request.method(), OkHeaders.contentLength(request), request.header(HOST_NAME));
+        final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url().url(), request.method(), Utils.contentLength(request), request.header(HOST_NAME));
         mEventReporter.httpExchangeError(okHttpInspectorRequest, e);
     }
 
