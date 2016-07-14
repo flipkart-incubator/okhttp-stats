@@ -20,7 +20,7 @@ import com.flipkart.fkvolley.RequestQueue;
 import com.flipkart.fkvolley.toolbox.ImageLoader;
 import com.flipkart.fkvolley.toolbox.OkHttp3Stack;
 import com.flipkart.okhttpstats.NetworkInterceptor;
-import com.flipkart.okhttpstats.handler.OnResponseReceivedListener;
+import com.flipkart.okhttpstats.handler.OnResponseListener;
 import com.flipkart.okhttpstats.handler.PersistentStatsHandler;
 import com.flipkart.okhttpstats.interpreter.DefaultInterpreter;
 import com.flipkart.okhttpstats.interpreter.NetworkInterpreter;
@@ -34,7 +34,7 @@ import okhttp3.OkHttpClient;
 
 public class MainActivity extends AppCompatActivity {
 
-    private OnResponseReceived onResponseReceived;
+    private OnResponse onResponseReceived;
     private PersistentStatsHandler networkRequestStatsHandler;
     private boolean isNewFlipperf = true;
     private ImageLoader imageLoader;
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         if (isNewFlipperf) {
-            onResponseReceived = new OnResponseReceived();
+            onResponseReceived = new OnResponse();
             networkRequestStatsHandler = new PersistentStatsHandler(this);
             networkRequestStatsHandler.addListener(onResponseReceived);
             NetworkInterpreter networkInterpreter = new DefaultInterpreter(new NetworkEventReporterImpl(networkRequestStatsHandler));
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
             NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
                     .setNetworkInterpreter(networkInterpreter)
                     .setEnabled(true)
-                    .build(this);
+                    .build();
 
             OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
                     .addInterceptor(networkInterceptor)
@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class OnResponseReceived implements OnResponseReceivedListener {
+    private class OnResponse implements OnResponseListener {
 
         @Override
         public void onResponseSuccess(NetworkInfo info, RequestStats requestStats) {

@@ -3,9 +3,8 @@ package com.flipkart.okhttpstats;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.telephony.TelephonyManager;
 
-import com.flipkart.okhttpstats.handler.OnResponseReceivedListener;
+import com.flipkart.okhttpstats.handler.OnResponseListener;
 import com.flipkart.okhttpstats.handler.PersistentStatsHandler;
 import com.flipkart.okhttpstats.model.RequestStats;
 
@@ -38,7 +37,7 @@ import static org.mockito.Mockito.verify;
 public class PersistentStatsHandlerTest {
 
     /**
-     * Test for {@link PersistentStatsHandler#addListener(OnResponseReceivedListener)}
+     * Test for {@link PersistentStatsHandler#addListener(OnResponseListener)}
      *
      * @throws Exception
      */
@@ -51,30 +50,30 @@ public class PersistentStatsHandlerTest {
 
         shadowConnectivityManager.setNetworkInfo(ConnectivityManager.TYPE_WIFI, connectivityManager.getActiveNetworkInfo());
 
-        OnResponseReceivedListener onResponseReceivedListener = mock(OnResponseReceivedListener.class);
+        OnResponseListener onResponseListener = mock(OnResponseListener.class);
 
         PersistentStatsHandler persistentStatsHandler = new PersistentStatsHandler(RuntimeEnvironment.application);
-        persistentStatsHandler.addListener(onResponseReceivedListener);
+        persistentStatsHandler.addListener(onResponseListener);
 
         //assert size is 1
         Assert.assertTrue(persistentStatsHandler.getOnResponseReceivedListenerList().size() == 1);
     }
 
     /**
-     * Test for {@link PersistentStatsHandler#removeListener(OnResponseReceivedListener)}
+     * Test for {@link PersistentStatsHandler#removeListener(OnResponseListener)}
      *
      * @throws Exception
      */
     @Test
     public void testRemoveListener() throws Exception {
-        OnResponseReceivedListener onResponseReceivedListener = mock(OnResponseReceivedListener.class);
+        OnResponseListener onResponseListener = mock(OnResponseListener.class);
 
         PersistentStatsHandler persistentStatsHandler = new PersistentStatsHandler(RuntimeEnvironment.application);
-        persistentStatsHandler.addListener(onResponseReceivedListener);
+        persistentStatsHandler.addListener(onResponseListener);
 
         //assert size is 1
         Assert.assertTrue(persistentStatsHandler.getOnResponseReceivedListenerList().size() == 1);
-        persistentStatsHandler.removeListener(onResponseReceivedListener);
+        persistentStatsHandler.removeListener(onResponseListener);
 
         //assert size is 0
         Assert.assertTrue(persistentStatsHandler.getOnResponseReceivedListenerList().size() == 0);
@@ -87,11 +86,11 @@ public class PersistentStatsHandlerTest {
      */
     @Test
     public void testOnResponseReceived() throws Exception {
-        OnResponseReceivedListener onResponseReceivedListener = mock(OnResponseReceivedListener.class);
-        OnResponseReceivedListener onResponseReceivedListener1 = mock(OnResponseReceivedListener.class);
+        OnResponseListener onResponseListener = mock(OnResponseListener.class);
+        OnResponseListener onResponseListener1 = mock(OnResponseListener.class);
 
         PersistentStatsHandler persistentStatsHandler = new PersistentStatsHandler(RuntimeEnvironment.application);
-        persistentStatsHandler.addListener(onResponseReceivedListener);
+        persistentStatsHandler.addListener(onResponseListener);
 
         //assert size is 1
         Assert.assertTrue(persistentStatsHandler.getOnResponseReceivedListenerList().size() == 1);
@@ -100,20 +99,20 @@ public class PersistentStatsHandlerTest {
         persistentStatsHandler.onResponseReceived(requestStats);
 
         //verify onResponseReceived gets called once
-        verify(onResponseReceivedListener, times(1)).onResponseSuccess(any(NetworkInfo.class), eq(requestStats));
-        reset(onResponseReceivedListener);
+        verify(onResponseListener, times(1)).onResponseSuccess(any(NetworkInfo.class), eq(requestStats));
+        reset(onResponseListener);
 
         //adding another listener
-        persistentStatsHandler.addListener(onResponseReceivedListener1);
+        persistentStatsHandler.addListener(onResponseListener1);
 
         //assert size is 2
         Assert.assertTrue(persistentStatsHandler.getOnResponseReceivedListenerList().size() == 2);
         persistentStatsHandler.onResponseReceived(requestStats);
 
         //verify onResponseReceived of 1st listener gets called once
-        verify(onResponseReceivedListener, times(1)).onResponseSuccess(any(NetworkInfo.class), eq(requestStats));
+        verify(onResponseListener, times(1)).onResponseSuccess(any(NetworkInfo.class), eq(requestStats));
         //verify onResponseReceived of 2nd listener gets called once
-        verify(onResponseReceivedListener1, times(1)).onResponseSuccess(any(NetworkInfo.class), eq(requestStats));
+        verify(onResponseListener1, times(1)).onResponseSuccess(any(NetworkInfo.class), eq(requestStats));
     }
 
     /**
@@ -123,11 +122,11 @@ public class PersistentStatsHandlerTest {
      */
     @Test
     public void testOnHttpExchangeError() throws Exception {
-        OnResponseReceivedListener onResponseReceivedListener = mock(OnResponseReceivedListener.class);
-        OnResponseReceivedListener onResponseReceivedListener1 = mock(OnResponseReceivedListener.class);
+        OnResponseListener onResponseListener = mock(OnResponseListener.class);
+        OnResponseListener onResponseListener1 = mock(OnResponseListener.class);
 
         PersistentStatsHandler persistentStatsHandler = new PersistentStatsHandler(RuntimeEnvironment.application);
-        persistentStatsHandler.addListener(onResponseReceivedListener);
+        persistentStatsHandler.addListener(onResponseListener);
 
         //assert size is 1
         Assert.assertTrue(persistentStatsHandler.getOnResponseReceivedListenerList().size() == 1);
@@ -136,32 +135,32 @@ public class PersistentStatsHandlerTest {
         persistentStatsHandler.onHttpExchangeError(requestStats, new IOException(""));
 
         //verify onHttpErrorReceived gets called once
-        verify(onResponseReceivedListener, times(1)).onResponseError(any(NetworkInfo.class), eq(requestStats), any(IOException.class));
+        verify(onResponseListener, times(1)).onResponseError(any(NetworkInfo.class), eq(requestStats), any(IOException.class));
 
         //adding another listener
-        persistentStatsHandler.addListener(onResponseReceivedListener1);
-        reset(onResponseReceivedListener);
+        persistentStatsHandler.addListener(onResponseListener1);
+        reset(onResponseListener);
 
         //assert size is 2
         Assert.assertTrue(persistentStatsHandler.getOnResponseReceivedListenerList().size() == 2);
         persistentStatsHandler.onHttpExchangeError(requestStats, new IOException(""));
 
-        verify(onResponseReceivedListener, times(1)).onResponseError(any(NetworkInfo.class), eq(requestStats), any(IOException.class));
-        verify(onResponseReceivedListener1, times(1)).onResponseError(any(NetworkInfo.class), eq(requestStats), any(IOException.class));
+        verify(onResponseListener, times(1)).onResponseError(any(NetworkInfo.class), eq(requestStats), any(IOException.class));
+        verify(onResponseListener1, times(1)).onResponseError(any(NetworkInfo.class), eq(requestStats), any(IOException.class));
     }
 
     /**
-     * Test for number of {@link OnResponseReceivedListener} in {@link PersistentStatsHandler}
+     * Test for number of {@link OnResponseListener} in {@link PersistentStatsHandler}
      *
      * @throws Exception
      */
     @Test
     public void testOnInputStreamError() throws Exception {
-        OnResponseReceivedListener onResponseReceivedListener = mock(OnResponseReceivedListener.class);
-        OnResponseReceivedListener onResponseReceivedListener1 = mock(OnResponseReceivedListener.class);
+        OnResponseListener onResponseListener = mock(OnResponseListener.class);
+        OnResponseListener onResponseListener1 = mock(OnResponseListener.class);
 
         PersistentStatsHandler persistentStatsHandler = new PersistentStatsHandler(RuntimeEnvironment.application);
-        persistentStatsHandler.addListener(onResponseReceivedListener);
+        persistentStatsHandler.addListener(onResponseListener);
 
         //assert size is 1
         Assert.assertTrue(persistentStatsHandler.getOnResponseReceivedListenerList().size() == 1);
@@ -170,10 +169,10 @@ public class PersistentStatsHandlerTest {
         persistentStatsHandler.onResponseInputStreamError(requestStats, new SocketTimeoutException());
 
         //verify onInputStreamReadError gets called once
-        reset(onResponseReceivedListener);
+        reset(onResponseListener);
 
         //adding another listener
-        persistentStatsHandler.addListener(onResponseReceivedListener1);
+        persistentStatsHandler.addListener(onResponseListener1);
 
         //assert size is 2
         Assert.assertTrue(persistentStatsHandler.getOnResponseReceivedListenerList().size() == 2);

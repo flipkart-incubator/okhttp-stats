@@ -9,7 +9,6 @@ import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 
 import com.flipkart.okhttpstats.model.RequestStats;
-import com.flipkart.okhttpstats.toolbox.HTTPStatusCode;
 import com.flipkart.okhttpstats.toolbox.NetworkStat;
 import com.flipkart.okhttpstats.toolbox.PreferenceManager;
 
@@ -38,8 +37,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     private static final String UNKNOWN_NETWORK = "unknown";
     private final PreferenceManager mPreferenceManager;
     private Logger mLogger = LoggerFactory.getLogger(PersistentStatsHandler.class);
-    private Set<OnResponseReceivedListener> mOnResponseReceivedListeners = new HashSet<>();
-    private Set<OnServerResponseReceivedListener> mOnServerResponseReceivedListeners = new HashSet<>();
+    private Set<OnResponseListener> mOnResponseListeners = new HashSet<>();
     private int mResponseCount = 0;
     private int MAX_SIZE;
     private WifiManager mWifiManager;
@@ -68,52 +66,25 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
         return null;
     }
 
-    @VisibleForTesting
-    public Set<OnServerResponseReceivedListener> getOnServerResponseReceivedListeners() {
-        return mOnServerResponseReceivedListeners;
-    }
-
     /**
      * Client can add listeners to listen for the callbacks.
      *
-     * @param onResponseReceivedListener : {@link OnResponseReceivedListener}
+     * @param onResponseListener : {@link OnResponseListener}
      */
-    public void addListener(OnResponseReceivedListener onResponseReceivedListener) {
-        if (mOnResponseReceivedListeners != null) {
-            mOnResponseReceivedListeners.add(onResponseReceivedListener);
+    public void addListener(OnResponseListener onResponseListener) {
+        if (mOnResponseListeners != null) {
+            mOnResponseListeners.add(onResponseListener);
         }
     }
 
     /**
      * Client can remove listeners
      *
-     * @param onResponseReceivedListener : {@link OnResponseReceivedListener}
+     * @param onResponseListener : {@link OnResponseListener}
      */
-    public void removeListener(OnResponseReceivedListener onResponseReceivedListener) {
-        if (mOnResponseReceivedListeners != null) {
-            mOnResponseReceivedListeners.remove(onResponseReceivedListener);
-        }
-    }
-
-    /**
-     * Client can add {@link OnServerResponseReceivedListener}
-     *
-     * @param onServerResponseReceivedListener : {@link OnResponseReceivedListener}
-     */
-    public void addListener(OnServerResponseReceivedListener onServerResponseReceivedListener) {
-        if (mOnServerResponseReceivedListeners != null) {
-            mOnServerResponseReceivedListeners.add(onServerResponseReceivedListener);
-        }
-    }
-
-    /**
-     * Client can remove {@link OnServerResponseReceivedListener}
-     *
-     * @param onServerResponseReceivedListener : {@link OnResponseReceivedListener}
-     */
-    public void removeListener(OnServerResponseReceivedListener onServerResponseReceivedListener) {
-        if (mOnServerResponseReceivedListeners != null) {
-            mOnServerResponseReceivedListeners.remove(onServerResponseReceivedListener);
+    public void removeListener(OnResponseListener onResponseListener) {
+        if (mOnResponseListeners != null) {
+            mOnResponseListeners.remove(onResponseListener);
         }
     }
 
@@ -142,25 +113,9 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
         }
 
         //call all the registered listeners
-        for (OnResponseReceivedListener onResponseReceivedListener : mOnResponseReceivedListeners) {
-            if (onResponseReceivedListener != null) {
-                onResponseReceivedListener.onResponseSuccess(getActiveNetworkInfo(), requestStats);
-            }
-        }
-
-        //call the specific registered listener based on status code
-        for (OnServerResponseReceivedListener onServerResponseReceivedListener : mOnServerResponseReceivedListeners) {
-            if (onServerResponseReceivedListener != null) {
-                if (requestStats != null) {
-                    int statusCode = requestStats.getStatusCode();
-                    if ((statusCode >= HTTPStatusCode.HTTP_2XX_START && statusCode <= HTTPStatusCode.HTTP_2XX_END) ||
-                            (statusCode >= HTTPStatusCode.HTTP_3XX_START && statusCode <= HTTPStatusCode.HTTP_3XX_END)) {
-                        onServerResponseReceivedListener.onResponseSuccess(getActiveNetworkInfo(), requestStats);
-                    } else if ((statusCode >= HTTPStatusCode.HTTP_4XX_START && statusCode <= HTTPStatusCode.HTTP_4XX_END) ||
-                            (statusCode >= HTTPStatusCode.HTTP_5XX_START && statusCode <= HTTPStatusCode.HTTP_5XX_END)) {
-                        onServerResponseReceivedListener.onResponseServerError(getActiveNetworkInfo(), requestStats);
-                    }
-                }
+        for (OnResponseListener onResponseListener : mOnResponseListeners) {
+            if (onResponseListener != null) {
+                onResponseListener.onResponseSuccess(getActiveNetworkInfo(), requestStats);
             }
         }
 
@@ -189,15 +144,9 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
             mLogger.debug("Response Received With Http Exchange Error : {}", requestStats);
         }
 
-        for (OnResponseReceivedListener onResponseReceivedListener : mOnResponseReceivedListeners) {
-            if (onResponseReceivedListener != null) {
-                onResponseReceivedListener.onResponseError(getActiveNetworkInfo(), requestStats, e);
-            }
-        }
-
-        for (OnServerResponseReceivedListener onServerResponseReceivedListener : mOnServerResponseReceivedListeners) {
-            if (onServerResponseReceivedListener != null) {
-                onServerResponseReceivedListener.onResponseNetworkError(getActiveNetworkInfo(), requestStats, e);
+        for (OnResponseListener onResponseListener : mOnResponseListeners) {
+            if (onResponseListener != null) {
+                onResponseListener.onResponseError(getActiveNetworkInfo(), requestStats, e);
             }
         }
     }
@@ -208,15 +157,9 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
             mLogger.debug("Response Received With InputStream Error : {}", requestStats);
         }
 
-        for (OnResponseReceivedListener onResponseReceivedListener : mOnResponseReceivedListeners) {
-            if (onResponseReceivedListener != null) {
-                onResponseReceivedListener.onResponseError(getActiveNetworkInfo(), requestStats, e);
-            }
-        }
-
-        for (OnServerResponseReceivedListener onServerResponseReceivedListener : mOnServerResponseReceivedListeners) {
-            if (onServerResponseReceivedListener != null) {
-                onServerResponseReceivedListener.onResponseNetworkError(getActiveNetworkInfo(), requestStats, e);
+        for (OnResponseListener onResponseListener : mOnResponseListeners) {
+            if (onResponseListener != null) {
+                onResponseListener.onResponseError(getActiveNetworkInfo(), requestStats, e);
             }
         }
     }
