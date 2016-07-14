@@ -24,10 +24,6 @@ OkHttp-Stats is an android library built on top of OkHttp, which is responsible 
 ````
 Now, pass this okHttpClient (which has an interceptor added) to the okhttpstack, and you are done.
 
-###Getting Started 
-
-Gradle Dependency : ````compile 'com.flipkart.android.okhttpstats:library:1.0.0'````
-
 ###[Wiki](https://github.com/Flipkart/okhttp-stats/wiki)
 
 ###Dependencies
