@@ -1,4 +1,4 @@
-package com.flipkart.flipperfdemo;
+package com.flipkart.okhttpstatsdemo;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

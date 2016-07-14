@@ -1,6 +1,23 @@
-package com.flipkart.flipperfdemo;
+/*
+ *
+ *  * Copyright 2016 Flipkart Internet Pvt. Ltd.
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *    http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *
+ */
 
-import android.content.Context;
+package com.flipkart.okhttpstatsdemo;
+
 import android.graphics.Bitmap;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -14,11 +31,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.android.volley.Network;
+import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.BasicNetwork;
-import com.flipkart.fkvolley.RequestQueue;
-import com.flipkart.fkvolley.toolbox.ImageLoader;
-import com.flipkart.fkvolley.toolbox.OkHttp3Stack;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
+import com.android.volley.toolbox.Volley;
 import com.flipkart.okhttpstats.NetworkInterceptor;
 import com.flipkart.okhttpstats.handler.OnResponseListener;
 import com.flipkart.okhttpstats.handler.PersistentStatsHandler;
@@ -27,16 +44,14 @@ import com.flipkart.okhttpstats.interpreter.NetworkInterpreter;
 import com.flipkart.okhttpstats.model.RequestStats;
 import com.flipkart.okhttpstats.reporter.NetworkEventReporterImpl;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import okhttp3.OkHttpClient;
 
 public class MainActivity extends AppCompatActivity {
 
-    private OnResponse onResponseReceived;
+    private OnResponseReceived onResponseReceived;
     private PersistentStatsHandler networkRequestStatsHandler;
-    private boolean isNewFlipperf = true;
     private ImageLoader imageLoader;
 
     @Override
@@ -46,66 +61,55 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if (isNewFlipperf) {
-            onResponseReceived = new OnResponse();
-            networkRequestStatsHandler = new PersistentStatsHandler(this);
-            networkRequestStatsHandler.addListener(onResponseReceived);
-            NetworkInterpreter networkInterpreter = new DefaultInterpreter(new NetworkEventReporterImpl(networkRequestStatsHandler));
+        onResponseReceived = new OnResponseReceived();
+        networkRequestStatsHandler = new PersistentStatsHandler(this);
+        networkRequestStatsHandler.addListener(onResponseReceived);
+        NetworkInterpreter networkInterpreter = new DefaultInterpreter(new NetworkEventReporterImpl(networkRequestStatsHandler));
 
-            NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
-                    .setNetworkInterpreter(networkInterpreter)
-                    .setEnabled(true)
-                    .build();
+        NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
+                .setNetworkInterpreter(networkInterpreter)
+                .setEnabled(true)
+                .build();
 
-            OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
-                    .addInterceptor(networkInterceptor)
-                    .build();
-            OkHttp3Stack okHttp3Stack = new OkHttp3Stack(okHttpClient);
-            imageLoader = new ImageLoader(initializeVolleyQueue(this, new BasicNetwork(okHttp3Stack)), new ImageLoader.ImageCache() {
-                private final LruCache<String, Bitmap> mCache = new LruCache<String, Bitmap>(
-                        10);
+        OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
+                .addInterceptor(networkInterceptor)
+                .build();
 
-                public void putBitmap(String url, Bitmap bitmap) {
-                    mCache.put(url, bitmap);
-                }
+        OkHttp3Stack okHttp3Stack = new OkHttp3Stack(okHttpClient);
+        new BasicNetwork(okHttp3Stack);
 
-                public Bitmap getBitmap(String url) {
-                    return mCache.get(url);
-                }
-            }, new ImageLoader.ImageCache() {
-                private final LruCache<String, Bitmap> mCache = new LruCache<String, Bitmap>(
-                        10);
+        RequestQueue requestQueue = Volley.newRequestQueue(this, okHttp3Stack);
 
-                public void putBitmap(String url, Bitmap bitmap) {
-                    mCache.put(url, bitmap);
-                }
+        imageLoader = new ImageLoader(requestQueue, new ImageLoader.ImageCache() {
+            private final LruCache<String, Bitmap> mCache = new LruCache<String, Bitmap>(10);
 
-                public Bitmap getBitmap(String url) {
-                    return mCache.get(url);
-                }
-            });
-        }
+            @Override
+            public Bitmap getBitmap(String url) {
+                return mCache.get(url);
+            }
 
-        final com.flipkart.fkvolley.toolbox.NetworkImageView networkImageView = (com.flipkart.fkvolley.toolbox.NetworkImageView) findViewById(R.id.img);
+            @Override
+            public void putBitmap(String url, Bitmap bitmap) {
+                mCache.put(url, bitmap);
+            }
+        });
+
+        final NetworkImageView networkImageView = (NetworkImageView) findViewById(R.id.img);
         assert networkImageView != null;
 
-        final ArrayList<String> image_list = ResourceList.getResourceList();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         assert fab != null;
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int rand = new Random().nextInt(image_list.size());
-                networkImageView.setImageUrl(image_list.get(rand), imageLoader);
+                int rand = new Random().nextInt(ResourceList.URLS.length);
+                String url = ResourceList.URLS[rand];
+                networkImageView.setImageUrl(url, imageLoader);
                 Snackbar.make(view, "Loading Image...", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
-    }
-
-    private RequestQueue initializeVolleyQueue(Context context, Network network) {
-        return com.flipkart.fkvolley.toolbox.Volley.newRequestQueue(context, network, 2);
     }
 
     @Override
@@ -136,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class OnResponse implements OnResponseListener {
+    private class OnResponseReceived implements OnResponseListener {
 
         @Override
         public void onResponseSuccess(NetworkInfo info, RequestStats requestStats) {

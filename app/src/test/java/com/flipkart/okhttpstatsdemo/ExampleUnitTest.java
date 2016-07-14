@@ -1,4 +1,4 @@
-package com.flipkart.flipperfdemo;
+package com.flipkart.okhttpstatsdemo;
 
 import org.junit.Test;
 
