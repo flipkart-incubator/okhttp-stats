@@ -21,37 +21,15 @@
  * SOFTWARE.
  */
 
-package com.flipkart.okhttpstats.handler;
+package com.flipkart.okhttpstats.toolbox;
 
-import android.support.annotation.Nullable;
-
-import com.flipkart.okhttpstats.model.RequestStats;
-
-import java.io.IOException;
-
-public interface NetworkRequestStatsHandler {
-
-    /**
-     * Indicates a successful response was received.
-     *
-     * @param requestStats {@link RequestStats}
-     */
-    void onResponseReceived(RequestStats requestStats);
-
-    /**
-     * Indicates the connection failed, which implies that we dont have information like response status code, size etc.
-     * Typically, socket timeouts, connect errors etc.
-     *
-     * @param requestStats {@link RequestStats}
-     */
-    void onHttpExchangeError(RequestStats requestStats, @Nullable IOException e);
-
-    /**
-     * Indicates that connection was successful, but we could not read the response stream.
-     * This implies that we have access to response status code etc.
-     *
-     * @param requestStats {@link RequestStats}
-     * @param e            {@link IOException}
-     */
-    void onResponseInputStreamError(RequestStats requestStats, @Nullable Exception e);
+public class HTTPStatusCode {
+    public static final int HTTP_2XX_START = 200;
+    public static final int HTTP_2XX_END = 299;
+    public static final int HTTP_3XX_START = 300;
+    public static final int HTTP_3XX_END = 399;
+    public static final int HTTP_4XX_START = 400;
+    public static final int HTTP_4XX_END = 499;
+    public static final int HTTP_5XX_START = 500;
+    public static final int HTTP_5XX_END = 599;
 }

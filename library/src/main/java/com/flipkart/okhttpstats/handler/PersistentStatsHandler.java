@@ -1,3 +1,26 @@
+/*
+ * The MIT License
+ *
+ * Copyright 2016 Flipkart Internet Pvt. Ltd.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this
+ * software and associated documentation files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom
+ * the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.flipkart.okhttpstats.handler;
 
 import android.content.Context;
@@ -16,9 +39,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
+/**
+ * Default implementation of {@link NetworkRequestStatsHandler}
+ * <p>
+ * Responsibilities:
+ * <p>
+ * 1. Allows to register/deregister listeners, and gives callback to all the registered listeners in case of success or errors
+ * 2. Gives the current network info for a particular request
+ * 3. Gives the network speed based upon the type of current network
+ * 4. Allows to calculate the average network speed, and save it to {@link android.content.SharedPreferences} to retrieve it later
+ */
 public class PersistentStatsHandler implements NetworkRequestStatsHandler {
 
     private static final int DEFAULT_MAX_SIZE = 10;
@@ -27,7 +60,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     private static final String UNKNOWN_NETWORK = "unknown";
     private final PreferenceManager mPreferenceManager;
     private Logger mLogger = LoggerFactory.getLogger(PersistentStatsHandler.class);
-    private List<OnResponseReceivedListener> mOnResponseReceivedListenerList = new ArrayList<>();
+    private Set<OnResponseListener> mOnResponseListeners = new HashSet<>();
     private int mResponseCount = 0;
     private int MAX_SIZE;
     private WifiManager mWifiManager;
@@ -47,7 +80,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     /**
      * Client can call this to get the current network info
      *
-     * @return
+     * @return {@link NetworkInfo}
      */
     public NetworkInfo getActiveNetworkInfo() {
         if (mConnectivityManager != null) {
@@ -56,32 +89,42 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
         return null;
     }
 
-    @VisibleForTesting
-    public List<OnResponseReceivedListener> getOnResponseReceivedListenerList() {
-        return mOnResponseReceivedListenerList;
-    }
-
     /**
      * Client can add listeners to listen for the callbacks.
      *
-     * @param onResponseReceivedListener : {@link OnResponseReceivedListener}
+     * @param onResponseListener : {@link OnResponseListener}
      */
-    public void addListener(OnResponseReceivedListener onResponseReceivedListener) {
-        if (mOnResponseReceivedListenerList != null) {
-            mOnResponseReceivedListenerList.add(onResponseReceivedListener);
+    public void addListener(OnResponseListener onResponseListener) {
+        if (mOnResponseListeners != null) {
+            mOnResponseListeners.add(onResponseListener);
         }
     }
 
-    public void removeListener(OnResponseReceivedListener onResponseReceivedListener) {
-        if (mOnResponseReceivedListenerList != null) {
-            mOnResponseReceivedListenerList.remove(onResponseReceivedListener);
+    /**
+     * Client can remove listeners
+     *
+     * @param onResponseListener : {@link OnResponseListener}
+     */
+    public void removeListener(OnResponseListener onResponseListener) {
+        if (mOnResponseListeners != null) {
+            mOnResponseListeners.remove(onResponseListener);
         }
     }
 
+    /**
+     * The client can set the max number of request before it stores the speed to shared preference
+     *
+     * @param size : int
+     */
     public void setMaxSizeForPersistence(int size) {
         this.MAX_SIZE = size;
     }
 
+    /**
+     * Exposed to the client so that he can get the average network speed
+     *
+     * @return avg speed
+     */
     public float getAverageNetworkSpeed() {
         return mCurrentAvgSpeed;
     }
@@ -92,9 +135,10 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
             mLogger.debug("Response Received : {}", requestStats);
         }
 
-        for (OnResponseReceivedListener onResponseReceivedListener : mOnResponseReceivedListenerList) {
-            if (onResponseReceivedListener != null) {
-                onResponseReceivedListener.onResponseSuccess(getActiveNetworkInfo(), requestStats);
+        //call all the registered listeners
+        for (OnResponseListener onResponseListener : mOnResponseListeners) {
+            if (onResponseListener != null) {
+                onResponseListener.onResponseSuccess(getActiveNetworkInfo(), requestStats);
             }
         }
 
@@ -123,9 +167,9 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
             mLogger.debug("Response Received With Http Exchange Error : {}", requestStats);
         }
 
-        for (OnResponseReceivedListener onResponseReceivedListener : mOnResponseReceivedListenerList) {
-            if (onResponseReceivedListener != null) {
-                onResponseReceivedListener.onResponseError(getActiveNetworkInfo(), requestStats, e);
+        for (OnResponseListener onResponseListener : mOnResponseListeners) {
+            if (onResponseListener != null) {
+                onResponseListener.onResponseError(getActiveNetworkInfo(), requestStats, e);
             }
         }
     }
@@ -136,9 +180,9 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
             mLogger.debug("Response Received With InputStream Error : {}", requestStats);
         }
 
-        for (OnResponseReceivedListener onResponseReceivedListener : mOnResponseReceivedListenerList) {
-            if (onResponseReceivedListener != null) {
-                onResponseReceivedListener.onResponseError(getActiveNetworkInfo(), requestStats, e);
+        for (OnResponseListener onResponseListener : mOnResponseListeners) {
+            if (onResponseListener != null) {
+                onResponseListener.onResponseError(getActiveNetworkInfo(), requestStats, e);
             }
         }
     }
@@ -162,6 +206,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
      * @param networkInfo {@link NetworkInfo}
      * @return string
      */
+    @VisibleForTesting
     public String getNetworkKey(NetworkInfo networkInfo) {
         if (networkInfo != null && networkInfo.getTypeName() != null) {
             if (networkInfo.getTypeName().equals(WIFI_NETWORK)) {
@@ -174,6 +219,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
         return UNKNOWN_NETWORK;
     }
 
+    @VisibleForTesting
     public int getWifiSSID() {
         WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
         if (wifiInfo != null) {
