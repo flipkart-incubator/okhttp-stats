@@ -23,31 +23,27 @@
 
 package com.flipkart.okhttpstatsdemo;
 
+import android.content.Context;
 import android.graphics.Bitmap;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.util.LruCache;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.HttpStack;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
 import com.circle.android.api.OkHttp3Stack;
 import com.flipkart.okhttpstats.NetworkInterceptor;
-import com.flipkart.okhttpstats.handler.OnResponseListener;
 import com.flipkart.okhttpstats.handler.PersistentStatsHandler;
 import com.flipkart.okhttpstats.interpreter.DefaultInterpreter;
 import com.flipkart.okhttpstats.interpreter.NetworkInterpreter;
-import com.flipkart.okhttpstats.model.RequestStats;
 import com.flipkart.okhttpstats.reporter.NetworkEventReporterImpl;
 
 import java.util.Random;
@@ -59,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
     private OnResponseReceived onResponseReceived;
     private PersistentStatsHandler networkRequestStatsHandler;
     private ImageLoader imageLoader;
+    private RequestQueue requestQueue;
+    private OkHttp3Stack okHttp3Stack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,28 +79,10 @@ public class MainActivity extends AppCompatActivity {
                 .addInterceptor(networkInterceptor)
                 .build();
 
-        OkHttp3Stack okHttp3Stack = new OkHttp3Stack(okHttpClient);
-        new BasicNetwork(okHttp3Stack);
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this, okHttp3Stack);
-
-        imageLoader = new ImageLoader(requestQueue, new ImageLoader.ImageCache() {
-            private final LruCache<String, Bitmap> mCache = new LruCache<String, Bitmap>(10);
-
-            @Override
-            public Bitmap getBitmap(String url) {
-                return mCache.get(url);
-            }
-
-            @Override
-            public void putBitmap(String url, Bitmap bitmap) {
-                mCache.put(url, bitmap);
-            }
-        });
+        okHttp3Stack = new OkHttp3Stack(okHttpClient);
 
         final NetworkImageView networkImageView = (NetworkImageView) findViewById(R.id.img);
         assert networkImageView != null;
-
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         assert fab != null;
@@ -111,11 +91,35 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 int rand = new Random().nextInt(ResourceList.URLS.length);
                 String url = ResourceList.URLS[rand];
-                networkImageView.setImageUrl(url, imageLoader);
-                Snackbar.make(view, "Loading Image...", Snackbar.LENGTH_LONG)
+                networkImageView.setImageUrl(url, getImageLoader());
+                Snackbar.make(view, "Loading Image...", Snackbar.LENGTH_SHORT)
                         .setAction("Action", null).show();
             }
         });
+    }
+
+    private RequestQueue getRequestQueue(Context context, HttpStack httpStack) {
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(context, httpStack);
+        }
+        return requestQueue;
+    }
+
+    private ImageLoader getImageLoader() {
+        if (imageLoader == null) {
+            imageLoader = new ImageLoader(getRequestQueue(this, okHttp3Stack), new ImageLoader.ImageCache() {
+
+                @Override
+                public Bitmap getBitmap(String url) {
+                    return null;
+                }
+
+                @Override
+                public void putBitmap(String url, Bitmap bitmap) {
+                }
+            });
+        }
+        return imageLoader;
     }
 
     @Override
@@ -144,35 +148,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private class OnResponseReceived implements OnResponseListener {
-
-        @Override
-        public void onResponseSuccess(NetworkInfo info, RequestStats requestStats) {
-            Log.d(MainActivity.class.getName(), "onResponseSuccessReceived : "
-                    + "\nId : " + requestStats.getId()
-                    + "\nUrl : " + requestStats.getUrl()
-                    + "\nMethod : " + requestStats.getMethodType()
-                    + "\nHost : " + requestStats.getHostName()
-                    + "\nRequest Size : " + requestStats.getRequestSize()
-                    + "\nResponse Size : " + requestStats.getResponseSize()
-                    + "\nTime Taken: " + (requestStats.getEndTime() - requestStats.getStartTime())
-                    + "\nStatus Code : " + requestStats.getStatusCode());
-        }
-
-        @Override
-        public void onResponseError(NetworkInfo info, RequestStats requestStats, Exception e) {
-            Log.d(MainActivity.class.getName(), "onResponseErrorReceived : "
-                    + "\nId : " + requestStats.getId()
-                    + "\nUrl : " + requestStats.getUrl()
-                    + "\nMethod : " + requestStats.getMethodType()
-                    + "\nHost : " + requestStats.getHostName()
-                    + "\nRequest Size : " + requestStats.getRequestSize()
-                    + "\nResponse Size : " + requestStats.getResponseSize()
-                    + "\nTime Taken: " + (requestStats.getEndTime() - requestStats.getStartTime())
-                    + "\nStatus Code : " + requestStats.getStatusCode()
-                    + "\nException : " + e.getMessage());
-        }
     }
 }
