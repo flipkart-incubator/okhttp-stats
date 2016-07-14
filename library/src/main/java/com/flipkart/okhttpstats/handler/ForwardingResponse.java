@@ -26,7 +26,7 @@ package com.flipkart.okhttpstats.handler;
 import android.net.NetworkInfo;
 
 import com.flipkart.okhttpstats.model.RequestStats;
-import com.flipkart.okhttpstats.toolbox.HTTPStatusCode;
+import com.flipkart.okhttpstats.toolbox.HttpStatusCode;
 
 public class ForwardingResponse implements OnResponseListener {
 
@@ -40,11 +40,11 @@ public class ForwardingResponse implements OnResponseListener {
     public void onResponseSuccess(NetworkInfo info, RequestStats requestStats) {
         if (requestStats != null) {
             int statusCode = requestStats.getStatusCode();
-            if ((statusCode >= HTTPStatusCode.HTTP_2XX_START && statusCode <= HTTPStatusCode.HTTP_2XX_END) ||
-                    (statusCode >= HTTPStatusCode.HTTP_3XX_START && statusCode <= HTTPStatusCode.HTTP_3XX_END)) {
+            if ((statusCode >= HttpStatusCode.HTTP_2XX_START && statusCode <= HttpStatusCode.HTTP_2XX_END) ||
+                    (statusCode >= HttpStatusCode.HTTP_3XX_START && statusCode <= HttpStatusCode.HTTP_3XX_END)) {
                 mOnStatusCodeAwareResponseListener.onResponseServerSuccess(info, requestStats);
-            } else if ((statusCode >= HTTPStatusCode.HTTP_4XX_START && statusCode <= HTTPStatusCode.HTTP_4XX_END) ||
-                    (statusCode >= HTTPStatusCode.HTTP_5XX_START && statusCode <= HTTPStatusCode.HTTP_5XX_END)) {
+            } else if ((statusCode >= HttpStatusCode.HTTP_4XX_START && statusCode <= HttpStatusCode.HTTP_4XX_END) ||
+                    (statusCode >= HttpStatusCode.HTTP_5XX_START && statusCode <= HttpStatusCode.HTTP_5XX_END)) {
                 mOnStatusCodeAwareResponseListener.onResponseServerError(info, requestStats);
             }
         }

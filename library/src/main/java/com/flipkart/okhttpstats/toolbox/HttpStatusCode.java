@@ -23,7 +23,7 @@
 
 package com.flipkart.okhttpstats.toolbox;
 
-public class HTTPStatusCode {
+public class HttpStatusCode {
     public static final int HTTP_2XX_START = 200;
     public static final int HTTP_2XX_END = 299;
     public static final int HTTP_3XX_START = 300;
