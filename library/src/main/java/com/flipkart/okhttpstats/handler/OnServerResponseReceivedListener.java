@@ -7,48 +7,32 @@ import com.flipkart.okhttpstats.model.RequestStats;
 import java.io.IOException;
 
 /**
- * This interface to be consumed by the client, to get callbacks based on status code and errors
+ * This interface to be consumed by the client, to get callbacks based on successful / unsuccessful responses and errors
  */
-interface OnServerResponseReceivedListener{
+interface OnServerResponseReceivedListener {
 
     /**
-     * This callback will be invoked for all the response with 2XX status codes
+     * This callback will be invoked for all the successful response (2XX and 3XX)
      *
      * @param info         : {@link NetworkInfo}
      * @param requestStats : {@link RequestStats}
      */
-    void on2XXStatusResponseReceived(NetworkInfo info, RequestStats requestStats);
+    void onResponseSuccess(NetworkInfo info, RequestStats requestStats);
 
     /**
-     * This callback will be invoked for all the response with 3XX status codes
+     * This callback will be invoked for all the unsuccessful response (4XX and 5XX)
      *
      * @param info         : {@link NetworkInfo}
      * @param requestStats : {@link RequestStats}
      */
-    void on3XXStatusResponseReceived(NetworkInfo info, RequestStats requestStats);
-
-    /**
-     * This callback will be invoked for all the response with 4XX status codes
-     *
-     * @param info         : {@link NetworkInfo}
-     * @param requestStats : {@link RequestStats}
-     */
-    void on4XXStatusResponseReceived(NetworkInfo info, RequestStats requestStats);
-
-    /**
-     * This callback will be invoked for all the response with 5XX status codes
-     *
-     * @param info         : {@link NetworkInfo}
-     * @param requestStats : {@link RequestStats}
-     */
-    void on5XXStatusResponseReceived(NetworkInfo info, RequestStats requestStats);
+    void onResponseServerError(NetworkInfo info, RequestStats requestStats);
 
     /**
      * This callback includes failure request cases, in cases when there are no response such as NoInternet and more
      *
-     * @param info         {@link NetworkInfo}
-     * @param requestStats {@link RequestStats}
-     * @param e            {@link IOException}
+     * @param info         : {@link NetworkInfo}
+     * @param requestStats : {@link RequestStats}
+     * @param e : {@link Exception e}
      */
-    void onResponseError(NetworkInfo info, RequestStats requestStats, Exception e);
+    void onResponseNetworkError(NetworkInfo info, RequestStats requestStats, Exception e);
 }

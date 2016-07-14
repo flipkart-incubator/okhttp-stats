@@ -59,7 +59,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     /**
      * Client can call this to get the current network info
      *
-     * @return
+     * @return {@link NetworkInfo}
      */
     public NetworkInfo getActiveNetworkInfo() {
         if (mConnectivityManager != null) {
@@ -153,14 +153,12 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
             if (onServerResponseReceivedListener != null) {
                 if (requestStats != null) {
                     int statusCode = requestStats.getStatusCode();
-                    if (statusCode >= HTTPStatusCode.HTTP_2XX_START && statusCode <= HTTPStatusCode.HTTP_2XX_END) {
-                        onServerResponseReceivedListener.on2XXStatusResponseReceived(getActiveNetworkInfo(), requestStats);
-                    } else if (statusCode >= HTTPStatusCode.HTTP_3XX_START && statusCode <= HTTPStatusCode.HTTP_3XX_END) {
-                        onServerResponseReceivedListener.on3XXStatusResponseReceived(getActiveNetworkInfo(), requestStats);
-                    } else if (statusCode >= HTTPStatusCode.HTTP_4XX_START && statusCode <= HTTPStatusCode.HTTP_4XX_END) {
-                        onServerResponseReceivedListener.on4XXStatusResponseReceived(getActiveNetworkInfo(), requestStats);
-                    } else if (statusCode >= HTTPStatusCode.HTTP_5XX_START && statusCode <= HTTPStatusCode.HTTP_5XX_END) {
-                        onServerResponseReceivedListener.on5XXStatusResponseReceived(getActiveNetworkInfo(), requestStats);
+                    if ((statusCode >= HTTPStatusCode.HTTP_2XX_START && statusCode <= HTTPStatusCode.HTTP_2XX_END) ||
+                            (statusCode >= HTTPStatusCode.HTTP_3XX_START && statusCode <= HTTPStatusCode.HTTP_3XX_END)) {
+                        onServerResponseReceivedListener.onResponseSuccess(getActiveNetworkInfo(), requestStats);
+                    } else if ((statusCode >= HTTPStatusCode.HTTP_4XX_START && statusCode <= HTTPStatusCode.HTTP_4XX_END) ||
+                            (statusCode >= HTTPStatusCode.HTTP_5XX_START && statusCode <= HTTPStatusCode.HTTP_5XX_END)) {
+                        onServerResponseReceivedListener.onResponseServerError(getActiveNetworkInfo(), requestStats);
                     }
                 }
             }
@@ -199,7 +197,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
 
         for (OnServerResponseReceivedListener onServerResponseReceivedListener : mOnServerResponseReceivedListeners) {
             if (onServerResponseReceivedListener != null) {
-                onServerResponseReceivedListener.onResponseError(getActiveNetworkInfo(), requestStats, e);
+                onServerResponseReceivedListener.onResponseNetworkError(getActiveNetworkInfo(), requestStats, e);
             }
         }
     }
@@ -218,7 +216,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
 
         for (OnServerResponseReceivedListener onServerResponseReceivedListener : mOnServerResponseReceivedListeners) {
             if (onServerResponseReceivedListener != null) {
-                onServerResponseReceivedListener.onResponseError(getActiveNetworkInfo(), requestStats, e);
+                onServerResponseReceivedListener.onResponseNetworkError(getActiveNetworkInfo(), requestStats, e);
             }
         }
     }
