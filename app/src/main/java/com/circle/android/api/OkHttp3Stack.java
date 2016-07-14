@@ -15,10 +15,7 @@
  *  * limitations under the License.
  *
  */
-
-package com.flipkart.okhttpstatsdemo;
-
-import android.text.TextUtils;
+package com.circle.android.api;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -46,7 +43,12 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
+/**
+ * OkHttp backed {@link com.android.volley.toolbox.HttpStack HttpStack} that does not
+ * use okhttp-urlconnection
+ */
 public class OkHttp3Stack implements HttpStack {
+
     private OkHttpClient mClient;
 
     public OkHttp3Stack() {
@@ -153,17 +155,11 @@ public class OkHttp3Stack implements HttpStack {
         okHttpRequestBuilder.url(request.getUrl());
 
         Map<String, String> headers = request.getHeaders();
-
-        for (Map.Entry<String, String> header : headers.entrySet()) {
-            if (!TextUtils.isEmpty(header.getKey()) && !TextUtils.isEmpty(header.getValue())) {
-                okHttpRequestBuilder.addHeader(header.getKey(), header.getValue());
-            }
+        for (final String name : headers.keySet()) {
+            okHttpRequestBuilder.addHeader(name, headers.get(name));
         }
-
-        for (Map.Entry<String, String> additionalHeader : additionalHeaders.entrySet()) {
-            if (!TextUtils.isEmpty(additionalHeader.getKey()) && !TextUtils.isEmpty(additionalHeader.getValue())) {
-                okHttpRequestBuilder.addHeader(additionalHeader.getKey(), additionalHeader.getValue());
-            }
+        for (final String name : additionalHeaders.keySet()) {
+            okHttpRequestBuilder.addHeader(name, additionalHeaders.get(name));
         }
 
         setConnectionParametersForRequest(okHttpRequestBuilder, request);

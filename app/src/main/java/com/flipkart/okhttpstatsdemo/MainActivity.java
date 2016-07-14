@@ -36,6 +36,7 @@ import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
+import com.circle.android.api.OkHttp3Stack;
 import com.flipkart.okhttpstats.NetworkInterceptor;
 import com.flipkart.okhttpstats.handler.OnResponseListener;
 import com.flipkart.okhttpstats.handler.PersistentStatsHandler;
