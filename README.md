@@ -1,6 +1,6 @@
-#okHttp-Stats
+#okhttp-Stats
 
-OkHttp-Stats is an android library built on top of OK-HTTP, which is responsible for intercepting all the network calls and for calculating network stats such as the average network speed of the user. This is more of a analyitcal tool which can be used to track the success and error responses.
+OkHttp-Stats is an android library built on top of OkHttp, which is responsible for intercepting all the network calls and for calculating network stats such as the average network speed of the user. This is more of a analytical tool which can be used to track the success and error responses.
 
 ###How to use ?
 
