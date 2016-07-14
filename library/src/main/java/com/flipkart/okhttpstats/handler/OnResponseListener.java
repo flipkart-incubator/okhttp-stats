@@ -23,35 +23,35 @@
 
 package com.flipkart.okhttpstats.handler;
 
-import android.support.annotation.Nullable;
+import android.net.NetworkInfo;
 
 import com.flipkart.okhttpstats.model.RequestStats;
 
 import java.io.IOException;
 
-public interface NetworkRequestStatsHandler {
+/**
+ * This interface to be consumed by the client, to get callbacks on success/failure cases
+ * It is more of a generic listener, where if server gives back any response {@link OnResponseListener#onResponseSuccess(NetworkInfo, RequestStats)} gets called, independent of the status code.
+ * When there is no response, or any error before server responds {@link OnResponseListener#onResponseError(NetworkInfo, RequestStats, Exception)} gets called
+ * <p>
+ * If the client wants callback more specific to server status code such as 2XX, 3XX, 4XX and 5XX, implement the {@link ForwardingResponse}
+ */
+public interface OnResponseListener {
 
     /**
-     * Indicates a successful response was received.
+     * This callback includes response with 2XX, 3XX, 4XX, 5XX status codes
      *
+     * @param info         {@link NetworkInfo}
      * @param requestStats {@link RequestStats}
      */
-    void onResponseReceived(RequestStats requestStats);
+    void onResponseSuccess(NetworkInfo info, RequestStats requestStats);
 
     /**
-     * Indicates the connection failed, which implies that we dont have information like response status code, size etc.
-     * Typically, socket timeouts, connect errors etc.
+     * This callback includes failure request cases, in cases when there are no response such as NoInternet and more
      *
-     * @param requestStats {@link RequestStats}
-     */
-    void onHttpExchangeError(RequestStats requestStats, @Nullable IOException e);
-
-    /**
-     * Indicates that connection was successful, but we could not read the response stream.
-     * This implies that we have access to response status code etc.
-     *
+     * @param info         {@link NetworkInfo}
      * @param requestStats {@link RequestStats}
      * @param e            {@link IOException}
      */
-    void onResponseInputStreamError(RequestStats requestStats, @Nullable Exception e);
+    void onResponseError(NetworkInfo info, RequestStats requestStats, Exception e);
 }

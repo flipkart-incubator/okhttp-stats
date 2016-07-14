@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.flipkart.flipperfdemo.MainActivity"
+    tools:context="com.flipkart.okhttpstatsdemo.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <com.flipkart.fkvolley.toolbox.NetworkImageView
+    <com.android.volley.toolbox.NetworkImageView
         android:id="@+id/img"
         android:layout_width="300dp"
         android:layout_height="300dp"
