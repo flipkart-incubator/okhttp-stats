@@ -35,18 +35,15 @@ buildscript {
     }
 }
 
-repositories {
-    jcenter()
-    maven { url 'http://repo1.maven.org/maven2' }
-}
-
 apply plugin: 'com.android.library'
 apply plugin: 'android-maven'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.0"
-
+    buildToolsVersion '24.0.0'
+    lintOptions {
+        abortOnError false
+    }
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 24
@@ -62,7 +59,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:support-annotations:24.0.0'
     compile 'org.slf4j:slf4j-api:1.7.6'
     compile 'com.squareup.okhttp3:okhttp:3.4.0'
