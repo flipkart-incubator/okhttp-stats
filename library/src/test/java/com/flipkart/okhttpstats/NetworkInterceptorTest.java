@@ -6,13 +6,14 @@ import android.support.annotation.Nullable;
 import com.flipkart.okhttpstats.interpreter.DefaultInterpreter;
 import com.flipkart.okhttpstats.interpreter.NetworkInterpreter;
 import com.flipkart.okhttpstats.reporter.NetworkEventReporter;
+import com.flipkart.okhttpstats.toolbox.Utils;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import java.io.ByteArrayOutputStream;
@@ -28,7 +29,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import okhttp3.internal.http.OkHeaders;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okio.Buffer;
@@ -55,6 +55,19 @@ public class NetworkInterceptorTest {
     }
 
     /**
+     * Test to verify that {@link IllegalStateException} is thrown if {@link NetworkInterpreter} is null
+     *
+     * @throws Exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void testIfExceptionThrownIfInterpreterNull() throws Exception {
+        new NetworkInterceptor.Builder()
+                .setEnabled(true)
+                .setNetworkInterpreter(null)
+                .build();
+    }
+
+    /**
      * Test to verify the response object before and after interception
      *
      * @throws IOException
@@ -67,7 +80,7 @@ public class NetworkInterceptorTest {
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
                 .setEnabled(true)
                 .setNetworkInterpreter(networkInterpreter)
-                .build(RuntimeEnvironment.application);
+                .build();
 
         Uri requestUri = Uri.parse("http://www.flipkart.com");
         String requestText = "Test Request";
@@ -105,59 +118,7 @@ public class NetworkInterceptorTest {
     }
 
     /**
-     * Test to verify {@link com.flipkart.okhttpstats.interpreter.DefaultInterpreter.ForwardingResponseBody}
-     *
-     * @throws IOException
-     */
-    @Test
-    public void testResponseBody() throws IOException {
-        NetworkEventReporter networkEventReporter = mock(NetworkEventReporter.class);
-        NetworkInterpreter networkInterpreter = new DefaultInterpreter(networkEventReporter);
-
-        NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
-                .setEnabled(true)
-                .setNetworkInterpreter(networkInterpreter)
-                .build(RuntimeEnvironment.application);
-
-        Uri requestUri = Uri.parse("http://www.flipkart.com");
-        String requestText = "Test Request";
-
-        //creating request
-        Request request = new Request.Builder()
-                .url(requestUri.toString())
-                .method("POST", RequestBody.create(MediaType.parse("text/plain"), requestText))
-                .build();
-
-        //creating response
-        Response response = new Response.Builder()
-                .request(request)
-                .protocol(Protocol.HTTP_1_1)
-                .code(200)
-                .addHeader("Content-Length", "20")
-                .body(ResponseBody.create(MediaType.parse("text/plain"), "any text"))
-                .build();
-
-        CustomChain customChain = new CustomChain(request, response, null);
-        networkInterceptor.intercept(customChain);
-
-        //intercepted request object
-        Response interceptedResponse = customChain.proceed(request);
-        DefaultInterpreter.ForwardingResponseBody forwardingResponseBody = new DefaultInterpreter.ForwardingResponseBody(interceptedResponse.body(), interceptedResponse.body().byteStream());
-
-        interceptedResponse = interceptedResponse.newBuilder().body(forwardingResponseBody).build();
-
-        //assert the response body of response
-        Assert.assertTrue(interceptedResponse.body() == forwardingResponseBody);
-        //assert the content type
-        Assert.assertTrue(interceptedResponse.body().contentType() == forwardingResponseBody.contentType());
-        //assert the content length
-        Assert.assertTrue(interceptedResponse.body().contentLength() == forwardingResponseBody.contentLength());
-        //assert the source
-        Assert.assertTrue(interceptedResponse.body().source() == forwardingResponseBody.source());
-    }
-
-    /**
-     * Test for Response With Content Length
+     * Test for Response With Content Length in their header
      *
      * @throws IOException
      */
@@ -169,7 +130,7 @@ public class NetworkInterceptorTest {
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
                 .setEnabled(true)
                 .setNetworkInterpreter(networkInterpreter)
-                .build(RuntimeEnvironment.application);
+                .build();
 
 
         Uri requestUri = Uri.parse("http://www.flipkart.com");
@@ -216,7 +177,7 @@ public class NetworkInterceptorTest {
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
                 .setEnabled(true)
                 .setNetworkInterpreter(networkInterpreter)
-                .build(RuntimeEnvironment.application);
+                .build();
 
         Uri requestUri = Uri.parse("http://www.flipkart.com");
         String requestText = "Test Request";
@@ -248,14 +209,15 @@ public class NetworkInterceptorTest {
         Assert.assertTrue(interceptedRequest.url().toString().equals(request.url().toString()));
         //assert request body is same
         Assert.assertTrue(interceptedRequest.body().equals(request.body()));
-
     }
 
     /**
      * Test the request object using {@link MockWebServer}
+     * Trying to simulate a real example by mocking server
      *
      * @throws IOException
      */
+    @Config(sdk = 23)
     @Test
     public void testRequest() throws IOException {
         NetworkEventReporter networkEventReporter = mock(NetworkEventReporter.class);
@@ -264,10 +226,9 @@ public class NetworkInterceptorTest {
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
                 .setNetworkInterpreter(networkInterpreter)
                 .setEnabled(true)
-                .build(RuntimeEnvironment.application);
+                .build();
 
-        OkHttpClient okHttpClient = new OkHttpClient();
-        okHttpClient.networkInterceptors().add(networkInterceptor);
+        OkHttpClient okHttpClient = new OkHttpClient.Builder().addNetworkInterceptor(networkInterceptor).build();
 
         MockWebServer server = new MockWebServer();
         server.start();
@@ -294,6 +255,7 @@ public class NetworkInterceptorTest {
      *
      * @throws IOException
      */
+    @Config(sdk = 23)
     @Test
     public void testResponseWithoutContentLength() throws IOException {
         NetworkEventReporter networkEventReporter = mock(NetworkEventReporter.class);
@@ -302,10 +264,9 @@ public class NetworkInterceptorTest {
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
                 .setNetworkInterpreter(networkInterpreter)
                 .setEnabled(true)
-                .build(RuntimeEnvironment.application);
+                .build();
 
-        OkHttpClient okHttpClient = new OkHttpClient();
-        okHttpClient.networkInterceptors().add(networkInterceptor);
+        OkHttpClient okHttpClient = new OkHttpClient.Builder().addNetworkInterceptor(networkInterceptor).build();
 
         byte[] uncompressedData = "Dummy Value".getBytes();
         byte[] compressedData = compress(uncompressedData);
@@ -315,7 +276,7 @@ public class NetworkInterceptorTest {
 
         //removing content length from the response header
         server.enqueue(new MockResponse()
-                .setChunkedBody(new Buffer().write(compressedData),3));
+                .setChunkedBody(new Buffer().write(compressedData), 3));
 
         Request request = new Request.Builder()
                 .url(server.url("/"))
@@ -331,7 +292,9 @@ public class NetworkInterceptorTest {
         ArgumentCaptor<NetworkEventReporter.InspectorResponse> responseArgumentCaptor = ArgumentCaptor.forClass(NetworkEventReporter.InspectorResponse.class);
         Mockito.verify(networkEventReporter, times(1))
                 .responseReceived(any(NetworkEventReporter.InspectorRequest.class), responseArgumentCaptor.capture());
-        Assert.assertTrue(responseArgumentCaptor.getValue().responseSize()==compressedData.length);
+
+        //assert that the bytes received from callback is same as compressed data
+        Assert.assertTrue(responseArgumentCaptor.getValue().responseSize() == compressedData.length);
 
         server.shutdown();
     }
@@ -353,14 +316,14 @@ public class NetworkInterceptorTest {
                 .addHeader("HOST", "flipkart")
                 .build();
 
-        DefaultInterpreter.OkHttpInspectorRequest okHttpInspectorRequest = new DefaultInterpreter.OkHttpInspectorRequest(1, request.url().url(), request.method(), OkHeaders.contentLength(request), request.header("HOST"));
+        DefaultInterpreter.OkHttpInspectorRequest okHttpInspectorRequest = new DefaultInterpreter.OkHttpInspectorRequest(1, request.url().url(), request.method(), Utils.contentLength(request), request.header("HOST"));
 
         //assert id is same
         Assert.assertTrue(okHttpInspectorRequest.requestId() == 1);
         //assert url is same
-        Assert.assertTrue(okHttpInspectorRequest.url().equals(request.url()));
+        Assert.assertTrue(okHttpInspectorRequest.url().equals(request.url().url()));
         //assert content length is same
-        Assert.assertTrue(okHttpInspectorRequest.requestSize() == OkHeaders.contentLength(request));
+        Assert.assertTrue(okHttpInspectorRequest.requestSize() == Utils.contentLength(request));
         //assert hostname is same
         Assert.assertTrue(okHttpInspectorRequest.hostName().equals(request.header("HOST")));
         //assert method is same
@@ -385,7 +348,10 @@ public class NetworkInterceptorTest {
         Assert.assertTrue(okHttpInspectorResponse.statusCode() == 200);
     }
 
-    private static class CustomChain implements Interceptor.Chain {
+    /**
+     * Only for testing purposes.
+     */
+    public static class CustomChain implements Interceptor.Chain {
         private final Request mRequest;
         private final Response mResponse;
         @Nullable

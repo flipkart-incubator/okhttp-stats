@@ -1,7 +1,8 @@
-package com.flipkart.okhttpstats;
+package com.flipkart.okhttpstats.model;
 
 import android.net.NetworkInfo;
 
+import com.flipkart.okhttpstats.BuildConfig;
 import com.flipkart.okhttpstats.model.RequestStats;
 
 import org.junit.Assert;

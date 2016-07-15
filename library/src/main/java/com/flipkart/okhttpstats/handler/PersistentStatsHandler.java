@@ -77,6 +77,21 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
         this.mCurrentAvgSpeed = mPreferenceManager.getAverageSpeed(getNetworkKey(getActiveNetworkInfo()));
     }
 
+    @VisibleForTesting
+    public PersistentStatsHandler(Context context, PreferenceManager preferenceManager) {
+        this.mPreferenceManager = preferenceManager;
+        this.MAX_SIZE = DEFAULT_MAX_SIZE;
+        this.mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        this.mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        this.mNetworkStat = new NetworkStat();
+        this.mCurrentAvgSpeed = mPreferenceManager.getAverageSpeed(getNetworkKey(getActiveNetworkInfo()));
+    }
+
+    @VisibleForTesting
+    public Set<OnResponseListener> getOnResponseListeners() {
+        return mOnResponseListeners;
+    }
+
     /**
      * Client can call this to get the current network info
      *

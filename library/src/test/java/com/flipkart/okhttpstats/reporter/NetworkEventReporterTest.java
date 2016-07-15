@@ -1,9 +1,10 @@
-package com.flipkart.okhttpstats;
+package com.flipkart.okhttpstats.reporter;
 
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 
+import com.flipkart.okhttpstats.BuildConfig;
 import com.flipkart.okhttpstats.handler.NetworkRequestStatsHandler;
 import com.flipkart.okhttpstats.model.RequestStats;
 import com.flipkart.okhttpstats.reporter.NetworkEventReporter;
