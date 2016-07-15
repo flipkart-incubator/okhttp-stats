@@ -1,5 +1,6 @@
-package com.flipkart.okhttpstats;
+package com.flipkart.okhttpstats.response;
 
+import com.flipkart.okhttpstats.BuildConfig;
 import com.flipkart.okhttpstats.response.CountingInputStream;
 import com.flipkart.okhttpstats.response.ResponseHandler;
 

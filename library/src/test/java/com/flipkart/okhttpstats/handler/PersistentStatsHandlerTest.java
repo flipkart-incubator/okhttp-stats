@@ -1,12 +1,12 @@
-package com.flipkart.okhttpstats;
+package com.flipkart.okhttpstats.handler;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.flipkart.okhttpstats.handler.OnResponseListener;
-import com.flipkart.okhttpstats.handler.PersistentStatsHandler;
+import com.flipkart.okhttpstats.BuildConfig;
 import com.flipkart.okhttpstats.model.RequestStats;
+import com.flipkart.okhttpstats.toolbox.PreferenceManager;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,11 +22,14 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyFloat;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by anirudh.r on 13/05/16 at 12:28 AM.
@@ -56,7 +59,7 @@ public class PersistentStatsHandlerTest {
         persistentStatsHandler.addListener(onResponseListener);
 
         //assert size is 1
-        Assert.assertTrue(persistentStatsHandler.getOnResponseReceivedListenerList().size() == 1);
+        Assert.assertTrue(persistentStatsHandler.getOnResponseListeners().size() == 1);
     }
 
     /**
@@ -72,11 +75,11 @@ public class PersistentStatsHandlerTest {
         persistentStatsHandler.addListener(onResponseListener);
 
         //assert size is 1
-        Assert.assertTrue(persistentStatsHandler.getOnResponseReceivedListenerList().size() == 1);
+        Assert.assertTrue(persistentStatsHandler.getOnResponseListeners().size() == 1);
         persistentStatsHandler.removeListener(onResponseListener);
 
         //assert size is 0
-        Assert.assertTrue(persistentStatsHandler.getOnResponseReceivedListenerList().size() == 0);
+        Assert.assertTrue(persistentStatsHandler.getOnResponseListeners().size() == 0);
     }
 
     /**
@@ -93,7 +96,7 @@ public class PersistentStatsHandlerTest {
         persistentStatsHandler.addListener(onResponseListener);
 
         //assert size is 1
-        Assert.assertTrue(persistentStatsHandler.getOnResponseReceivedListenerList().size() == 1);
+        Assert.assertTrue(persistentStatsHandler.getOnResponseListeners().size() == 1);
 
         RequestStats requestStats = new RequestStats(1);
         persistentStatsHandler.onResponseReceived(requestStats);
@@ -106,7 +109,7 @@ public class PersistentStatsHandlerTest {
         persistentStatsHandler.addListener(onResponseListener1);
 
         //assert size is 2
-        Assert.assertTrue(persistentStatsHandler.getOnResponseReceivedListenerList().size() == 2);
+        Assert.assertTrue(persistentStatsHandler.getOnResponseListeners().size() == 2);
         persistentStatsHandler.onResponseReceived(requestStats);
 
         //verify onResponseReceived of 1st listener gets called once
@@ -129,7 +132,7 @@ public class PersistentStatsHandlerTest {
         persistentStatsHandler.addListener(onResponseListener);
 
         //assert size is 1
-        Assert.assertTrue(persistentStatsHandler.getOnResponseReceivedListenerList().size() == 1);
+        Assert.assertTrue(persistentStatsHandler.getOnResponseListeners().size() == 1);
 
         RequestStats requestStats = new RequestStats(1);
         persistentStatsHandler.onHttpExchangeError(requestStats, new IOException(""));
@@ -142,7 +145,7 @@ public class PersistentStatsHandlerTest {
         reset(onResponseListener);
 
         //assert size is 2
-        Assert.assertTrue(persistentStatsHandler.getOnResponseReceivedListenerList().size() == 2);
+        Assert.assertTrue(persistentStatsHandler.getOnResponseListeners().size() == 2);
         persistentStatsHandler.onHttpExchangeError(requestStats, new IOException(""));
 
         verify(onResponseListener, times(1)).onResponseError(any(NetworkInfo.class), eq(requestStats), any(IOException.class));
@@ -163,7 +166,7 @@ public class PersistentStatsHandlerTest {
         persistentStatsHandler.addListener(onResponseListener);
 
         //assert size is 1
-        Assert.assertTrue(persistentStatsHandler.getOnResponseReceivedListenerList().size() == 1);
+        Assert.assertTrue(persistentStatsHandler.getOnResponseListeners().size() == 1);
 
         RequestStats requestStats = new RequestStats(1);
         persistentStatsHandler.onResponseInputStreamError(requestStats, new SocketTimeoutException());
@@ -175,7 +178,7 @@ public class PersistentStatsHandlerTest {
         persistentStatsHandler.addListener(onResponseListener1);
 
         //assert size is 2
-        Assert.assertTrue(persistentStatsHandler.getOnResponseReceivedListenerList().size() == 2);
+        Assert.assertTrue(persistentStatsHandler.getOnResponseListeners().size() == 2);
     }
 
     /**
@@ -209,5 +212,34 @@ public class PersistentStatsHandlerTest {
 
         PersistentStatsHandler persistentStatsHandler = new PersistentStatsHandler(RuntimeEnvironment.application);
         Assert.assertTrue(persistentStatsHandler.getNetworkKey(shadowConnectivityManager.getActiveNetworkInfo()) != null);
+    }
+
+    /**
+     * Test to verify that {@link PreferenceManager#setAverageSpeed(String, float)} gets called when number of request sent is greater
+     * than the max number
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testSaveToSharedPreferenceCalled() throws Exception {
+        PreferenceManager preferenceManager = mock(PreferenceManager.class);
+
+        PersistentStatsHandler persistentStatsHandler = new PersistentStatsHandler(RuntimeEnvironment.application, preferenceManager);
+        persistentStatsHandler.setMaxSizeForPersistence(3);
+
+        RequestStats requestStats = new RequestStats(2);
+        requestStats.setStatusCode(200);
+
+        RequestStats requestStats1 = new RequestStats(2);
+        requestStats.setStatusCode(200);
+
+        RequestStats requestStats2 = new RequestStats(2);
+        requestStats.setStatusCode(200);
+
+        persistentStatsHandler.onResponseReceived(requestStats);
+        persistentStatsHandler.onResponseReceived(requestStats1);
+        persistentStatsHandler.onResponseReceived(requestStats2);
+
+        verify(preferenceManager, times(1)).setAverageSpeed(anyString(), anyFloat());
     }
 }

@@ -1,9 +1,10 @@
-package com.flipkart.okhttpstats;
+package com.flipkart.okhttpstats.toolbox;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.flipkart.okhttpstats.BuildConfig;
 import com.flipkart.okhttpstats.handler.PersistentStatsHandler;
 import com.flipkart.okhttpstats.toolbox.PreferenceManager;
 

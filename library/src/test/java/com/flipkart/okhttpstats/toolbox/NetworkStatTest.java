@@ -1,5 +1,6 @@
-package com.flipkart.okhttpstats;
+package com.flipkart.okhttpstats.toolbox;
 
+import com.flipkart.okhttpstats.BuildConfig;
 import com.flipkart.okhttpstats.model.RequestStats;
 import com.flipkart.okhttpstats.toolbox.NetworkStat;
 
