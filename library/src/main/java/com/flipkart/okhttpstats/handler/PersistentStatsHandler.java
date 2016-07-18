@@ -28,6 +28,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Handler;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 
@@ -55,6 +56,7 @@ import java.util.Set;
 public class PersistentStatsHandler implements NetworkRequestStatsHandler {
 
     private static final int DEFAULT_MAX_SIZE = 10;
+    private static final int DEFAULT_TIMEOUT = 10; //in millisec
     private static final String WIFI_NETWORK = "WIFI";
     private static final String MOBILE_NETWORK = "mobile";
     private static final String UNKNOWN_NETWORK = "unknown";
@@ -63,14 +65,25 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     private Set<OnResponseListener> mOnResponseListeners = new HashSet<>();
     private int mResponseCount = 0;
     private int MAX_SIZE;
+    private long TIME_OUT;
     private WifiManager mWifiManager;
     private NetworkStat mNetworkStat;
     private float mCurrentAvgSpeed = 0;
     private ConnectivityManager mConnectivityManager;
+    private Handler mHandler = new Handler();
+    private Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mCurrentAvgSpeed = calculateNewSpeed(mCurrentAvgSpeed);
+            saveToSharedPreference(mCurrentAvgSpeed);
+            mResponseCount = 0;
+        }
+    };
 
     public PersistentStatsHandler(Context context) {
         this.mPreferenceManager = new PreferenceManager(context);
         this.MAX_SIZE = DEFAULT_MAX_SIZE;
+        this.TIME_OUT = DEFAULT_TIMEOUT;
         this.mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         this.mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         this.mNetworkStat = new NetworkStat();
@@ -81,6 +94,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     public PersistentStatsHandler(Context context, PreferenceManager preferenceManager) {
         this.mPreferenceManager = preferenceManager;
         this.MAX_SIZE = DEFAULT_MAX_SIZE;
+        this.TIME_OUT = DEFAULT_TIMEOUT;
         this.mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         this.mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         this.mNetworkStat = new NetworkStat();
@@ -136,6 +150,15 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     }
 
     /**
+     * The client can set the time out before it stores the speed to shared preference
+     *
+     * @param timeOut : long
+     */
+    public void setTimeoutForPersistence(long timeOut) {
+        this.TIME_OUT = timeOut;
+    }
+
+    /**
      * Exposed to the client so that he can get the average network speed
      *
      * @return avg speed
@@ -160,10 +183,13 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
         //save to shared prefs if condition is satisfied
         synchronized (this) {
             mResponseCount += 1;
+            stopTimer();
             if (mResponseCount >= MAX_SIZE) {
                 mCurrentAvgSpeed = calculateNewSpeed(mCurrentAvgSpeed);
                 saveToSharedPreference(mCurrentAvgSpeed);
                 mResponseCount = 0;
+            } else {
+                startTimer();
             }
         }
 
@@ -231,6 +257,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
             }
             return UNKNOWN_NETWORK;
         }
+
         return UNKNOWN_NETWORK;
     }
 
@@ -244,5 +271,19 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
             }
         }
         return -1;
+    }
+
+    /**
+     * This method starts the timer.
+     */
+    private void startTimer() {
+        mHandler.postDelayed(mRunnable, TIME_OUT);
+    }
+
+    /**
+     * This method stops the timer.
+     */
+    private void stopTimer() {
+        mHandler.removeCallbacks(mRunnable);
     }
 }
