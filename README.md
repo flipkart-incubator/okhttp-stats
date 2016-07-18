@@ -1,4 +1,4 @@
-#okhttp-stats
+#okhttp-stats [![](https://jitpack.io/v/flipkart-incubator/okhttp-stats.svg)](https://jitpack.io/#flipkart-incubator/okhttp-stats)
 
 OkHttp-Stats is an android library built on top of OkHttp3, which is responsible for intercepting all the network calls and for calculating network stats such as the average network speed of the user. This is more of an analytical tool which can be used to track the success and error responses.
 
