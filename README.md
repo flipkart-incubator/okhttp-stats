@@ -1,8 +1,26 @@
-#okhttp-stats
+#okhttp-stats ![alt text](https://travis-ci.org/flipkart-incubator/okhttp-stats.svg?branch=develop) [![](https://jitpack.io/v/flipkart-incubator/okhttp-stats.svg)](https://jitpack.io/#flipkart-incubator/okhttp-stats)
 
 OkHttp-Stats is an android library built on top of OkHttp3, which is responsible for intercepting all the network calls and for calculating network stats such as the average network speed of the user. This is more of an analytical tool which can be used to track the success and error responses.
 
 Can be plugged in to any app which uses okhttp in their networking stack.
+
+###Get okhttp-stats
+
+Add it in your root build.gradle at the end of repositories:
+
+	allprojects {
+		repositories {
+			...
+			maven { url "https://jitpack.io" }
+		}
+	}
+
+Add the dependency:
+
+	dependencies {
+	        compile 'com.github.flipkart-incubator:okhttp-stats:1.0'
+	}
+
 
 ###How to use ?
 
