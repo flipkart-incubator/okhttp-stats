@@ -1,10 +1,10 @@
-#okhttp-stats ![alt text](https://travis-ci.org/flipkart-incubator/okhttp-stats.svg?branch=develop) [![](https://jitpack.io/v/flipkart-incubator/okhttp-stats.svg)](https://jitpack.io/#flipkart-incubator/okhttp-stats)
+#okhttp-stats ![alt text](https://travis-ci.org/flipkart-incubator/okhttp-stats.svg?branch=master) [![](https://jitpack.io/v/flipkart-incubator/okhttp-stats.svg)](https://jitpack.io/#flipkart-incubator/okhttp-stats)
 
-OkHttp-Stats is an android library built on top of OkHttp3, which is responsible for intercepting all the network calls and for calculating network stats such as the average network speed of the user. This is more of an analytical tool which can be used to track the success and error responses.
+OkHttp-Stats is an android library built on top of OkHttp3, which is responsible for intercepting all the network calls and for calculating network stats such as the average network speed of the user. This is more of an analytical tool which can be used to track the success and error response logs.
 
 Can be plugged in to any app which uses okhttp in their networking stack.
 
-###Get okhttp-stats
+###Gradle Dependency ?
 
 Add it in your root build.gradle at the end of repositories:
 
@@ -18,7 +18,7 @@ Add it in your root build.gradle at the end of repositories:
 Add the dependency:
 
 	dependencies {
-	        compile 'com.github.flipkart-incubator:okhttp-stats:1.0'
+		compile 'com.github.flipkart-incubator:okhttp-stats:1.0'
 	}
 
 
@@ -58,7 +58,7 @@ private class OnResponseReceived implements OnResponseListener {
     }
 ````
 
-Initialize the NetworkInterceptor, and register your listener.
+Initialize the NetworkInterceptor, and register your listener with the NetworkInterceptor.
 
 ````java
         
@@ -84,13 +84,18 @@ Initialize the NetworkInterceptor, and register your listener.
 ````
 Now, pass the okHttpClient (which has an interceptor added) to the okhttpstack, and you are done.
 
-###[Wiki](https://github.com/Flipkart/okhttp-stats/wiki)
 
-###Dependencies
+###Getting Started Guide ?
+
+Head over to the [Wiki](https://github.com/Flipkart/okhttp-stats/wiki) page for the detailed documentation
+
+
+###Library Dependencies
 
 * [OkHttp](https://github.com/square/okhttp)
 * [Slf4J](http://www.slf4j.org/)
 * [JUnit](http://junit.org/), [Roboelectric](http://robolectric.org/), [Mockito](http://mockito.org/)
+
 
 ###Licence
 
