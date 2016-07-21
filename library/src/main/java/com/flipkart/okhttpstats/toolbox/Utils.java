@@ -29,6 +29,16 @@ import okhttp3.Response;
 
 public class Utils {
 
+    private static boolean isLoggingEnabled = false;
+
+    public static boolean isLoggingEnabled() {
+        return isLoggingEnabled;
+    }
+
+    public static void setIsLoggingEnabled(boolean isLoggingEnabled) {
+        Utils.isLoggingEnabled = isLoggingEnabled;
+    }
+
     public static long contentLength(Request request) {
         return contentLength(request.headers());
     }

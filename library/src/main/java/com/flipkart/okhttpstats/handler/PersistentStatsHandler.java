@@ -34,6 +34,7 @@ import android.text.TextUtils;
 import com.flipkart.okhttpstats.model.RequestStats;
 import com.flipkart.okhttpstats.toolbox.NetworkStat;
 import com.flipkart.okhttpstats.toolbox.PreferenceManager;
+import com.flipkart.okhttpstats.toolbox.Utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,7 +147,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
 
     @Override
     public void onResponseReceived(final RequestStats requestStats) {
-        if (mLogger.isDebugEnabled()) {
+        if (Utils.isLoggingEnabled()) {
             mLogger.debug("Response Received : {}", requestStats);
         }
 
@@ -178,7 +179,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
 
     @Override
     public void onHttpExchangeError(RequestStats requestStats, IOException e) {
-        if (mLogger.isDebugEnabled()) {
+        if (Utils.isLoggingEnabled()) {
             mLogger.debug("Response Received With Http Exchange Error : {}", requestStats);
         }
 
@@ -191,7 +192,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
 
     @Override
     public void onResponseInputStreamError(RequestStats requestStats, Exception e) {
-        if (mLogger.isDebugEnabled()) {
+        if (Utils.isLoggingEnabled()) {
             mLogger.debug("Response Received With InputStream Error : {}", requestStats);
         }
 
@@ -208,7 +209,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
      * @param currentAvgSpeed : float
      */
     private void saveToSharedPreference(float currentAvgSpeed) {
-        if (mLogger.isDebugEnabled()) {
+        if (Utils.isLoggingEnabled()) {
             mLogger.debug("avg speed", "saveToSharedPreference: " + mNetworkStat.getCurrentAvgSpeed());
         }
         String networkKey = getNetworkKey(getActiveNetworkInfo());
