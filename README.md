@@ -100,8 +100,13 @@ Head over to the [Wiki](https://github.com/Flipkart/okhttp-stats/wiki) page for 
 ## Contributing
 
 1. Fork the repo
-2. Apply your changes
+2. Apply the changes
 3. Submit your pull request
+
+
+## Releases
+
+Checkout the [Releases](https://github.com/flipkart-incubator/okhttp-stats/releases) tab for all release info.
 
 
 ## Licence
