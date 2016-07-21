@@ -4,7 +4,7 @@ OkHttp-Stats is an android library built on top of OkHttp3, which is responsible
 
 Can be plugged in to any app which uses okhttp in their networking stack.
 
-###Gradle Dependency ?
+## Gradle Dependency
 
 Add it in your root build.gradle at the end of repositories:
 
@@ -22,7 +22,7 @@ Add the dependency:
 	}
 
 
-###How to use ?
+## How to works
 
 Create a class that implements the ````OnResponseListener````. This is where you will get all the callbacks in case of success or error responses.
 
@@ -85,19 +85,26 @@ Initialize the NetworkInterceptor, and register your listener with the NetworkIn
 Now, pass the okHttpClient (which has an interceptor added) to the okhttpstack, and you are done.
 
 
-###Getting Started Guide ?
+## Getting Started Guide
 
 Head over to the [Wiki](https://github.com/Flipkart/okhttp-stats/wiki) page for the detailed documentation
 
 
-###Library Dependencies
+## Library Dependencies
 
 * [OkHttp](https://github.com/square/okhttp)
 * [Slf4J](http://www.slf4j.org/)
 * [JUnit](http://junit.org/), [Roboelectric](http://robolectric.org/), [Mockito](http://mockito.org/)
 
 
-###Licence
+## Contributing
+
+1. Fork the repo
+2. Apply your changes
+3. Submit your pull request
+
+
+## Licence
 
 ```
 The MIT License (MIT)
