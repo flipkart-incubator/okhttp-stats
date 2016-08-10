@@ -71,7 +71,7 @@ public class DefaultInterpreter implements NetworkInterpreter {
                 try {
                     responseStream = body.byteStream();
                 } catch (Exception e) {
-                    if (logger.isDebugEnabled()) {
+                    if (Utils.isLoggingEnabled()) {
                         logger.debug("Error received while reading input stream {}", e.getMessage());
                     }
 
@@ -101,7 +101,7 @@ public class DefaultInterpreter implements NetworkInterpreter {
 
     @Override
     public void interpretError(int requestId, NetworkInterceptor.TimeInfo timeInfo, Request request, IOException e) {
-        if (logger.isDebugEnabled()) {
+        if (Utils.isLoggingEnabled()) {
             logger.debug("Error received while proceeding response {}", e.getMessage());
         }
         final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url().url(), request.method(), Utils.contentLength(request), request.header(HOST_NAME));
