@@ -30,14 +30,12 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.flipkart.okhttpstats.model.RequestStats;
 import com.flipkart.okhttpstats.toolbox.NetworkStat;
 import com.flipkart.okhttpstats.toolbox.PreferenceManager;
 import com.flipkart.okhttpstats.toolbox.Utils;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -60,7 +58,6 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     private static final String MOBILE_NETWORK = "mobile";
     private static final String UNKNOWN_NETWORK = "unknown";
     private final PreferenceManager mPreferenceManager;
-    private Logger mLogger = LoggerFactory.getLogger(PersistentStatsHandler.class);
     private Set<OnResponseListener> mOnResponseListeners = new HashSet<>();
     private int mResponseCount = 0;
     private int MAX_SIZE;
@@ -148,7 +145,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     @Override
     public void onResponseReceived(final RequestStats requestStats) {
         if (Utils.isLoggingEnabled()) {
-            mLogger.debug("Response Received : {}", requestStats);
+            Log.d("Response Received : ", requestStats + " ");
         }
 
         //call all the registered listeners
@@ -180,7 +177,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     @Override
     public void onHttpExchangeError(RequestStats requestStats, IOException e) {
         if (Utils.isLoggingEnabled()) {
-            mLogger.debug("Response Received With Http Exchange Error : {}", requestStats);
+            Log.d("Response Http Error :", requestStats + "");
         }
 
         for (OnResponseListener onResponseListener : mOnResponseListeners) {
@@ -193,7 +190,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     @Override
     public void onResponseInputStreamError(RequestStats requestStats, Exception e) {
         if (Utils.isLoggingEnabled()) {
-            mLogger.debug("Response Received With InputStream Error : {}", requestStats);
+            Log.d("Response InputStream : ", requestStats + "");
         }
 
         for (OnResponseListener onResponseListener : mOnResponseListeners) {
@@ -210,7 +207,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
      */
     private void saveToSharedPreference(float currentAvgSpeed) {
         if (Utils.isLoggingEnabled()) {
-            mLogger.debug("avg speed", "saveToSharedPreference: " + mNetworkStat.getCurrentAvgSpeed());
+            Log.d("avg speed", "saveToSharedPreference: " + mNetworkStat.getCurrentAvgSpeed());
         }
         String networkKey = getNetworkKey(getActiveNetworkInfo());
         mPreferenceManager.setAverageSpeed(networkKey, currentAvgSpeed);

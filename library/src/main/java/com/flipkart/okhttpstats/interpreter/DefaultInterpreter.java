@@ -24,15 +24,13 @@
 package com.flipkart.okhttpstats.interpreter;
 
 import android.support.annotation.VisibleForTesting;
+import android.util.Log;
 
 import com.flipkart.okhttpstats.NetworkInterceptor;
 import com.flipkart.okhttpstats.reporter.NetworkEventReporter;
 import com.flipkart.okhttpstats.response.CountingInputStream;
 import com.flipkart.okhttpstats.response.DefaultResponseHandler;
 import com.flipkart.okhttpstats.toolbox.Utils;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,7 +49,6 @@ import okio.Okio;
 public class DefaultInterpreter implements NetworkInterpreter {
     private static final String HOST_NAME = "HOST";
     private static final String CONTENT_LENGTH = "Content-Length";
-    private Logger logger = LoggerFactory.getLogger(DefaultInterpreter.class);
     private NetworkEventReporter mEventReporter;
 
     public DefaultInterpreter(NetworkEventReporter mEventReporter) {
@@ -72,7 +69,7 @@ public class DefaultInterpreter implements NetworkInterpreter {
                     responseStream = body.byteStream();
                 } catch (Exception e) {
                     if (Utils.isLoggingEnabled()) {
-                        logger.debug("Error received while reading input stream {}", e.getMessage());
+                        Log.d("Error reading IS : ", e.getMessage());
                     }
 
                     //notify event reporter in case there is any exception while getting the input stream of response
@@ -102,7 +99,7 @@ public class DefaultInterpreter implements NetworkInterpreter {
     @Override
     public void interpretError(int requestId, NetworkInterceptor.TimeInfo timeInfo, Request request, IOException e) {
         if (Utils.isLoggingEnabled()) {
-            logger.debug("Error received while proceeding response {}", e.getMessage());
+            Log.d("Error response: ", e.getMessage());
         }
         final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url().url(), request.method(), Utils.contentLength(request), request.header(HOST_NAME));
         mEventReporter.httpExchangeError(okHttpInspectorRequest, e);
