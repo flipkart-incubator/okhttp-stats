@@ -24,6 +24,7 @@
 package com.flipkart.okhttpstats;
 
 import com.flipkart.okhttpstats.interpreter.NetworkInterpreter;
+import com.flipkart.okhttpstats.toolbox.OkHttpStatLog;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -49,6 +50,7 @@ public final class NetworkInterceptor implements Interceptor {
             throw new IllegalStateException("NetworkInterpreter cannot be null");
         }
         mInterpreter = builder.mInterpreter;
+        OkHttpStatLog.enableLogging(builder.mIsLoggingEnabled);
     }
 
     /**
@@ -95,6 +97,7 @@ public final class NetworkInterceptor implements Interceptor {
     public static class Builder {
         private boolean mEnabled = true;
         private NetworkInterpreter mInterpreter;
+        private boolean mIsLoggingEnabled = true;
 
         /**
          * To enable/disable the calls to {@link NetworkInterpreter}
@@ -116,6 +119,17 @@ public final class NetworkInterceptor implements Interceptor {
          */
         public Builder setNetworkInterpreter(NetworkInterpreter interpreter) {
             this.mInterpreter = interpreter;
+            return this;
+        }
+
+        /**
+         * To enable / disable logging
+         *
+         * @param isLoggingEnabled :boolean
+         * @return {@link Builder}
+         */
+        public Builder isLoggingEnabled(boolean isLoggingEnabled) {
+            this.mIsLoggingEnabled = isLoggingEnabled;
             return this;
         }
 
