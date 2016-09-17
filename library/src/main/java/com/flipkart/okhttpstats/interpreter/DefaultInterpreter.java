@@ -79,23 +79,23 @@ public class DefaultInterpreter implements NetworkInterpreter {
                         throw e;
                     }
                 }
+
+                //interpreting the response stream using CountingInputStream, once the counting is done, notify the event reporter that response has been received
+                responseStream = new CountingInputStream(responseStream, new DefaultResponseHandler(new DefaultResponseHandler.ResponseCallback() {
+                    @Override
+                    public void onEOF(long bytesRead) {
+                        okHttpInspectorResponse.mResponseSize = bytesRead;
+                        mEventReporter.responseReceived(okHttpInspectorRequest, okHttpInspectorResponse);
+                    }
+                }));
+
+                //creating response object using the interpreted stream
+                response = response.newBuilder().body(new ForwardingResponseBody(body, responseStream)).build();
             } finally {
                 if (body != null) {
                     body.close();
                 }
             }
-
-            //interpreting the response stream using CountingInputStream, once the counting is done, notify the event reporter that response has been received
-            responseStream = new CountingInputStream(responseStream, new DefaultResponseHandler(new DefaultResponseHandler.ResponseCallback() {
-                @Override
-                public void onEOF(long bytesRead) {
-                    okHttpInspectorResponse.mResponseSize = bytesRead;
-                    mEventReporter.responseReceived(okHttpInspectorRequest, okHttpInspectorResponse);
-                }
-            }));
-
-            //creating response object using the interpreted stream
-            response = response.newBuilder().body(new ForwardingResponseBody(body, responseStream)).build();
         } else {
             //if response has content length, notify the event reporter that response has been received.
             mEventReporter.responseReceived(okHttpInspectorRequest, okHttpInspectorResponse);
