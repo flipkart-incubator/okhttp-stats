@@ -34,6 +34,7 @@ import android.util.Log;
 
 import com.flipkart.okhttpstats.model.RequestStats;
 import com.flipkart.okhttpstats.toolbox.NetworkStat;
+import com.flipkart.okhttpstats.toolbox.OkHttpStatLog;
 import com.flipkart.okhttpstats.toolbox.PreferenceManager;
 import com.flipkart.okhttpstats.toolbox.Utils;
 
@@ -144,7 +145,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
 
     @Override
     public void onResponseReceived(final RequestStats requestStats) {
-        if (Utils.isLoggingEnabled()) {
+        if (OkHttpStatLog.isLoggingEnabled()) {
             Log.d("Response Received : ", requestStats + " ");
         }
 
@@ -176,7 +177,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
 
     @Override
     public void onHttpExchangeError(RequestStats requestStats, IOException e) {
-        if (Utils.isLoggingEnabled()) {
+        if (OkHttpStatLog.isLoggingEnabled()) {
             Log.d("Response Http Error :", requestStats + "");
         }
 
@@ -189,7 +190,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
 
     @Override
     public void onResponseInputStreamError(RequestStats requestStats, Exception e) {
-        if (Utils.isLoggingEnabled()) {
+        if (OkHttpStatLog.isLoggingEnabled()) {
             Log.d("Response InputStream : ", requestStats + "");
         }
 
@@ -206,7 +207,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
      * @param currentAvgSpeed : float
      */
     private void saveToSharedPreference(float currentAvgSpeed) {
-        if (Utils.isLoggingEnabled()) {
+        if (OkHttpStatLog.isLoggingEnabled()) {
             Log.d("avg speed", "saveToSharedPreference: " + mNetworkStat.getCurrentAvgSpeed());
         }
         String networkKey = getNetworkKey(getActiveNetworkInfo());

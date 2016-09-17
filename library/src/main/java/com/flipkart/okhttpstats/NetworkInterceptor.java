@@ -24,7 +24,7 @@
 package com.flipkart.okhttpstats;
 
 import com.flipkart.okhttpstats.interpreter.NetworkInterpreter;
-import com.flipkart.okhttpstats.toolbox.Utils;
+import com.flipkart.okhttpstats.toolbox.OkHttpStatLog;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -50,7 +50,7 @@ public final class NetworkInterceptor implements Interceptor {
             throw new IllegalStateException("NetworkInterpreter cannot be null");
         }
         mInterpreter = builder.mInterpreter;
-        Utils.setIsLoggingEnabled(builder.mIsLoggingEnabled);
+        OkHttpStatLog.enableLogging(builder.mIsLoggingEnabled);
     }
 
     /**
@@ -96,8 +96,8 @@ public final class NetworkInterceptor implements Interceptor {
      */
     public static class Builder {
         private boolean mEnabled = true;
-        private boolean mIsLoggingEnabled = false;
         private NetworkInterpreter mInterpreter;
+        private boolean mIsLoggingEnabled = true;
 
         /**
          * To enable/disable the calls to {@link NetworkInterpreter}
@@ -106,7 +106,7 @@ public final class NetworkInterceptor implements Interceptor {
          * @param enabled boolean
          * @return {@link Builder}
          */
-        public Builder setEnabled(boolean enabled) {
+        public Builder isInterceptorEnabled(boolean enabled) {
             this.mEnabled = enabled;
             return this;
         }
@@ -123,12 +123,12 @@ public final class NetworkInterceptor implements Interceptor {
         }
 
         /**
-         * To enable/disable logging. By default logging is disabled.
+         * To enable / disable logging
          *
-         * @param isLoggingEnabled : boolean
+         * @param isLoggingEnabled :boolean
          * @return {@link Builder}
          */
-        public Builder setLoggingEnabled(boolean isLoggingEnabled) {
+        public Builder isLoggingEnabled(boolean isLoggingEnabled) {
             this.mIsLoggingEnabled = isLoggingEnabled;
             return this;
         }

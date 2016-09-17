@@ -30,6 +30,7 @@ import com.flipkart.okhttpstats.NetworkInterceptor;
 import com.flipkart.okhttpstats.reporter.NetworkEventReporter;
 import com.flipkart.okhttpstats.response.CountingInputStream;
 import com.flipkart.okhttpstats.response.DefaultResponseHandler;
+import com.flipkart.okhttpstats.toolbox.OkHttpStatLog;
 import com.flipkart.okhttpstats.toolbox.Utils;
 
 import java.io.IOException;
@@ -64,31 +65,37 @@ public class DefaultInterpreter implements NetworkInterpreter {
         if (response.header(CONTENT_LENGTH) == null) {
             final ResponseBody body = response.body();
             InputStream responseStream = null;
-            if (body != null) {
-                try {
-                    responseStream = body.byteStream();
-                } catch (Exception e) {
-                    if (Utils.isLoggingEnabled()) {
-                        Log.d("Error reading IS : ", e.getMessage());
-                    }
+            try {
+                if (body != null) {
+                    try {
+                        responseStream = body.byteStream();
+                    } catch (Exception e) {
+                        if (OkHttpStatLog.isLoggingEnabled()) {
+                            Log.d("Error reading IS : ", e.getMessage());
+                        }
 
-                    //notify event reporter in case there is any exception while getting the input stream of response
-                    mEventReporter.responseInputStreamError(okHttpInspectorRequest, okHttpInspectorResponse, e);
-                    throw e;
+                        //notify event reporter in case there is any exception while getting the input stream of response
+                        mEventReporter.responseInputStreamError(okHttpInspectorRequest, okHttpInspectorResponse, e);
+                        throw e;
+                    }
+                }
+
+                //interpreting the response stream using CountingInputStream, once the counting is done, notify the event reporter that response has been received
+                responseStream = new CountingInputStream(responseStream, new DefaultResponseHandler(new DefaultResponseHandler.ResponseCallback() {
+                    @Override
+                    public void onEOF(long bytesRead) {
+                        okHttpInspectorResponse.mResponseSize = bytesRead;
+                        mEventReporter.responseReceived(okHttpInspectorRequest, okHttpInspectorResponse);
+                    }
+                }));
+
+                //creating response object using the interpreted stream
+                response = response.newBuilder().body(new ForwardingResponseBody(body, responseStream)).build();
+            } finally {
+                if (body != null) {
+                    body.close();
                 }
             }
-
-            //interpreting the response stream using CountingInputStream, once the counting is done, notify the event reporter that response has been received
-            responseStream = new CountingInputStream(responseStream, new DefaultResponseHandler(new DefaultResponseHandler.ResponseCallback() {
-                @Override
-                public void onEOF(long bytesRead) {
-                    okHttpInspectorResponse.mResponseSize = bytesRead;
-                    mEventReporter.responseReceived(okHttpInspectorRequest, okHttpInspectorResponse);
-                }
-            }));
-
-            //creating response object using the interpreted stream
-            response = response.newBuilder().body(new ForwardingResponseBody(body, responseStream)).build();
         } else {
             //if response has content length, notify the event reporter that response has been received.
             mEventReporter.responseReceived(okHttpInspectorRequest, okHttpInspectorResponse);
@@ -98,7 +105,7 @@ public class DefaultInterpreter implements NetworkInterpreter {
 
     @Override
     public void interpretError(int requestId, NetworkInterceptor.TimeInfo timeInfo, Request request, IOException e) {
-        if (Utils.isLoggingEnabled()) {
+        if (OkHttpStatLog.isLoggingEnabled()) {
             Log.d("Error response: ", e.getMessage());
         }
         final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url().url(), request.method(), Utils.contentLength(request), request.header(HOST_NAME));

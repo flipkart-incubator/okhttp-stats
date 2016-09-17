@@ -1,7 +1,5 @@
 package com.flipkart.okhttpstats.interpreter;
 
-import android.net.Uri;
-
 import com.flipkart.okhttpstats.NetworkInterceptor;
 import com.flipkart.okhttpstats.NetworkInterceptorTest;
 import com.flipkart.okhttpstats.reporter.NetworkEventReporter;
@@ -149,7 +147,7 @@ public class DefaultInterpreterTest {
         NetworkInterpreter networkInterpreter = new DefaultInterpreter(networkEventReporter);
 
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
-                .setEnabled(true)
+                .isInterceptorEnabled(true)
                 .setNetworkInterpreter(networkInterpreter)
                 .build();
 

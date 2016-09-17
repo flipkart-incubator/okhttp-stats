@@ -62,7 +62,7 @@ public class NetworkInterceptorTest {
     @Test(expected = IllegalStateException.class)
     public void testIfExceptionThrownIfInterpreterNull() throws Exception {
         new NetworkInterceptor.Builder()
-                .setEnabled(true)
+                .isInterceptorEnabled(true)
                 .setNetworkInterpreter(null)
                 .build();
     }
@@ -78,7 +78,7 @@ public class NetworkInterceptorTest {
         NetworkInterpreter networkInterpreter = new DefaultInterpreter(networkEventReporter);
 
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
-                .setEnabled(true)
+                .isInterceptorEnabled(true)
                 .setNetworkInterpreter(networkInterpreter)
                 .build();
 
@@ -128,7 +128,7 @@ public class NetworkInterceptorTest {
         NetworkInterpreter networkInterpreter = new DefaultInterpreter(networkEventReporter);
 
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
-                .setEnabled(true)
+                .isInterceptorEnabled(true)
                 .setNetworkInterpreter(networkInterpreter)
                 .build();
 
@@ -175,7 +175,7 @@ public class NetworkInterceptorTest {
         NetworkInterpreter networkInterpreter = new DefaultInterpreter(networkEventReporter);
 
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
-                .setEnabled(true)
+                .isInterceptorEnabled(true)
                 .setNetworkInterpreter(networkInterpreter)
                 .build();
 
@@ -225,7 +225,7 @@ public class NetworkInterceptorTest {
 
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
                 .setNetworkInterpreter(networkInterpreter)
-                .setEnabled(true)
+                .isInterceptorEnabled(true)
                 .build();
 
         OkHttpClient okHttpClient = new OkHttpClient.Builder().addNetworkInterceptor(networkInterceptor).build();
@@ -263,7 +263,7 @@ public class NetworkInterceptorTest {
 
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
                 .setNetworkInterpreter(networkInterpreter)
-                .setEnabled(true)
+                .isInterceptorEnabled(true)
                 .build();
 
         OkHttpClient okHttpClient = new OkHttpClient.Builder().addNetworkInterceptor(networkInterceptor).build();

@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
         NetworkInterceptor networkInterceptor = new NetworkInterceptor.Builder()
                 .setNetworkInterpreter(networkInterpreter)
-                .setEnabled(true)
+                .isLoggingEnabled(true)
                 .build();
 
         OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
