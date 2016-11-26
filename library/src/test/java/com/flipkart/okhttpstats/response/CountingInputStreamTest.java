@@ -1,13 +1,11 @@
 package com.flipkart.okhttpstats.response;
 
 import com.flipkart.okhttpstats.BuildConfig;
-import com.flipkart.okhttpstats.response.CountingInputStream;
-import com.flipkart.okhttpstats.response.ResponseHandler;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.io.ByteArrayInputStream;
@@ -23,7 +21,7 @@ import static org.mockito.Mockito.verify;
  * Created by anirudh.r on 05/05/16 at 7:32 PM.
  * Test for {@link CountingInputStream}
  */
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class CountingInputStreamTest {
 

@@ -1,12 +1,10 @@
 package com.flipkart.okhttpstats.response;
 
 import com.flipkart.okhttpstats.BuildConfig;
-import com.flipkart.okhttpstats.response.DefaultResponseHandler;
-import com.flipkart.okhttpstats.response.ResponseHandler;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import static org.mockito.Mockito.mock;
@@ -17,7 +15,7 @@ import static org.mockito.Mockito.verify;
  * Created by anirudh.r on 05/05/16 at 7:53 PM.
  * Test for {@link DefaultResponseHandler}
  */
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class DefaultResponseHandlerTest {
 

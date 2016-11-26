@@ -10,7 +10,7 @@ import com.flipkart.okhttpstats.toolbox.PreferenceManager;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.internal.ShadowExtractor;
@@ -20,7 +20,7 @@ import org.robolectric.shadows.ShadowConnectivityManager;
  * Created by anirudh.r on 13/05/16 at 10:48 AM.
  * Test for {@link PreferenceManager}
  */
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class PreferenceManagerTest {
 

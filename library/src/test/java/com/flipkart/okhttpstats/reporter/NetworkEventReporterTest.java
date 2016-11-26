@@ -7,12 +7,10 @@ import android.os.Looper;
 import com.flipkart.okhttpstats.BuildConfig;
 import com.flipkart.okhttpstats.handler.NetworkRequestStatsHandler;
 import com.flipkart.okhttpstats.model.RequestStats;
-import com.flipkart.okhttpstats.reporter.NetworkEventReporter;
-import com.flipkart.okhttpstats.reporter.NetworkEventReporterImpl;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.internal.ShadowExtractor;
 import org.robolectric.shadows.ShadowLooper;
@@ -28,7 +26,7 @@ import static org.mockito.Mockito.verify;
  * Created by anirudh.r on 17/05/16 at 10:55 PM.
  * Test for {@link NetworkEventReporter}
  */
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class NetworkEventReporterTest {
 

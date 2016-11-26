@@ -7,7 +7,7 @@ import com.flipkart.okhttpstats.BuildConfig;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.net.MalformedURLException;
@@ -15,7 +15,7 @@ import java.net.URL;
 
 import static org.mockito.Mockito.mock;
 
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class RequestStatsTest {
 

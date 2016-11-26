@@ -5,8 +5,6 @@ import android.support.annotation.Nullable;
 
 import com.flipkart.okhttpstats.BuildConfig;
 import com.flipkart.okhttpstats.NetworkInterceptor;
-import com.flipkart.okhttpstats.interpreter.DefaultInterpreter;
-import com.flipkart.okhttpstats.interpreter.NetworkInterpreter;
 import com.flipkart.okhttpstats.reporter.NetworkEventReporter;
 import com.flipkart.okhttpstats.toolbox.Utils;
 
@@ -15,7 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.io.ByteArrayOutputStream;
@@ -44,7 +42,7 @@ import static org.mockito.Mockito.verify;
  * Created by anirudh.r on 05/05/16 at 7:24 PM.
  * Test for {@link NetworkInterceptor}
  */
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class NetworkInterceptorTest {
 
