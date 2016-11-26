@@ -23,6 +23,7 @@
 
 package com.flipkart.okhttpstats.interpreter;
 
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
@@ -57,18 +58,18 @@ public class DefaultInterpreter implements NetworkInterpreter {
 
     @Override
     public Response interpretResponseStream(int requestId, NetworkInterceptor.TimeInfo timeInfo, Request request, Response response) throws IOException {
-        final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url().url(), request.method(), Utils.contentLength(request), request.header(HOST_NAME));
-        final OkHttpInspectorResponse okHttpInspectorResponse = new OkHttpInspectorResponse(requestId, response.code(), Utils.contentLength(response), timeInfo.mStartTime, timeInfo.mEndTime);
+        ResponseBody responseBody = response.body();
 
+        final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url().url(), request.method(), Utils.contentLength(request), request.header(HOST_NAME));
+        final OkHttpInspectorResponse okHttpInspectorResponse = new OkHttpInspectorResponse(requestId, response.code(), Utils.contentLength(response), timeInfo.mStartTime, timeInfo.mEndTime, responseBody);
         //if response does not have content length, using CountingInputStream to read its bytes
         if (response.header(CONTENT_LENGTH) == null) {
-            final ResponseBody body = response.body();
             InputStream responseStream = null;
-            if (body != null) {
+            if (responseBody != null) {
                 try {
-                    responseStream = body.byteStream();
+                    responseStream = responseBody.byteStream();
                 } catch (Exception e) {
-                    if (Utils.isLoggingEnabled()) {
+                    if (Utils.isLoggingEnabled) {
                         Log.d("Error reading IS : ", e.getMessage());
                     }
 
@@ -88,7 +89,7 @@ public class DefaultInterpreter implements NetworkInterpreter {
             }));
 
             //creating response object using the interpreted stream
-            response = response.newBuilder().body(new ForwardingResponseBody(body, responseStream)).build();
+            response = response.newBuilder().body(new ForwardingResponseBody(responseBody, responseStream)).build();
         } else {
             //if response has content length, notify the event reporter that response has been received.
             mEventReporter.responseReceived(okHttpInspectorRequest, okHttpInspectorResponse);
@@ -98,7 +99,7 @@ public class DefaultInterpreter implements NetworkInterpreter {
 
     @Override
     public void interpretError(int requestId, NetworkInterceptor.TimeInfo timeInfo, Request request, IOException e) {
-        if (Utils.isLoggingEnabled()) {
+        if (Utils.isLoggingEnabled) {
             Log.d("Error response: ", e.getMessage());
         }
         final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url().url(), request.method(), Utils.contentLength(request), request.header(HOST_NAME));
@@ -108,15 +109,14 @@ public class DefaultInterpreter implements NetworkInterpreter {
     /**
      * Implementation of {@link NetworkEventReporter.InspectorRequest}
      */
-    @VisibleForTesting
-    public static class OkHttpInspectorRequest implements NetworkEventReporter.InspectorRequest {
-        private final int mRequestId;
-        private final URL mRequestUrl;
-        private final String mMethodType;
-        private final long mContentLength;
-        private final String mHostName;
+    static class OkHttpInspectorRequest implements NetworkEventReporter.InspectorRequest {
+        final int mRequestId;
+        final URL mRequestUrl;
+        final String mMethodType;
+        final long mContentLength;
+        final String mHostName;
 
-        public OkHttpInspectorRequest(int requestId, URL requestUrl, String methodType, long contentLength, String hostName) {
+        OkHttpInspectorRequest(int requestId, URL requestUrl, String methodType, long contentLength, String hostName) {
             this.mRequestId = requestId;
             this.mRequestUrl = requestUrl;
             this.mMethodType = methodType;
@@ -153,20 +153,22 @@ public class DefaultInterpreter implements NetworkInterpreter {
     /**
      * Implementation of {@link NetworkEventReporter.InspectorResponse}
      */
-    @VisibleForTesting
-    public static class OkHttpInspectorResponse implements NetworkEventReporter.InspectorResponse {
-        private int mRequestId;
-        private long mStartTime;
-        private long mEndTime;
-        private int mStatusCode;
-        private long mResponseSize;
+    static class OkHttpInspectorResponse implements NetworkEventReporter.InspectorResponse {
+        int mRequestId;
+        long mStartTime;
+        long mEndTime;
+        int mStatusCode;
+        long mResponseSize;
+        @Nullable
+        ResponseBody responseBody;
 
-        public OkHttpInspectorResponse(int requestId, int statusCode, long responseSize, long startTime, long endTime) {
+        OkHttpInspectorResponse(int requestId, int statusCode, long responseSize, long startTime, long endTime, @Nullable ResponseBody responseBody) {
             this.mRequestId = requestId;
             this.mStatusCode = statusCode;
             this.mResponseSize = responseSize;
             this.mStartTime = startTime;
             this.mEndTime = endTime;
+            this.responseBody = responseBody;
         }
 
         @Override
@@ -193,6 +195,12 @@ public class DefaultInterpreter implements NetworkInterpreter {
         public long endTime() {
             return mEndTime;
         }
+
+        @Override
+        @Nullable
+        public ResponseBody responseBody() {
+            return responseBody;
+        }
     }
 
     /**
@@ -200,11 +208,11 @@ public class DefaultInterpreter implements NetworkInterpreter {
      * Will only be used in case the response does not have the content-length
      */
     @VisibleForTesting
-    public static class ForwardingResponseBody extends ResponseBody {
-        private final ResponseBody mBody;
-        private final BufferedSource mInterceptedSource;
+    static class ForwardingResponseBody extends ResponseBody {
+        final ResponseBody mBody;
+        final BufferedSource mInterceptedSource;
 
-        public ForwardingResponseBody(ResponseBody body, InputStream interceptedStream) {
+        ForwardingResponseBody(ResponseBody body, InputStream interceptedStream) {
             mBody = body;
             mInterceptedSource = Okio.buffer(Okio.source(interceptedStream));
         }

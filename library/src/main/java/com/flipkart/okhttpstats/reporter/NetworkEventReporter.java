@@ -24,6 +24,8 @@
 package com.flipkart.okhttpstats.reporter;
 
 
+import android.support.annotation.Nullable;
+
 import java.io.IOException;
 import java.net.URL;
 
@@ -81,5 +83,8 @@ public interface NetworkEventReporter {
         long startTime();
 
         long endTime();
+
+        @Nullable
+        ResponseBody responseBody();
     }
 }

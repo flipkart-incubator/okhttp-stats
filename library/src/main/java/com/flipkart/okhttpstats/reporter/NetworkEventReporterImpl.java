@@ -55,14 +55,15 @@ public class NetworkEventReporterImpl implements NetworkEventReporter {
         if (inspectorRequest != null && inspectorResponse != null) {
             final int requestId = inspectorResponse.requestId();
             RequestStats requestStats = new RequestStats(requestId);
-            requestStats.setRequestSize(inspectorRequest.requestSize());
-            requestStats.setUrl(inspectorRequest.url());
-            requestStats.setMethodType(inspectorRequest.method());
-            requestStats.setHostName(inspectorRequest.hostName());
-            requestStats.setResponseSize(inspectorResponse.responseSize());
-            requestStats.setStatusCode(inspectorResponse.statusCode());
-            requestStats.setStartTime(inspectorResponse.startTime());
-            requestStats.setEndTime(inspectorResponse.endTime());
+            requestStats.requestSize = inspectorRequest.requestSize();
+            requestStats.url = inspectorRequest.url();
+            requestStats.methodType = inspectorRequest.method();
+            requestStats.hostName = inspectorRequest.hostName();
+            requestStats.responseSize = inspectorResponse.responseSize();
+            requestStats.statusCode = inspectorResponse.statusCode();
+            requestStats.startTime = inspectorResponse.startTime();
+            requestStats.endTime = inspectorResponse.endTime();
+            requestStats.responseBody = inspectorResponse.responseBody();
             mNetworkRequestStatsHandler.onResponseReceived(requestStats);
         }
     }
@@ -72,10 +73,10 @@ public class NetworkEventReporterImpl implements NetworkEventReporter {
         if (inspectorRequest != null) {
             final int requestId = inspectorRequest.requestId();
             RequestStats requestStats = new RequestStats(requestId);
-            requestStats.setUrl(inspectorRequest.url());
-            requestStats.setMethodType(inspectorRequest.method());
-            requestStats.setHostName(inspectorRequest.hostName());
-            requestStats.setRequestSize(inspectorRequest.requestSize());
+            requestStats.url = inspectorRequest.url();
+            requestStats.methodType = inspectorRequest.method();
+            requestStats.hostName = inspectorRequest.hostName();
+            requestStats.requestSize = inspectorRequest.requestSize();
             mNetworkRequestStatsHandler.onHttpExchangeError(requestStats, e);
         }
     }
@@ -85,13 +86,14 @@ public class NetworkEventReporterImpl implements NetworkEventReporter {
         if (inspectorRequest != null && inspectorResponse != null) {
             final int requestId = inspectorResponse.requestId();
             RequestStats requestStats = new RequestStats(requestId);
-            requestStats.setRequestSize(inspectorRequest.requestSize());
-            requestStats.setUrl(inspectorRequest.url());
-            requestStats.setMethodType(inspectorRequest.method());
-            requestStats.setHostName(inspectorRequest.hostName());
-            requestStats.setStatusCode(inspectorResponse.statusCode());
-            requestStats.setStartTime(inspectorResponse.startTime());
-            requestStats.setEndTime(inspectorResponse.endTime());
+            requestStats.requestSize = inspectorRequest.requestSize();
+            requestStats.url = inspectorRequest.url();
+            requestStats.methodType = inspectorRequest.method();
+            requestStats.hostName = inspectorRequest.hostName();
+            requestStats.statusCode = inspectorResponse.statusCode();
+            requestStats.startTime = inspectorResponse.startTime();
+            requestStats.endTime = inspectorResponse.endTime();
+            requestStats.responseBody = inspectorResponse.responseBody();
             mNetworkRequestStatsHandler.onResponseInputStreamError(requestStats, e);
         }
     }
