@@ -31,8 +31,8 @@ public class ForwardingResponseTest {
         ForwardingResponse forwardingResponse = new ForwardingResponse(onStatusCodeAwareResponseListener);
 
         RequestStats requestStats = new RequestStats(1);
-        requestStats.setStatusCode(200);
-        requestStats.setHostName("flipkart.com");
+        requestStats.statusCode = (200);
+        requestStats.hostName = ("flipkart.com");
 
         NetworkInfo info = mock(NetworkInfo.class);
 
@@ -43,8 +43,8 @@ public class ForwardingResponseTest {
         reset(onStatusCodeAwareResponseListener);
 
         requestStats = new RequestStats(1);
-        requestStats.setStatusCode(299);
-        requestStats.setHostName("flipkart.com");
+        requestStats.statusCode = (299);
+        requestStats.hostName = ("flipkart.com");
 
         forwardingResponse.onResponseSuccess(info, requestStats);
 
@@ -53,8 +53,8 @@ public class ForwardingResponseTest {
         reset(onStatusCodeAwareResponseListener);
 
         requestStats = new RequestStats(1);
-        requestStats.setStatusCode(300);
-        requestStats.setHostName("flipkart.com");
+        requestStats.statusCode = (300);
+        requestStats.hostName = ("flipkart.com");
 
         forwardingResponse.onResponseSuccess(info, requestStats);
 
@@ -63,8 +63,8 @@ public class ForwardingResponseTest {
         reset(onStatusCodeAwareResponseListener);
 
         requestStats = new RequestStats(1);
-        requestStats.setStatusCode(399);
-        requestStats.setHostName("flipkart.com");
+        requestStats.statusCode = (399);
+        requestStats.hostName = ("flipkart.com");
 
         forwardingResponse.onResponseSuccess(info, requestStats);
 
@@ -85,8 +85,8 @@ public class ForwardingResponseTest {
         ForwardingResponse forwardingResponse = new ForwardingResponse(onStatusCodeAwareResponseListener);
 
         RequestStats requestStats = new RequestStats(1);
-        requestStats.setStatusCode(400);
-        requestStats.setHostName("flipkart.com");
+        requestStats.statusCode = (400);
+        requestStats.hostName = ("flipkart.com");
 
         NetworkInfo info = mock(NetworkInfo.class);
 
@@ -97,8 +97,8 @@ public class ForwardingResponseTest {
         reset(onStatusCodeAwareResponseListener);
 
         requestStats = new RequestStats(1);
-        requestStats.setStatusCode(499);
-        requestStats.setHostName("flipkart.com");
+        requestStats.statusCode = (499);
+        requestStats.hostName = ("flipkart.com");
 
         forwardingResponse.onResponseSuccess(info, requestStats);
 
@@ -107,8 +107,8 @@ public class ForwardingResponseTest {
         reset(onStatusCodeAwareResponseListener);
 
         requestStats = new RequestStats(1);
-        requestStats.setStatusCode(500);
-        requestStats.setHostName("flipkart.com");
+        requestStats.statusCode = (500);
+        requestStats.hostName = ("flipkart.com");
 
         forwardingResponse.onResponseSuccess(info, requestStats);
 
@@ -117,8 +117,8 @@ public class ForwardingResponseTest {
         reset(onStatusCodeAwareResponseListener);
 
         requestStats = new RequestStats(1);
-        requestStats.setStatusCode(599);
-        requestStats.setHostName("flipkart.com");
+        requestStats.statusCode = (599);
+        requestStats.hostName = ("flipkart.com");
 
         forwardingResponse.onResponseSuccess(info, requestStats);
 
@@ -139,8 +139,8 @@ public class ForwardingResponseTest {
         ForwardingResponse forwardingResponse = new ForwardingResponse(onStatusCodeAwareResponseListener);
 
         RequestStats requestStats = new RequestStats(1);
-        requestStats.setStatusCode(400);
-        requestStats.setHostName("flipkart.com");
+        requestStats.statusCode = (400);
+        requestStats.hostName = ("flipkart.com");
 
         NetworkInfo info = mock(NetworkInfo.class);
         IOException e = new IOException("Test error");

@@ -228,13 +228,13 @@ public class PersistentStatsHandlerTest {
         persistentStatsHandler.setMaxSizeForPersistence(3);
 
         RequestStats requestStats = new RequestStats(2);
-        requestStats.setStatusCode(200);
+        requestStats.statusCode = (200);
 
         RequestStats requestStats1 = new RequestStats(2);
-        requestStats.setStatusCode(200);
+        requestStats.statusCode = (200);
 
         RequestStats requestStats2 = new RequestStats(2);
-        requestStats.setStatusCode(200);
+        requestStats.statusCode = (200);
 
         persistentStatsHandler.onResponseReceived(requestStats);
         persistentStatsHandler.onResponseReceived(requestStats1);
