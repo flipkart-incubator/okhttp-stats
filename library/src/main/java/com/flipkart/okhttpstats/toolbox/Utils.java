@@ -29,15 +29,7 @@ import okhttp3.Response;
 
 public class Utils {
 
-    private static boolean isLoggingEnabled = false;
-
-    public static boolean isLoggingEnabled() {
-        return isLoggingEnabled;
-    }
-
-    public static void setIsLoggingEnabled(boolean isLoggingEnabled) {
-        Utils.isLoggingEnabled = isLoggingEnabled;
-    }
+    public static boolean isLoggingEnabled = false;
 
     public static long contentLength(Request request) {
         return contentLength(request.headers());
@@ -47,7 +39,7 @@ public class Utils {
         return contentLength(response.headers());
     }
 
-    public static long contentLength(Headers headers) {
+    private static long contentLength(Headers headers) {
         return stringToLong(headers.get("Content-Length"));
     }
 

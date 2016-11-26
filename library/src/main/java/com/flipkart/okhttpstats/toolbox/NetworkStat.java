@@ -50,17 +50,17 @@ public final class NetworkStat {
     public synchronized void addRequestStat(final RequestStats requestStats) {
         if (requestStats != null) {
             long apiSpeed = 0;
-            if (requestStats.getEndTime() > requestStats.getStartTime()) {
-                apiSpeed = requestStats.getResponseSize() / (requestStats.getEndTime() - requestStats.getStartTime());
+            if (requestStats.endTime > requestStats.startTime) {
+                apiSpeed = requestStats.responseSize / (requestStats.endTime - requestStats.startTime);
             }
             if (apiSpeed > mPeakSpeed) {
                 mPeakSpeed = apiSpeed;
             }
             mRequestStatQueue.add(requestStats);
-            mTotalSize += requestStats.getResponseSize();
+            mTotalSize += requestStats.responseSize;
             if (mRequestStatQueue.size() > MAX_QUEUE_SIZE) {
                 RequestStats requestStat = mRequestStatQueue.poll();
-                mTotalSize -= requestStat.getResponseSize();
+                mTotalSize -= requestStat.responseSize;
             }
             calculateAvgSpeed();
         }
@@ -70,10 +70,10 @@ public final class NetworkStat {
         double newAvgSpeed = 0;
         for (RequestStats requestStats : mRequestStatQueue) {
             long apiSpeed = 0;
-            if (requestStats.getEndTime() > requestStats.getStartTime()) {
-                apiSpeed = requestStats.getResponseSize() / (requestStats.getEndTime() - requestStats.getStartTime());
+            if (requestStats.endTime > requestStats.startTime) {
+                apiSpeed = requestStats.responseSize / (requestStats.endTime - requestStats.startTime);
             }
-            double proportion = requestStats.getResponseSize() / mTotalSize;
+            double proportion = requestStats.responseSize / mTotalSize;
             newAvgSpeed += apiSpeed * proportion;
         }
         mCurrentAvgSpeed = newAvgSpeed;

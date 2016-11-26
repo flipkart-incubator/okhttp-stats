@@ -11,27 +11,27 @@ public class OnResponseReceived implements OnResponseListener {
     @Override
     public void onResponseSuccess(NetworkInfo info, RequestStats requestStats) {
         Log.d(MainActivity.class.getName(), "onResponseSuccessReceived : "
-                + "\nId : " + requestStats.getId()
-                + "\nUrl : " + requestStats.getUrl()
-                + "\nMethod : " + requestStats.getMethodType()
-                + "\nHost : " + requestStats.getHostName()
-                + "\nRequest Size : " + requestStats.getRequestSize()
-                + "\nResponse Size : " + requestStats.getResponseSize()
-                + "\nTime Taken: " + (requestStats.getEndTime() - requestStats.getStartTime())
-                + "\nStatus Code : " + requestStats.getStatusCode());
+                + "\nId : " + requestStats.id
+                + "\nUrl : " + requestStats.url
+                + "\nMethod : " + requestStats.methodType
+                + "\nHost : " + requestStats.hostName
+                + "\nRequest Size : " + requestStats.requestSize
+                + "\nResponse Size : " + requestStats.responseSize
+                + "\nTime Taken: " + (requestStats.endTime - requestStats.startTime)
+                + "\nStatus Code : " + requestStats.statusCode);
     }
 
     @Override
     public void onResponseError(NetworkInfo info, RequestStats requestStats, Exception e) {
         Log.d(MainActivity.class.getName(), "onResponseErrorReceived : "
-                + "\nId : " + requestStats.getId()
-                + "\nUrl : " + requestStats.getUrl()
-                + "\nMethod : " + requestStats.getMethodType()
-                + "\nHost : " + requestStats.getHostName()
-                + "\nRequest Size : " + requestStats.getRequestSize()
-                + "\nResponse Size : " + requestStats.getResponseSize()
-                + "\nTime Taken: " + (requestStats.getEndTime() - requestStats.getStartTime())
-                + "\nStatus Code : " + requestStats.getStatusCode()
+                + "\nId : " + requestStats.id
+                + "\nUrl : " + requestStats.url
+                + "\nMethod : " + requestStats.methodType
+                + "\nHost : " + requestStats.hostName
+                + "\nRequest Size : " + requestStats.requestSize
+                + "\nResponse Size : " + requestStats.responseSize
+                + "\nTime Taken: " + (requestStats.endTime - requestStats.startTime)
+                + "\nStatus Code : " + requestStats.statusCode
                 + "\nException : " + e.getMessage());
     }
 }

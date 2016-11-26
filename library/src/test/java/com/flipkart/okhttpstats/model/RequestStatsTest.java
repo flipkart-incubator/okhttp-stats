@@ -3,12 +3,11 @@ package com.flipkart.okhttpstats.model;
 import android.net.NetworkInfo;
 
 import com.flipkart.okhttpstats.BuildConfig;
-import com.flipkart.okhttpstats.model.RequestStats;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.net.MalformedURLException;
@@ -16,7 +15,7 @@ import java.net.URL;
 
 import static org.mockito.Mockito.mock;
 
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class RequestStatsTest {
 
@@ -29,23 +28,23 @@ public class RequestStatsTest {
 
         NetworkInfo networkInfo = mock(NetworkInfo.class);
 
-        requestStats.setUrl(new URL("http://www.flipkart.com"));
-        requestStats.setRequestSize(20);
-        requestStats.setMethodType("POST");
-        requestStats.setResponseSize(40);
-        requestStats.setStartTime(2);
-        requestStats.setEndTime(3);
-        requestStats.setStatusCode(200);
-        requestStats.setHostName("flipkart.com");
+        requestStats.url = new URL("http://www.flipkart.com");
+        requestStats.requestSize = 20;
+        requestStats.methodType = "POST";
+        requestStats.responseSize = 40;
+        requestStats.startTime = 2;
+        requestStats.endTime = 3;
+        requestStats.statusCode = 200;
+        requestStats.hostName = "flipkart.com";
 
-        Assert.assertTrue(requestStats.getId() == 1);
-        Assert.assertTrue(requestStats.getUrl().toString().equals("http://www.flipkart.com"));
-        Assert.assertTrue(requestStats.getRequestSize() == 20);
-        Assert.assertTrue(requestStats.getMethodType().equals("POST"));
-        Assert.assertTrue(requestStats.getResponseSize() == 40);
-        Assert.assertTrue(requestStats.getStartTime() == 2);
-        Assert.assertTrue(requestStats.getEndTime() == 3);
-        Assert.assertTrue(requestStats.getStatusCode() == 200);
-        Assert.assertTrue(requestStats.getHostName().equals("flipkart.com"));
+        Assert.assertTrue(requestStats.id == 1);
+        Assert.assertTrue(requestStats.url.toString().equals("http://www.flipkart.com"));
+        Assert.assertTrue(requestStats.requestSize == 20);
+        Assert.assertTrue(requestStats.methodType.equals("POST"));
+        Assert.assertTrue(requestStats.responseSize == 40);
+        Assert.assertTrue(requestStats.startTime == 2);
+        Assert.assertTrue(requestStats.endTime == 3);
+        Assert.assertTrue(requestStats.statusCode == 200);
+        Assert.assertTrue(requestStats.hostName.equals("flipkart.com"));
     }
 }

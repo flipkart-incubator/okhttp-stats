@@ -11,7 +11,7 @@ import com.flipkart.okhttpstats.toolbox.PreferenceManager;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.internal.ShadowExtractor;
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
  * Created by anirudh.r on 13/05/16 at 12:28 AM.
  * Test for {@link PersistentStatsHandler}
  */
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class PersistentStatsHandlerTest {
 
@@ -228,13 +228,13 @@ public class PersistentStatsHandlerTest {
         persistentStatsHandler.setMaxSizeForPersistence(3);
 
         RequestStats requestStats = new RequestStats(2);
-        requestStats.setStatusCode(200);
+        requestStats.statusCode = (200);
 
         RequestStats requestStats1 = new RequestStats(2);
-        requestStats.setStatusCode(200);
+        requestStats.statusCode = (200);
 
         RequestStats requestStats2 = new RequestStats(2);
-        requestStats.setStatusCode(200);
+        requestStats.statusCode = (200);
 
         persistentStatsHandler.onResponseReceived(requestStats);
         persistentStatsHandler.onResponseReceived(requestStats1);

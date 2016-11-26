@@ -1,9 +1,6 @@
 package com.flipkart.okhttpstats.interpreter;
 
-import android.net.Uri;
-
 import com.flipkart.okhttpstats.NetworkInterceptor;
-import com.flipkart.okhttpstats.NetworkInterceptorTest;
 import com.flipkart.okhttpstats.reporter.NetworkEventReporter;
 import com.flipkart.okhttpstats.toolbox.Utils;
 
@@ -126,7 +123,8 @@ public class DefaultInterpreterTest {
     @Test
     public void testOkHttpInspectorResponse() throws Exception {
 
-        DefaultInterpreter.OkHttpInspectorResponse okHttpInspectorResponse = new DefaultInterpreter.OkHttpInspectorResponse(1, 200, 20, 2, 3);
+        ResponseBody responseBody = mock(ResponseBody.class);
+        DefaultInterpreter.OkHttpInspectorResponse okHttpInspectorResponse = new DefaultInterpreter.OkHttpInspectorResponse(1, 200, 20, 2, 3, responseBody);
 
         //assert id is same
         Assert.assertTrue(okHttpInspectorResponse.requestId() == 1);

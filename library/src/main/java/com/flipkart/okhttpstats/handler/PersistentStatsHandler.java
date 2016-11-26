@@ -76,7 +76,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     }
 
     @VisibleForTesting
-    public PersistentStatsHandler(Context context, PreferenceManager preferenceManager) {
+    PersistentStatsHandler(Context context, PreferenceManager preferenceManager) {
         this.mPreferenceManager = preferenceManager;
         this.MAX_SIZE = DEFAULT_MAX_SIZE;
         this.mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -86,7 +86,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     }
 
     @VisibleForTesting
-    public Set<OnResponseListener> getOnResponseListeners() {
+    Set<OnResponseListener> getOnResponseListeners() {
         return mOnResponseListeners;
     }
 
@@ -144,7 +144,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
 
     @Override
     public void onResponseReceived(final RequestStats requestStats) {
-        if (Utils.isLoggingEnabled()) {
+        if (Utils.isLoggingEnabled) {
             Log.d("Response Received : ", requestStats + " ");
         }
 
@@ -176,7 +176,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
 
     @Override
     public void onHttpExchangeError(RequestStats requestStats, IOException e) {
-        if (Utils.isLoggingEnabled()) {
+        if (Utils.isLoggingEnabled) {
             Log.d("Response Http Error :", requestStats + "");
         }
 
@@ -189,7 +189,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
 
     @Override
     public void onResponseInputStreamError(RequestStats requestStats, Exception e) {
-        if (Utils.isLoggingEnabled()) {
+        if (Utils.isLoggingEnabled) {
             Log.d("Response InputStream : ", requestStats + "");
         }
 
@@ -206,7 +206,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
      * @param currentAvgSpeed : float
      */
     private void saveToSharedPreference(float currentAvgSpeed) {
-        if (Utils.isLoggingEnabled()) {
+        if (Utils.isLoggingEnabled) {
             Log.d("avg speed", "saveToSharedPreference: " + mNetworkStat.getCurrentAvgSpeed());
         }
         String networkKey = getNetworkKey(getActiveNetworkInfo());
@@ -220,7 +220,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
      * @return string
      */
     @VisibleForTesting
-    public String getNetworkKey(NetworkInfo networkInfo) {
+    String getNetworkKey(NetworkInfo networkInfo) {
         if (networkInfo != null && networkInfo.getTypeName() != null) {
             if (networkInfo.getTypeName().equals(WIFI_NETWORK)) {
                 return WIFI_NETWORK + "_" + getWifiSSID();
@@ -233,7 +233,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     }
 
     @VisibleForTesting
-    public int getWifiSSID() {
+    int getWifiSSID() {
         WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
         if (wifiInfo != null) {
             String ssid = wifiInfo.getSSID();

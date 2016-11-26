@@ -36,4 +36,3 @@ public interface ResponseHandler {
      */
     void onEOF();
 }
-

@@ -50,7 +50,7 @@ public final class NetworkInterceptor implements Interceptor {
             throw new IllegalStateException("NetworkInterpreter cannot be null");
         }
         mInterpreter = builder.mInterpreter;
-        Utils.setIsLoggingEnabled(builder.mIsLoggingEnabled);
+        Utils.isLoggingEnabled = builder.mIsLoggingEnabled;
     }
 
     /**
