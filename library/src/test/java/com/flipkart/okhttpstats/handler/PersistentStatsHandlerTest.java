@@ -59,7 +59,7 @@ public class PersistentStatsHandlerTest {
         persistentStatsHandler.addListener(onResponseListener);
 
         //assert size is 1
-        Assert.assertTrue(persistentStatsHandler.getOnResponseListeners().size() == 1);
+        Assert.assertTrue(persistentStatsHandler.mOnResponseListeners.size() == 1);
     }
 
     /**
@@ -75,11 +75,11 @@ public class PersistentStatsHandlerTest {
         persistentStatsHandler.addListener(onResponseListener);
 
         //assert size is 1
-        Assert.assertTrue(persistentStatsHandler.getOnResponseListeners().size() == 1);
+        Assert.assertTrue(persistentStatsHandler.mOnResponseListeners.size() == 1);
         persistentStatsHandler.removeListener(onResponseListener);
 
         //assert size is 0
-        Assert.assertTrue(persistentStatsHandler.getOnResponseListeners().size() == 0);
+        Assert.assertTrue(persistentStatsHandler.mOnResponseListeners.size() == 0);
     }
 
     /**
@@ -96,7 +96,7 @@ public class PersistentStatsHandlerTest {
         persistentStatsHandler.addListener(onResponseListener);
 
         //assert size is 1
-        Assert.assertTrue(persistentStatsHandler.getOnResponseListeners().size() == 1);
+        Assert.assertTrue(persistentStatsHandler.mOnResponseListeners.size() == 1);
 
         RequestStats requestStats = new RequestStats(1);
         persistentStatsHandler.onResponseReceived(requestStats);
@@ -109,7 +109,7 @@ public class PersistentStatsHandlerTest {
         persistentStatsHandler.addListener(onResponseListener1);
 
         //assert size is 2
-        Assert.assertTrue(persistentStatsHandler.getOnResponseListeners().size() == 2);
+        Assert.assertTrue(persistentStatsHandler.mOnResponseListeners.size() == 2);
         persistentStatsHandler.onResponseReceived(requestStats);
 
         //verify onResponseReceived of 1st listener gets called once
@@ -132,7 +132,7 @@ public class PersistentStatsHandlerTest {
         persistentStatsHandler.addListener(onResponseListener);
 
         //assert size is 1
-        Assert.assertTrue(persistentStatsHandler.getOnResponseListeners().size() == 1);
+        Assert.assertTrue(persistentStatsHandler.mOnResponseListeners.size() == 1);
 
         RequestStats requestStats = new RequestStats(1);
         persistentStatsHandler.onHttpExchangeError(requestStats, new IOException(""));
@@ -145,7 +145,7 @@ public class PersistentStatsHandlerTest {
         reset(onResponseListener);
 
         //assert size is 2
-        Assert.assertTrue(persistentStatsHandler.getOnResponseListeners().size() == 2);
+        Assert.assertTrue(persistentStatsHandler.mOnResponseListeners.size() == 2);
         persistentStatsHandler.onHttpExchangeError(requestStats, new IOException(""));
 
         verify(onResponseListener, times(1)).onResponseError(any(NetworkInfo.class), eq(requestStats), any(IOException.class));
@@ -166,7 +166,7 @@ public class PersistentStatsHandlerTest {
         persistentStatsHandler.addListener(onResponseListener);
 
         //assert size is 1
-        Assert.assertTrue(persistentStatsHandler.getOnResponseListeners().size() == 1);
+        Assert.assertTrue(persistentStatsHandler.mOnResponseListeners.size() == 1);
 
         RequestStats requestStats = new RequestStats(1);
         persistentStatsHandler.onResponseInputStreamError(requestStats, new SocketTimeoutException());
@@ -178,7 +178,7 @@ public class PersistentStatsHandlerTest {
         persistentStatsHandler.addListener(onResponseListener1);
 
         //assert size is 2
-        Assert.assertTrue(persistentStatsHandler.getOnResponseListeners().size() == 2);
+        Assert.assertTrue(persistentStatsHandler.mOnResponseListeners.size() == 2);
     }
 
     /**

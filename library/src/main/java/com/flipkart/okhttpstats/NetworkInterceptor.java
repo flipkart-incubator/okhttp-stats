@@ -44,7 +44,7 @@ public final class NetworkInterceptor implements Interceptor {
     private final AtomicInteger mNextRequestId = new AtomicInteger(1);
     private boolean mEnabled = true;
 
-    private NetworkInterceptor(Builder builder) {
+    NetworkInterceptor(Builder builder) {
         mEnabled = builder.mEnabled;
         if (builder.mInterpreter == null) {
             throw new IllegalStateException("NetworkInterpreter cannot be null");
@@ -95,9 +95,9 @@ public final class NetworkInterceptor implements Interceptor {
      * Builder Pattern for {@link NetworkInterceptor}
      */
     public static class Builder {
-        private boolean mEnabled = true;
-        private boolean mIsLoggingEnabled = false;
-        private NetworkInterpreter mInterpreter;
+        boolean mEnabled = true;
+        boolean mIsLoggingEnabled = false;
+        NetworkInterpreter mInterpreter;
 
         /**
          * To enable/disable the calls to {@link NetworkInterpreter}

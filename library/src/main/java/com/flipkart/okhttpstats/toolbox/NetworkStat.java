@@ -37,14 +37,10 @@ public final class NetworkStat {
     private double mPeakSpeed = 0;
     private Queue<RequestStats> mRequestStatQueue;
     private double mTotalSize = 0;
-    private double mCurrentAvgSpeed = 0;
+    public double mCurrentAvgSpeed = 0;
 
     public NetworkStat() {
         mRequestStatQueue = new LinkedList<>();
-    }
-
-    public double getCurrentAvgSpeed() {
-        return mCurrentAvgSpeed;
     }
 
     public synchronized void addRequestStat(final RequestStats requestStats) {

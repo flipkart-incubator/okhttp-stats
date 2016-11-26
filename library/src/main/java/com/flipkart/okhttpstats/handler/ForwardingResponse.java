@@ -26,11 +26,18 @@ package com.flipkart.okhttpstats.handler;
 import android.net.NetworkInfo;
 
 import com.flipkart.okhttpstats.model.RequestStats;
-import com.flipkart.okhttpstats.toolbox.HttpStatusCode;
 
 public class ForwardingResponse implements OnResponseListener {
 
     private OnStatusCodeAwareResponseListener mOnStatusCodeAwareResponseListener;
+    private static final int HTTP_2XX_START = 200;
+    private static final int HTTP_2XX_END = 299;
+    private static final int HTTP_3XX_START = 300;
+    private static final int HTTP_3XX_END = 399;
+    private static final int HTTP_4XX_START = 400;
+    private static final int HTTP_4XX_END = 499;
+    private static final int HTTP_5XX_START = 500;
+    private static final int HTTP_5XX_END = 599;
 
     public ForwardingResponse(OnStatusCodeAwareResponseListener onStatusCodeAwareResponseListener) {
         mOnStatusCodeAwareResponseListener = onStatusCodeAwareResponseListener;
@@ -40,11 +47,11 @@ public class ForwardingResponse implements OnResponseListener {
     public void onResponseSuccess(NetworkInfo info, RequestStats requestStats) {
         if (requestStats != null) {
             int statusCode = requestStats.statusCode;
-            if ((statusCode >= HttpStatusCode.HTTP_2XX_START && statusCode <= HttpStatusCode.HTTP_2XX_END) ||
-                    (statusCode >= HttpStatusCode.HTTP_3XX_START && statusCode <= HttpStatusCode.HTTP_3XX_END)) {
+            if ((statusCode >= HTTP_2XX_START && statusCode <= HTTP_2XX_END) ||
+                    (statusCode >= HTTP_3XX_START && statusCode <= HTTP_3XX_END)) {
                 mOnStatusCodeAwareResponseListener.onResponseServerSuccess(info, requestStats);
-            } else if ((statusCode >= HttpStatusCode.HTTP_4XX_START && statusCode <= HttpStatusCode.HTTP_4XX_END) ||
-                    (statusCode >= HttpStatusCode.HTTP_5XX_START && statusCode <= HttpStatusCode.HTTP_5XX_END)) {
+            } else if ((statusCode >= HTTP_4XX_START && statusCode <= HTTP_4XX_END) ||
+                    (statusCode >= HTTP_5XX_START && statusCode <= HTTP_5XX_END)) {
                 mOnStatusCodeAwareResponseListener.onResponseServerError(info, requestStats);
             }
         }

@@ -58,7 +58,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     private static final String MOBILE_NETWORK = "mobile";
     private static final String UNKNOWN_NETWORK = "unknown";
     private final PreferenceManager mPreferenceManager;
-    private Set<OnResponseListener> mOnResponseListeners = new HashSet<>();
+    Set<OnResponseListener> mOnResponseListeners = new HashSet<>();
     private int mResponseCount = 0;
     private int MAX_SIZE;
     private WifiManager mWifiManager;
@@ -83,11 +83,6 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
         this.mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         this.mNetworkStat = new NetworkStat();
         this.mCurrentAvgSpeed = mPreferenceManager.getAverageSpeed(getNetworkKey(getActiveNetworkInfo()));
-    }
-
-    @VisibleForTesting
-    Set<OnResponseListener> getOnResponseListeners() {
-        return mOnResponseListeners;
     }
 
     /**
@@ -134,7 +129,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     }
 
     /**
-     * Exposed to the client so that he can get the average network speed
+     * Exposed to the client to get the average network speed
      *
      * @return avg speed
      */
@@ -159,19 +154,18 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
         synchronized (this) {
             mResponseCount += 1;
             if (mResponseCount >= MAX_SIZE) {
-                mCurrentAvgSpeed = calculateNewSpeed(mCurrentAvgSpeed);
-                saveToSharedPreference(mCurrentAvgSpeed);
+                //calculate the new average speed
+                double newAvgSpeed = mNetworkStat.mCurrentAvgSpeed;
+                mCurrentAvgSpeed = (float) ((mCurrentAvgSpeed + newAvgSpeed) / 2);
+                //save it in shared preference
+                String networkKey = getNetworkKey(getActiveNetworkInfo());
+                mPreferenceManager.setAverageSpeed(networkKey, mCurrentAvgSpeed);
+                //reset the response count
                 mResponseCount = 0;
             }
         }
 
         mNetworkStat.addRequestStat(requestStats);
-    }
-
-    private float calculateNewSpeed(float currentAvgSpeed) {
-        double newAvgSpeed = mNetworkStat.getCurrentAvgSpeed();
-        currentAvgSpeed = (float) ((currentAvgSpeed + newAvgSpeed) / 2);
-        return currentAvgSpeed;
     }
 
     @Override
@@ -198,19 +192,6 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
                 onResponseListener.onResponseError(getActiveNetworkInfo(), requestStats, e);
             }
         }
-    }
-
-    /**
-     * Saves the network avg speed in the Shared Pref
-     *
-     * @param currentAvgSpeed : float
-     */
-    private void saveToSharedPreference(float currentAvgSpeed) {
-        if (Utils.isLoggingEnabled) {
-            Log.d("avg speed", "saveToSharedPreference: " + mNetworkStat.getCurrentAvgSpeed());
-        }
-        String networkKey = getNetworkKey(getActiveNetworkInfo());
-        mPreferenceManager.setAverageSpeed(networkKey, currentAvgSpeed);
     }
 
     /**

@@ -24,22 +24,12 @@
 package com.flipkart.okhttpstats.toolbox;
 
 import okhttp3.Headers;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class Utils {
 
     public static boolean isLoggingEnabled = false;
 
-    public static long contentLength(Request request) {
-        return contentLength(request.headers());
-    }
-
-    public static long contentLength(Response response) {
-        return contentLength(response.headers());
-    }
-
-    private static long contentLength(Headers headers) {
+    public static long contentLength(Headers headers) {
         return stringToLong(headers.get("Content-Length"));
     }
 
