@@ -50,7 +50,7 @@ import okio.Okio;
 public class DefaultInterpreter implements NetworkInterpreter {
     private static final String HOST_NAME = "HOST";
     private static final String CONTENT_LENGTH = "Content-Length";
-    private NetworkEventReporter mEventReporter;
+    NetworkEventReporter mEventReporter;
 
     public DefaultInterpreter(NetworkEventReporter mEventReporter) {
         this.mEventReporter = mEventReporter;
@@ -60,8 +60,8 @@ public class DefaultInterpreter implements NetworkInterpreter {
     public Response interpretResponseStream(int requestId, NetworkInterceptor.TimeInfo timeInfo, Request request, Response response) throws IOException {
         ResponseBody responseBody = response.body();
 
-        final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url().url(), request.method(), Utils.contentLength(request), request.header(HOST_NAME));
-        final OkHttpInspectorResponse okHttpInspectorResponse = new OkHttpInspectorResponse(requestId, response.code(), Utils.contentLength(response), timeInfo.mStartTime, timeInfo.mEndTime, responseBody);
+        final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url().url(), request.method(), Utils.contentLength(request.headers()), request.url().host());
+        final OkHttpInspectorResponse okHttpInspectorResponse = new OkHttpInspectorResponse(requestId, response.code(), Utils.contentLength(response.headers()), timeInfo.mStartTime, timeInfo.mEndTime, responseBody);
         //if response does not have content length, using CountingInputStream to read its bytes
         if (response.header(CONTENT_LENGTH) == null) {
             InputStream responseStream = null;
@@ -94,6 +94,7 @@ public class DefaultInterpreter implements NetworkInterpreter {
             //if response has content length, notify the event reporter that response has been received.
             mEventReporter.responseReceived(okHttpInspectorRequest, okHttpInspectorResponse);
         }
+
         return response;
     }
 
@@ -102,7 +103,7 @@ public class DefaultInterpreter implements NetworkInterpreter {
         if (Utils.isLoggingEnabled) {
             Log.d("Error response: ", e.getMessage());
         }
-        final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url().url(), request.method(), Utils.contentLength(request), request.header(HOST_NAME));
+        final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url().url(), request.method(), Utils.contentLength(request.headers()), request.header(HOST_NAME));
         mEventReporter.httpExchangeError(okHttpInspectorRequest, e);
     }
 

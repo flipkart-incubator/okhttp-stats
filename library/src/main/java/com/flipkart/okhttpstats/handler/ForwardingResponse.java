@@ -32,6 +32,7 @@ public class ForwardingResponse implements OnResponseListener {
 
     private OnStatusCodeAwareResponseListener mOnStatusCodeAwareResponseListener;
 
+
     public ForwardingResponse(OnStatusCodeAwareResponseListener onStatusCodeAwareResponseListener) {
         mOnStatusCodeAwareResponseListener = onStatusCodeAwareResponseListener;
     }
