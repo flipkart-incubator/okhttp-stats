@@ -8,19 +8,22 @@ Can be plugged in to any app which uses okhttp in their networking stack.
 
 Add it in your root build.gradle at the end of repositories:
 
+````java
 	allprojects {
 		repositories {
 			...
 			maven { url "https://jitpack.io" }
 		}
 	}
+````
 
 Add the dependency:
 
+````java
 	dependencies {
-		compile 'com.github.flipkart-incubator:okhttp-stats:1.1.0'
+		compile 'com.github.flipkart-incubator:okhttp-stats:1.1.1'
 	}
-
+````
 
 ## How to works
 
@@ -93,7 +96,6 @@ Head over to the [Wiki](https://github.com/Flipkart/okhttp-stats/wiki) page for 
 ## Library Dependencies
 
 * [OkHttp](https://github.com/square/okhttp)
-* [Slf4J](http://www.slf4j.org/)
 * [JUnit](http://junit.org/), [Roboelectric](http://robolectric.org/), [Mockito](http://mockito.org/)
 
 
