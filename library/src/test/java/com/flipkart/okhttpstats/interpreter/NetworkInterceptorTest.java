@@ -316,14 +316,14 @@ public class NetworkInterceptorTest {
                 .addHeader("HOST", "flipkart")
                 .build();
 
-        DefaultInterpreter.OkHttpInspectorRequest okHttpInspectorRequest = new DefaultInterpreter.OkHttpInspectorRequest(1, request.url().url(), request.method(), Utils.contentLength(request), request.header("HOST"));
+        DefaultInterpreter.OkHttpInspectorRequest okHttpInspectorRequest = new DefaultInterpreter.OkHttpInspectorRequest(1, request.url().url(), request.method(), Utils.contentLength(request.headers()), request.header("HOST"));
 
         //assert id is same
         Assert.assertTrue(okHttpInspectorRequest.requestId() == 1);
         //assert url is same
         Assert.assertTrue(okHttpInspectorRequest.url().equals(request.url().url()));
         //assert content length is same
-        Assert.assertTrue(okHttpInspectorRequest.requestSize() == Utils.contentLength(request));
+        Assert.assertTrue(okHttpInspectorRequest.requestSize() == Utils.contentLength(request.headers()));
         //assert hostname is same
         Assert.assertTrue(okHttpInspectorRequest.hostName().equals(request.header("HOST")));
         //assert method is same
