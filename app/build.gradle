@@ -2,6 +2,11 @@ repositories {
     mavenCentral()
 }
 
+allprojects {
+    repositories {
+        maven { url "https://jitpack.io" }
+    }
+}
 apply plugin: 'com.android.application'
 
 android {
@@ -31,5 +36,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.0.0'
     compile 'com.android.support:design:24.0.0'
     compile 'com.android.volley:volley:1.0.0'
-    compile project(':library')
+    compile 'com.github.flipkart-incubator:okhttp-stats:1.1.0-beta'
 }
