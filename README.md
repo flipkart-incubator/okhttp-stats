@@ -1,8 +1,8 @@
-#okhttp-stats ![alt text](https://travis-ci.org/flipkart-incubator/okhttp-stats.svg?branch=master) [![](https://jitpack.io/v/flipkart-incubator/okhttp-stats.svg)](https://jitpack.io/#flipkart-incubator/okhttp-stats)
+# okhttp-stats ![alt text](https://travis-ci.org/flipkart-incubator/okhttp-stats.svg?branch=master) [![](https://jitpack.io/v/flipkart-incubator/okhttp-stats.svg)](https://jitpack.io/#flipkart-incubator/okhttp-stats)
 
-OkHttp-Stats is an android library built on top of OkHttp3, which is responsible for intercepting all the network calls and for calculating network stats such as the average network speed of the user. This is more of an analytical tool which can be used to track the success and error response logs.
+OkHttp-Stats is an android library built on top of OkHttp, which is responsible for intercepting all the network calls and for calculating network stats such as the average network speed of the user. 
 
-Can be plugged in to any app which uses okhttp in their networking stack.
+This is more of an analytical tool which can be used to track the success and error response logs. Can be plugged in to any app which uses okhttp in their networking stack.
 
 ## Gradle Dependency
 
@@ -10,10 +10,10 @@ Add it in your root build.gradle at the end of repositories:
 
 ````java
 	allprojects {
-		repositories {
-			...
-			maven { url "https://jitpack.io" }
-		}
+	    repositories {
+		...
+		maven { url "https://jitpack.io" }
+	    }
 	}
 ````
 
@@ -21,11 +21,11 @@ Add the dependency:
 
 ````java
 	dependencies {
-		compile 'com.github.flipkart-incubator:okhttp-stats:1.1.1'
+	     compile 'com.github.flipkart-incubator:okhttp-stats:1.1.1'
 	}
 ````
 
-## How to works
+## How it Works ?
 
 Create a class that implements the ````OnResponseListener````. This is where you will get all the callbacks in case of success or error responses.
 
