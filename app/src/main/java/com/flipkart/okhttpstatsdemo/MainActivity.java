@@ -40,11 +40,11 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
 import com.circle.android.api.OkHttp3Stack;
-import com.flipkart.okhttpstats.NetworkInterceptor;
-import com.flipkart.okhttpstats.handler.PersistentStatsHandler;
-import com.flipkart.okhttpstats.interpreter.DefaultInterpreter;
-import com.flipkart.okhttpstats.interpreter.NetworkInterpreter;
-import com.flipkart.okhttpstats.reporter.NetworkEventReporterImpl;
+import com.flipkart.okhttpstats.kotlin.NetworkInterceptor;
+import com.flipkart.okhttpstats.kotlin.handler.PersistentStatsHandler;
+import com.flipkart.okhttpstats.kotlin.interpreter.DefaultInterpreter;
+import com.flipkart.okhttpstats.kotlin.interpreter.NetworkInterpreter;
+import com.flipkart.okhttpstats.kotlin.reporter.NetworkEventReporterImpl;
 
 import java.util.Random;
 
