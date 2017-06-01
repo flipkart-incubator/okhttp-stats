@@ -4,8 +4,8 @@ import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.flipkart.okhttpstats.kotlin.handler.OnResponseListener;
-import com.flipkart.okhttpstats.kotlin.model.RequestStats;
+import com.flipkart.okhttpstats.handler.OnResponseListener;
+import com.flipkart.okhttpstats.model.RequestStats;
 
 
 public class OnResponseReceived implements OnResponseListener {
