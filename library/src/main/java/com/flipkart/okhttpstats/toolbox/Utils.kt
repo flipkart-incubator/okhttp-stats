@@ -1,13 +1,11 @@
-package com.flipkart.okhttpstats.kotlin.toolbox
-
-import okhttp3.Headers
+package com.flipkart.okhttpstats.toolbox
 
 object Utils {
 
     var isLoggingEnabled = false
 
-    fun contentLength(headers: Headers): Long {
-        return stringToLong(headers.get("Content-Length"))
+    fun contentLength(headers: okhttp3.Headers): Long {
+        return Utils.stringToLong(headers.get("Content-Length"))
     }
 
     private fun stringToLong(s: String?): Long {

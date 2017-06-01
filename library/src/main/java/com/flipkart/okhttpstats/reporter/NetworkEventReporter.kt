@@ -1,9 +1,8 @@
-package com.flipkart.okhttpstats.kotlin.reporter
+package com.flipkart.okhttpstats.reporter
 
 import okhttp3.Response
 import okhttp3.ResponseBody
 import java.io.IOException
-import java.net.URL
 
 /**
  * Interface to report events in case of response or any errors.
@@ -15,7 +14,7 @@ interface NetworkEventReporter {
 
      * @param inspectorResponse : contains response headers
      */
-    fun responseReceived(inspectorRequest: InspectorRequest, inspectorResponse: InspectorResponse)
+    fun responseReceived(inspectorRequest: NetworkEventReporter.InspectorRequest, inspectorResponse: NetworkEventReporter.InspectorResponse)
 
     /**
      * Reports any [IOException] while [Response] is being proceeded.
@@ -24,7 +23,7 @@ interface NetworkEventReporter {
      * *
      * @param e                : error message
      */
-    fun httpExchangeError(inspectorRequest: InspectorRequest, e: IOException)
+    fun httpExchangeError(inspectorRequest: NetworkEventReporter.InspectorRequest, e: java.io.IOException)
 
     /**
      * Reports error while getting the input steam from [ResponseBody]
@@ -33,12 +32,12 @@ interface NetworkEventReporter {
      * *
      * @param e                 : error message
      */
-    fun responseInputStreamError(inspectorRequest: InspectorRequest, inspectorResponse: InspectorResponse, e: Exception)
+    fun responseInputStreamError(inspectorRequest: NetworkEventReporter.InspectorRequest, inspectorResponse: NetworkEventReporter.InspectorResponse, e: Exception)
 
     interface InspectorRequest {
         fun requestId(): Int
 
-        fun url(): URL
+        fun url(): java.net.URL
 
         fun method(): String
 
@@ -59,6 +58,6 @@ interface NetworkEventReporter {
 
         fun endTime(): Long
 
-        fun responseBody(): ResponseBody?
+        fun responseBody(): okhttp3.ResponseBody?
     }
 }

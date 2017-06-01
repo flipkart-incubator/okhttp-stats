@@ -1,7 +1,5 @@
-package com.flipkart.okhttpstats.kotlin.response
+package com.flipkart.okhttpstats.response
 
-import java.io.FilterInputStream
-import java.io.IOException
 import java.io.InputStream
 
 /**
@@ -11,7 +9,7 @@ import java.io.InputStream
  * *
  * @since 2009.09.15 **tentative**
  */
-class CountingInputStream(`in`: InputStream?, private val responseHandler: ResponseHandler) : FilterInputStream(`in`) {
+class CountingInputStream(`in`: java.io.InputStream?, private val responseHandler: ResponseHandler) : java.io.FilterInputStream(`in`) {
     private var count: Int = 0
 
     @Synchronized private fun checkEOF(n: Int): Int {
@@ -21,7 +19,7 @@ class CountingInputStream(`in`: InputStream?, private val responseHandler: Respo
         return n
     }
 
-    @Throws(IOException::class)
+    @Throws(java.io.IOException::class)
     override fun read(): Int {
         try {
             val result = checkEOF(`in`.read())
@@ -30,17 +28,17 @@ class CountingInputStream(`in`: InputStream?, private val responseHandler: Respo
             }
             responseHandler.onRead(count)
             return result
-        } catch (ex: IOException) {
+        } catch (ex: java.io.IOException) {
             return 0
         }
     }
 
-    @Throws(IOException::class)
+    @Throws(java.io.IOException::class)
     override fun read(b: ByteArray): Int {
         return this.read(b, 0, b.size)
     }
 
-    @Throws(IOException::class)
+    @Throws(java.io.IOException::class)
     override fun read(b: ByteArray, off: Int, len: Int): Int {
         try {
             val result = checkEOF(`in`.read(b, off, len))
@@ -49,7 +47,7 @@ class CountingInputStream(`in`: InputStream?, private val responseHandler: Respo
             }
             responseHandler.onRead(result)
             return result
-        } catch (ex: IOException) {
+        } catch (ex: java.io.IOException) {
             return 0
         }
 
@@ -59,7 +57,7 @@ class CountingInputStream(`in`: InputStream?, private val responseHandler: Respo
         return false
     }
 
-    @Throws(IOException::class)
+    @Throws(java.io.IOException::class)
     override fun reset() {
         throw UnsupportedOperationException("Mark not supported")
     }

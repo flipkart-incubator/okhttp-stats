@@ -1,4 +1,4 @@
-package com.flipkart.okhttpstats.kotlin.toolbox
+package com.flipkart.okhttpstats.toolbox
 
 object HttpStatusCode {
     val HTTP_2XX_START = 200

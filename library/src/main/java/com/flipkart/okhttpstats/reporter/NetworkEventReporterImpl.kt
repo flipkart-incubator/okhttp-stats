@@ -1,7 +1,7 @@
-package com.flipkart.okhttpstats.kotlin.reporter
+package com.flipkart.okhttpstats.reporter
 
-import com.flipkart.okhttpstats.kotlin.handler.NetworkRequestStatsHandler
-import com.flipkart.okhttpstats.kotlin.model.RequestStats
+import com.flipkart.okhttpstats.handler.NetworkRequestStatsHandler
+import com.flipkart.okhttpstats.model.RequestStats
 import okhttp3.Interceptor
 import okhttp3.ResponseBody
 import java.io.IOException
@@ -36,7 +36,7 @@ class NetworkEventReporterImpl(private val networkRequestStatsHandler: NetworkRe
         networkRequestStatsHandler.onResponseReceived(requestStats)
     }
 
-    override fun httpExchangeError(inspectorRequest: NetworkEventReporter.InspectorRequest, e: IOException) {
+    override fun httpExchangeError(inspectorRequest: NetworkEventReporter.InspectorRequest, e: java.io.IOException) {
         val requestId = inspectorRequest.requestId()
         val requestStats = RequestStats(requestId)
         requestStats.url = inspectorRequest.url()

@@ -1,4 +1,4 @@
-package com.flipkart.okhttpstats.kotlin.response
+package com.flipkart.okhttpstats.response
 
 /**
  * Default implementation of [ResponseHandler]

@@ -1,4 +1,4 @@
-package com.flipkart.okhttpstats.kotlin.response
+package com.flipkart.okhttpstats.response
 
 /**
  * Implementations are to read the number of bytes in case the response header do not have content-length

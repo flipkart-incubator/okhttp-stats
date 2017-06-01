@@ -1,19 +1,18 @@
-package com.flipkart.okhttpstats.kotlin.toolbox
+package com.flipkart.okhttpstats.toolbox
 
-import com.flipkart.okhttpstats.kotlin.model.RequestStats
-import java.util.*
+import com.flipkart.okhttpstats.model.RequestStats
 
 /**
  * Utility class to calculate the average network speed
  */
 class NetworkStat {
     private var peakSpeed = 0.0
-    private val requestStatQueue: Queue<RequestStats>
+    private val requestStatQueue: java.util.Queue<RequestStats>
     private var totalSize = 0.0
     var currentAvgSpeed = 0.0
 
     init {
-        requestStatQueue = LinkedList<RequestStats>()
+        requestStatQueue = java.util.LinkedList<RequestStats>()
     }
 
     @Synchronized fun addRequestStat(requestStats: RequestStats) {
@@ -26,7 +25,7 @@ class NetworkStat {
         }
         requestStatQueue.add(requestStats)
         totalSize += requestStats.responseSize.toDouble()
-        if (requestStatQueue.size > MAX_QUEUE_SIZE) {
+        if (requestStatQueue.size > Companion.MAX_QUEUE_SIZE) {
             val requestStat = requestStatQueue.poll()
             totalSize -= requestStat.responseSize.toDouble()
         }

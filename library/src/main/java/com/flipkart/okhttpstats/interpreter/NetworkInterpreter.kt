@@ -1,8 +1,6 @@
-package com.flipkart.okhttpstats.kotlin.interpreter
+package com.flipkart.okhttpstats.interpreter
 
-import com.flipkart.okhttpstats.kotlin.NetworkInterceptor
-import okhttp3.Request
-import okhttp3.Response
+import com.flipkart.okhttpstats.NetworkInterceptor
 import okhttp3.ResponseBody
 import java.io.IOException
 
@@ -26,8 +24,8 @@ interface NetworkInterpreter {
      * *
      * @throws IOException
      */
-    @Throws(IOException::class)
-    fun interpretResponseStream(requestId: Int, timeInfo: NetworkInterceptor.TimeInfo, request: Request, response: Response): Response
+    @Throws(java.io.IOException::class)
+    fun interpretResponseStream(requestId: Int, timeInfo: NetworkInterceptor.TimeInfo, request: okhttp3.Request, response: okhttp3.Response): okhttp3.Response
 
     /**
      * Interpre the error received
@@ -40,5 +38,5 @@ interface NetworkInterpreter {
      * *
      * @param e         e
      */
-    fun interpretError(requestId: Int, timeInfo: NetworkInterceptor.TimeInfo, request: Request, e: IOException)
+    fun interpretError(requestId: Int, timeInfo: NetworkInterceptor.TimeInfo, request: okhttp3.Request, e: java.io.IOException)
 }

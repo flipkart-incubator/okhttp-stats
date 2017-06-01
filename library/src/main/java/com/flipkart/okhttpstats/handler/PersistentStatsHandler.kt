@@ -1,18 +1,10 @@
-package com.flipkart.okhttpstats.kotlin.handler
+package com.flipkart.okhttpstats.handler
 
-import android.content.Context
-import android.net.ConnectivityManager
 import android.net.NetworkInfo
-import android.net.wifi.WifiManager
-import android.support.annotation.VisibleForTesting
-import android.text.TextUtils
-import android.util.Log
-import com.flipkart.okhttpstats.kotlin.model.RequestStats
-import com.flipkart.okhttpstats.kotlin.toolbox.NetworkStat
-import com.flipkart.okhttpstats.kotlin.toolbox.PreferenceManager
-import com.flipkart.okhttpstats.kotlin.toolbox.Utils
-import java.io.IOException
-import java.util.*
+import com.flipkart.okhttpstats.model.RequestStats
+import com.flipkart.okhttpstats.toolbox.NetworkStat
+import com.flipkart.okhttpstats.toolbox.PreferenceManager
+import com.flipkart.okhttpstats.toolbox.Utils
 
 /**
  * Default implementation of [NetworkRequestStatsHandler]
@@ -28,10 +20,10 @@ import java.util.*
  */
 class PersistentStatsHandler : NetworkRequestStatsHandler {
     private val preferenceManager: PreferenceManager
-    internal var onResponseListeners: MutableSet<OnResponseListener> = HashSet()
+    internal var onResponseListeners: MutableSet<OnResponseListener> = java.util.HashSet()
     private var responseCount = 0
     private var MAX_SIZE: Int = 0
-    private var wifiManager: WifiManager
+    private var wifiManager: android.net.wifi.WifiManager?
     private var networkStat: NetworkStat = NetworkStat()
     /**
      * Exposed to the client to get the average network speed
@@ -39,22 +31,22 @@ class PersistentStatsHandler : NetworkRequestStatsHandler {
      * @return avg speed
      */
     var averageNetworkSpeed = 0f
-    private var connectivityManager: ConnectivityManager? = null
+    private var connectivityManager: android.net.ConnectivityManager? = null
 
-    constructor(context: Context) {
+    constructor(context: android.content.Context) {
         this.preferenceManager = PreferenceManager(context)
-        this.MAX_SIZE = DEFAULT_MAX_SIZE
-        this.wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        this.connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        this.MAX_SIZE = PersistentStatsHandler.Companion.DEFAULT_MAX_SIZE
+        this.wifiManager = context.getSystemService(android.content.Context.WIFI_SERVICE) as android.net.wifi.WifiManager
+        this.connectivityManager = context.getSystemService(android.content.Context.CONNECTIVITY_SERVICE) as android.net.ConnectivityManager
         this.averageNetworkSpeed = preferenceManager.getAverageSpeed(getNetworkKey(activeNetworkInfo))
     }
 
-    @VisibleForTesting
-    internal constructor(context: Context, preferenceManager: PreferenceManager) {
+    @android.support.annotation.VisibleForTesting
+    internal constructor(context: android.content.Context, preferenceManager: PreferenceManager) {
         this.preferenceManager = preferenceManager
-        this.MAX_SIZE = DEFAULT_MAX_SIZE
-        this.wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        this.connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        this.MAX_SIZE = PersistentStatsHandler.Companion.DEFAULT_MAX_SIZE
+        this.wifiManager = context.getSystemService(android.content.Context.WIFI_SERVICE) as android.net.wifi.WifiManager
+        this.connectivityManager = context.getSystemService(android.content.Context.CONNECTIVITY_SERVICE) as android.net.ConnectivityManager
         this.averageNetworkSpeed = preferenceManager.getAverageSpeed(getNetworkKey(activeNetworkInfo))
     }
 
@@ -63,7 +55,7 @@ class PersistentStatsHandler : NetworkRequestStatsHandler {
 
      * @return [NetworkInfo]
      */
-    val activeNetworkInfo: NetworkInfo?
+    val activeNetworkInfo: android.net.NetworkInfo?
         get() {
             return connectivityManager?.getActiveNetworkInfo()
         }
@@ -97,7 +89,7 @@ class PersistentStatsHandler : NetworkRequestStatsHandler {
 
     override fun onResponseReceived(requestStats: RequestStats) {
         if (Utils.isLoggingEnabled) {
-            Log.d("Response Received : ", requestStats.url.toString() + " ")
+            android.util.Log.d("Response Received : ", requestStats.url.toString() + " ")
         }
 
         //call all the registered listeners
@@ -123,9 +115,9 @@ class PersistentStatsHandler : NetworkRequestStatsHandler {
         networkStat.addRequestStat(requestStats)
     }
 
-    override fun onHttpExchangeError(requestStats: RequestStats, e: IOException) {
+    override fun onHttpExchangeError(requestStats: RequestStats, e: java.io.IOException) {
         if (Utils.isLoggingEnabled) {
-            Log.d("Response Http Error :", requestStats.url.toString())
+            android.util.Log.d("Response Http Error :", requestStats.url.toString())
         }
 
         for (onResponseListener in onResponseListeners) {
@@ -135,7 +127,7 @@ class PersistentStatsHandler : NetworkRequestStatsHandler {
 
     override fun onResponseInputStreamError(requestStats: RequestStats, e: Exception) {
         if (Utils.isLoggingEnabled) {
-            Log.d("Response InputStream : ", requestStats.url.toString())
+            android.util.Log.d("Response InputStream : ", requestStats.url.toString())
         }
 
         for (onResponseListener in onResponseListeners) {
@@ -150,23 +142,23 @@ class PersistentStatsHandler : NetworkRequestStatsHandler {
      * *
      * @return string
      */
-    @VisibleForTesting
-    internal fun getNetworkKey(networkInfo: NetworkInfo?): String {
+    @android.support.annotation.VisibleForTesting
+    internal fun getNetworkKey(networkInfo: android.net.NetworkInfo?): String {
         val networkType = networkInfo?.getTypeName()
-        if (networkType == WIFI_NETWORK) {
-            return WIFI_NETWORK + "_" + wifiSSID
-        } else if (networkType == MOBILE_NETWORK) {
-            return MOBILE_NETWORK + "_" + networkInfo.getSubtypeName()
+        if (networkType == Companion.WIFI_NETWORK) {
+            return Companion.WIFI_NETWORK + "_" + wifiSSID
+        } else if (networkType == Companion.MOBILE_NETWORK) {
+            return Companion.MOBILE_NETWORK + "_" + networkInfo.getSubtypeName()
         }
-        return UNKNOWN_NETWORK
+        return Companion.UNKNOWN_NETWORK
     }
 
     internal val wifiSSID: Int?
-        @VisibleForTesting
+        @android.support.annotation.VisibleForTesting
         get() {
             val wifiInfo = wifiManager?.getConnectionInfo()
             val ssid = wifiInfo?.getSSID()
-            if (!TextUtils.isEmpty(ssid)) {
+            if (!android.text.TextUtils.isEmpty(ssid)) {
                 return ssid?.hashCode()
             }
             return -1

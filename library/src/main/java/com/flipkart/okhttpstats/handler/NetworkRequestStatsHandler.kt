@@ -1,7 +1,7 @@
-package com.flipkart.okhttpstats.kotlin.handler
+package com.flipkart.okhttpstats.handler
 
 
-import com.flipkart.okhttpstats.kotlin.model.RequestStats
+import com.flipkart.okhttpstats.model.RequestStats
 
 import java.io.IOException
 
@@ -20,7 +20,7 @@ interface NetworkRequestStatsHandler {
 
      * @param requestStats [RequestStats]
      */
-    fun onHttpExchangeError(requestStats: RequestStats, e: IOException)
+    fun onHttpExchangeError(requestStats: RequestStats, e: java.io.IOException)
 
     /**
      * Indicates that connection was successful, but we could not read the response stream.

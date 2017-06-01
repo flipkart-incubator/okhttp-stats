@@ -1,7 +1,7 @@
-package com.flipkart.okhttpstats.kotlin
+package com.flipkart.okhttpstats
 
-import com.flipkart.okhttpstats.kotlin.interpreter.NetworkInterpreter
-import com.flipkart.okhttpstats.kotlin.toolbox.Utils
+import com.flipkart.okhttpstats.interpreter.NetworkInterpreter
+import com.flipkart.okhttpstats.toolbox.Utils
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.io.IOException

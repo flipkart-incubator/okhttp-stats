@@ -1,16 +1,15 @@
-package com.flipkart.okhttpstats.kotlin.handler
+package com.flipkart.okhttpstats.handler
 
-import android.net.NetworkInfo
-import com.flipkart.okhttpstats.kotlin.model.RequestStats
-import com.flipkart.okhttpstats.kotlin.toolbox.HttpStatusCode
+import com.flipkart.okhttpstats.model.RequestStats
+import com.flipkart.okhttpstats.toolbox.HttpStatusCode
 
-class ForwardingResponse(private val mOnStatusCodeAwareResponseListener: OnStatusCodeAwareResponseListener): OnResponseListener {
+class ForwardingResponse(private val mOnStatusCodeAwareResponseListener: OnStatusCodeAwareResponseListener) : OnResponseListener {
 
-    override fun onResponseError(info: NetworkInfo?, requestStats: RequestStats, e: Exception) {
+    override fun onResponseError(info: android.net.NetworkInfo?, requestStats: RequestStats, e: Exception) {
         mOnStatusCodeAwareResponseListener.onResponseNetworkError(info, requestStats, e)
     }
 
-    override fun onResponseSuccess(info: NetworkInfo?, requestStats: RequestStats) {
+    override fun onResponseSuccess(info: android.net.NetworkInfo?, requestStats: RequestStats) {
         val statusCode = requestStats.statusCode
         if (statusCode >= HttpStatusCode.HTTP_2XX_START && statusCode <= HttpStatusCode.HTTP_2XX_END || statusCode >= HttpStatusCode.HTTP_3XX_START && statusCode <= HttpStatusCode.HTTP_3XX_END) {
             mOnStatusCodeAwareResponseListener.onResponseServerSuccess(info, requestStats)

@@ -1,7 +1,7 @@
-package com.flipkart.okhttpstats.kotlin.handler
+package com.flipkart.okhttpstats.handler
 
 import android.net.NetworkInfo
-import com.flipkart.okhttpstats.kotlin.model.RequestStats
+import com.flipkart.okhttpstats.model.RequestStats
 import java.io.IOException
 
 /**
@@ -21,7 +21,7 @@ interface OnResponseListener {
      * *
      * @param requestStats [RequestStats]
      */
-    fun onResponseSuccess(info: NetworkInfo?, requestStats: RequestStats)
+    fun onResponseSuccess(info: android.net.NetworkInfo?, requestStats: RequestStats)
 
     /**
      * This callback includes failure request cases, in cases when there are no response such as NoInternet and more
@@ -32,5 +32,5 @@ interface OnResponseListener {
      * *
      * @param e            [IOException]
      */
-    fun onResponseError(info: NetworkInfo?, requestStats: RequestStats, e: Exception)
+    fun onResponseError(info: android.net.NetworkInfo?, requestStats: RequestStats, e: Exception)
 }

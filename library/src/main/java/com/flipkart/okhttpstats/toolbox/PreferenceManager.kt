@@ -1,16 +1,13 @@
-package com.flipkart.okhttpstats.kotlin.toolbox
-
-import android.content.Context
-import android.content.SharedPreferences
+package com.flipkart.okhttpstats.toolbox
 
 /**
  * Preference Manager to store network speed
  */
-class PreferenceManager(context: Context) {
-    private val sharedPreferences: SharedPreferences
+class PreferenceManager(context: android.content.Context) {
+    private val sharedPreferences: android.content.SharedPreferences
 
     init {
-        this.sharedPreferences = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
+        this.sharedPreferences = context.getSharedPreferences(PreferenceManager.Companion.PREFERENCES, android.content.Context.MODE_PRIVATE)
     }
 
     fun setAverageSpeed(networkType: String, avgSpeed: Float) {
