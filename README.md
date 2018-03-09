@@ -21,7 +21,7 @@ Add the dependency:
 
 ````java
 	dependencies {
-		compile 'com.github.flipkart-incubator:okhttp-stats:1.1.1'
+		compile 'com.github.flipkart-incubator:okhttp-stats:1.1.2'
 	}
 ````
 
