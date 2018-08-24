@@ -14,6 +14,7 @@ public class OnResponseReceived implements OnResponseListener {
                 + "\nId : " + requestStats.id
                 + "\nUrl : " + requestStats.url
                 + "\nMethod : " + requestStats.methodType
+                + "\nStatus Code : " + requestStats.statusCode
                 + "\nHost : " + requestStats.hostName
                 + "\nRequest Size : " + requestStats.requestSize
                 + "\nResponse Size : " + requestStats.responseSize
@@ -27,6 +28,8 @@ public class OnResponseReceived implements OnResponseListener {
                 + "\nId : " + requestStats.id
                 + "\nUrl : " + requestStats.url
                 + "\nMethod : " + requestStats.methodType
+                + "\nStatus Code : " + requestStats.statusCode
+                + "\nRequest Body : " + requestStats.requestBody
                 + "\nHost : " + requestStats.hostName
                 + "\nRequest Size : " + requestStats.requestSize
                 + "\nResponse Size : " + requestStats.responseSize
