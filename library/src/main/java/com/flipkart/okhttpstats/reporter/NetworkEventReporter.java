@@ -29,6 +29,7 @@ import android.support.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
@@ -70,6 +71,9 @@ public interface NetworkEventReporter {
         long requestSize();
 
         String hostName();
+
+        @Nullable
+        RequestBody requestBody();
     }
 
     interface InspectorResponse {

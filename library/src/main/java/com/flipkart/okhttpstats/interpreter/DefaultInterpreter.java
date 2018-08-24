@@ -39,6 +39,7 @@ import java.net.URL;
 
 import okhttp3.MediaType;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.BufferedSource;
@@ -60,7 +61,7 @@ public class DefaultInterpreter implements NetworkInterpreter {
     public Response interpretResponseStream(int requestId, NetworkInterceptor.TimeInfo timeInfo, Request request, Response response) throws IOException {
         ResponseBody responseBody = response.body();
 
-        final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url().url(), request.method(), Utils.contentLength(request.headers()), request.url().host());
+        final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url().url(), request.method(), Utils.contentLength(request.headers()), request.url().host(), request.body());
         final OkHttpInspectorResponse okHttpInspectorResponse = new OkHttpInspectorResponse(requestId, response.code(), Utils.contentLength(response.headers()), timeInfo.mStartTime, timeInfo.mEndTime, responseBody);
         //if response does not have content length, using CountingInputStream to read its bytes
         if (response.header(CONTENT_LENGTH) == null) {
@@ -103,7 +104,7 @@ public class DefaultInterpreter implements NetworkInterpreter {
         if (Utils.isLoggingEnabled) {
             Log.d("Error response: ", e.getMessage());
         }
-        final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url().url(), request.method(), Utils.contentLength(request.headers()), request.header(HOST_NAME));
+        final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url().url(), request.method(), Utils.contentLength(request.headers()), request.header(HOST_NAME), request.body());
         mEventReporter.httpExchangeError(okHttpInspectorRequest, e);
     }
 
@@ -116,13 +117,16 @@ public class DefaultInterpreter implements NetworkInterpreter {
         final String mMethodType;
         final long mContentLength;
         final String mHostName;
+        final RequestBody mRequestBody;
 
-        OkHttpInspectorRequest(int requestId, URL requestUrl, String methodType, long contentLength, String hostName) {
+        OkHttpInspectorRequest(int requestId, URL requestUrl, String methodType, long contentLength,
+                               String hostName, RequestBody requestBody) {
             this.mRequestId = requestId;
             this.mRequestUrl = requestUrl;
             this.mMethodType = methodType;
             this.mContentLength = contentLength;
             this.mHostName = hostName;
+            this.mRequestBody = requestBody;
         }
 
         @Override
@@ -149,6 +153,9 @@ public class DefaultInterpreter implements NetworkInterpreter {
         public String hostName() {
             return mHostName;
         }
+
+        @Override
+        public RequestBody requestBody() { return mRequestBody; }
     }
 
     /**

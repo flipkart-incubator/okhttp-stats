@@ -59,6 +59,7 @@ public class NetworkEventReporterImpl implements NetworkEventReporter {
             requestStats.url = inspectorRequest.url();
             requestStats.methodType = inspectorRequest.method();
             requestStats.hostName = inspectorRequest.hostName();
+            requestStats.requestBody = inspectorRequest.requestBody();
             requestStats.responseSize = inspectorResponse.responseSize();
             requestStats.statusCode = inspectorResponse.statusCode();
             requestStats.startTime = inspectorResponse.startTime();
@@ -77,6 +78,7 @@ public class NetworkEventReporterImpl implements NetworkEventReporter {
             requestStats.methodType = inspectorRequest.method();
             requestStats.hostName = inspectorRequest.hostName();
             requestStats.requestSize = inspectorRequest.requestSize();
+            requestStats.requestBody = inspectorRequest.requestBody();
             mNetworkRequestStatsHandler.onHttpExchangeError(requestStats, e);
         }
     }
@@ -90,6 +92,7 @@ public class NetworkEventReporterImpl implements NetworkEventReporter {
             requestStats.url = inspectorRequest.url();
             requestStats.methodType = inspectorRequest.method();
             requestStats.hostName = inspectorRequest.hostName();
+            requestStats.requestBody = inspectorRequest.requestBody();
             requestStats.statusCode = inspectorResponse.statusCode();
             requestStats.startTime = inspectorResponse.startTime();
             requestStats.endTime = inspectorResponse.endTime();

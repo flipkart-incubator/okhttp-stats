@@ -25,6 +25,7 @@ package com.flipkart.okhttpstats.model;
 
 import java.net.URL;
 
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 
 /**
@@ -37,6 +38,7 @@ public class RequestStats {
     public String methodType;
     public long requestSize;
     public long responseSize;
+    public RequestBody requestBody;
     public ResponseBody responseBody;
     public String hostName;
     public int statusCode;
@@ -45,5 +47,20 @@ public class RequestStats {
 
     public RequestStats(int requestId) {
         this.id = requestId;
+    }
+
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Id : ").append(id)
+                .append("\nMethod : ").append(methodType)
+                .append("\nHost : ").append(hostName)
+                .append("\nStatusCode : ").append(statusCode)
+                .append("\nRequest Size : ").append(requestSize)
+                .append("\nResponse Size : ").append(responseSize)
+                .append("\nTime Taken : ").append(endTime - startTime)
+                .append("\nUrl : ").append(url)
+                .append("\nRequest Body : ").append(requestBody)
+                .append("\nResponse Body : ").append(responseBody);
+        return stringBuilder.toString();
     }
 }
