@@ -24,6 +24,7 @@
 package com.flipkart.okhttpstats.handler;
 
 import android.net.NetworkInfo;
+import android.support.annotation.Nullable;
 
 import com.flipkart.okhttpstats.model.RequestStats;
 
@@ -44,7 +45,7 @@ public interface OnResponseListener {
      * @param info         {@link NetworkInfo}
      * @param requestStats {@link RequestStats}
      */
-    void onResponseSuccess(NetworkInfo info, RequestStats requestStats);
+    void onResponseSuccess(@Nullable NetworkInfo info, RequestStats requestStats);
 
     /**
      * This callback includes failure request cases, in cases when there are no response such as NoInternet and more
@@ -53,5 +54,5 @@ public interface OnResponseListener {
      * @param requestStats {@link RequestStats}
      * @param e            {@link IOException}
      */
-    void onResponseError(NetworkInfo info, RequestStats requestStats, Exception e);
+    void onResponseError(@Nullable NetworkInfo info, RequestStats requestStats, Exception e);
 }

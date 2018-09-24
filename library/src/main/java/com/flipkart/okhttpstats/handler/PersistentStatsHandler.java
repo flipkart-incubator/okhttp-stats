@@ -23,12 +23,16 @@
 
 package com.flipkart.okhttpstats.handler;
 
+import android.Manifest;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.content.PermissionChecker;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -65,14 +69,18 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     private NetworkStat mNetworkStat;
     private float mCurrentAvgSpeed = 0;
     private ConnectivityManager mConnectivityManager;
+    private boolean mNetworkAccessPermissionGranted;
+    private boolean mWifiAccessPermissionGranted;
 
-    public PersistentStatsHandler(Context context) {
+    public PersistentStatsHandler(@NonNull Context context) {
         this.mPreferenceManager = new PreferenceManager(context);
         this.MAX_SIZE = DEFAULT_MAX_SIZE;
         this.mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         this.mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         this.mNetworkStat = new NetworkStat();
         this.mCurrentAvgSpeed = mPreferenceManager.getAverageSpeed(getNetworkKey(getActiveNetworkInfo()));
+        this.mNetworkAccessPermissionGranted = PermissionChecker.checkSelfPermission(context, Manifest.permission.ACCESS_NETWORK_STATE) == PermissionChecker.PERMISSION_GRANTED;
+        this.mWifiAccessPermissionGranted = PermissionChecker.checkSelfPermission(context, Manifest.permission.ACCESS_WIFI_STATE) == PermissionChecker.PERMISSION_GRANTED;
     }
 
     @VisibleForTesting
@@ -83,6 +91,8 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
         this.mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         this.mNetworkStat = new NetworkStat();
         this.mCurrentAvgSpeed = mPreferenceManager.getAverageSpeed(getNetworkKey(getActiveNetworkInfo()));
+        this.mNetworkAccessPermissionGranted = PermissionChecker.checkSelfPermission(context, Manifest.permission.ACCESS_NETWORK_STATE) == PermissionChecker.PERMISSION_GRANTED;
+        this.mWifiAccessPermissionGranted = PermissionChecker.checkSelfPermission(context, Manifest.permission.ACCESS_WIFI_STATE) == PermissionChecker.PERMISSION_GRANTED;
     }
 
     /**
@@ -90,8 +100,9 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
      *
      * @return {@link NetworkInfo}
      */
+    @Nullable
     public NetworkInfo getActiveNetworkInfo() {
-        if (mConnectivityManager != null) {
+        if (mConnectivityManager != null && mNetworkAccessPermissionGranted) {
             return mConnectivityManager.getActiveNetworkInfo();
         }
         return null;
@@ -201,7 +212,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
      * @return string
      */
     @VisibleForTesting
-    String getNetworkKey(NetworkInfo networkInfo) {
+    String getNetworkKey(@Nullable NetworkInfo networkInfo) {
         if (networkInfo != null && networkInfo.getTypeName() != null) {
             if (networkInfo.getTypeName().equals(WIFI_NETWORK)) {
                 return WIFI_NETWORK + "_" + getWifiSSID();
@@ -215,7 +226,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
 
     @VisibleForTesting
     int getWifiSSID() {
-        WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
+        WifiInfo wifiInfo = mWifiAccessPermissionGranted ? mWifiManager.getConnectionInfo() : null;
         if (wifiInfo != null) {
             String ssid = wifiInfo.getSSID();
             if (!TextUtils.isEmpty(ssid)) {
