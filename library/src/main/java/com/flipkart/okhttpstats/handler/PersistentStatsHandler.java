@@ -24,6 +24,7 @@
 package com.flipkart.okhttpstats.handler;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -62,6 +63,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     private static final String MOBILE_NETWORK = "mobile";
     private static final String UNKNOWN_NETWORK = "unknown";
     private final PreferenceManager mPreferenceManager;
+    private final Context mContext;
     Set<OnResponseListener> mOnResponseListeners = new HashSet<>();
     private int mResponseCount = 0;
     private int MAX_SIZE;
@@ -69,30 +71,26 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     private NetworkStat mNetworkStat;
     private float mCurrentAvgSpeed = 0;
     private ConnectivityManager mConnectivityManager;
-    private boolean mNetworkAccessPermissionGranted;
-    private boolean mWifiAccessPermissionGranted;
 
     public PersistentStatsHandler(@NonNull Context context) {
+        this.mContext = context;
         this.mPreferenceManager = new PreferenceManager(context);
         this.MAX_SIZE = DEFAULT_MAX_SIZE;
         this.mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         this.mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         this.mNetworkStat = new NetworkStat();
         this.mCurrentAvgSpeed = mPreferenceManager.getAverageSpeed(getNetworkKey(getActiveNetworkInfo()));
-        this.mNetworkAccessPermissionGranted = PermissionChecker.checkSelfPermission(context, Manifest.permission.ACCESS_NETWORK_STATE) == PermissionChecker.PERMISSION_GRANTED;
-        this.mWifiAccessPermissionGranted = PermissionChecker.checkSelfPermission(context, Manifest.permission.ACCESS_WIFI_STATE) == PermissionChecker.PERMISSION_GRANTED;
     }
 
     @VisibleForTesting
     PersistentStatsHandler(Context context, PreferenceManager preferenceManager) {
+        this.mContext = context;
         this.mPreferenceManager = preferenceManager;
         this.MAX_SIZE = DEFAULT_MAX_SIZE;
         this.mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         this.mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         this.mNetworkStat = new NetworkStat();
         this.mCurrentAvgSpeed = mPreferenceManager.getAverageSpeed(getNetworkKey(getActiveNetworkInfo()));
-        this.mNetworkAccessPermissionGranted = PermissionChecker.checkSelfPermission(context, Manifest.permission.ACCESS_NETWORK_STATE) == PermissionChecker.PERMISSION_GRANTED;
-        this.mWifiAccessPermissionGranted = PermissionChecker.checkSelfPermission(context, Manifest.permission.ACCESS_WIFI_STATE) == PermissionChecker.PERMISSION_GRANTED;
     }
 
     /**
@@ -100,9 +98,12 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
      *
      * @return {@link NetworkInfo}
      */
+    @SuppressLint("MissingPermission")
     @Nullable
     public NetworkInfo getActiveNetworkInfo() {
-        if (mConnectivityManager != null && mNetworkAccessPermissionGranted) {
+        // check if the permission is granted to the process
+        if (mConnectivityManager != null && PermissionChecker.checkSelfPermission(mContext,
+                Manifest.permission.ACCESS_NETWORK_STATE) == PermissionChecker.PERMISSION_GRANTED) {
             return mConnectivityManager.getActiveNetworkInfo();
         }
         return null;
@@ -225,8 +226,10 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     }
 
     @VisibleForTesting
+    @SuppressLint("MissingPermission")
     int getWifiSSID() {
-        WifiInfo wifiInfo = mWifiAccessPermissionGranted ? mWifiManager.getConnectionInfo() : null;
+        boolean granted = PermissionChecker.checkSelfPermission(mContext, Manifest.permission.ACCESS_WIFI_STATE) == PermissionChecker.PERMISSION_GRANTED;
+        WifiInfo wifiInfo = granted ? mWifiManager.getConnectionInfo() : null;
         if (wifiInfo != null) {
             String ssid = wifiInfo.getSSID();
             if (!TextUtils.isEmpty(ssid)) {
