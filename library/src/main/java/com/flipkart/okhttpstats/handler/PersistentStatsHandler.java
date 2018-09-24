@@ -23,12 +23,17 @@
 
 package com.flipkart.okhttpstats.handler;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.content.PermissionChecker;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -58,6 +63,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     private static final String MOBILE_NETWORK = "mobile";
     private static final String UNKNOWN_NETWORK = "unknown";
     private final PreferenceManager mPreferenceManager;
+    private final Context mContext;
     Set<OnResponseListener> mOnResponseListeners = new HashSet<>();
     private int mResponseCount = 0;
     private int MAX_SIZE;
@@ -66,7 +72,8 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     private float mCurrentAvgSpeed = 0;
     private ConnectivityManager mConnectivityManager;
 
-    public PersistentStatsHandler(Context context) {
+    public PersistentStatsHandler(@NonNull Context context) {
+        this.mContext = context;
         this.mPreferenceManager = new PreferenceManager(context);
         this.MAX_SIZE = DEFAULT_MAX_SIZE;
         this.mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -77,6 +84,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
 
     @VisibleForTesting
     PersistentStatsHandler(Context context, PreferenceManager preferenceManager) {
+        this.mContext = context;
         this.mPreferenceManager = preferenceManager;
         this.MAX_SIZE = DEFAULT_MAX_SIZE;
         this.mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -90,8 +98,12 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
      *
      * @return {@link NetworkInfo}
      */
+    @SuppressLint("MissingPermission")
+    @Nullable
     public NetworkInfo getActiveNetworkInfo() {
-        if (mConnectivityManager != null) {
+        // check if the permission is granted to the process
+        if (mConnectivityManager != null && PermissionChecker.checkSelfPermission(mContext,
+                Manifest.permission.ACCESS_NETWORK_STATE) == PermissionChecker.PERMISSION_GRANTED) {
             return mConnectivityManager.getActiveNetworkInfo();
         }
         return null;
@@ -201,7 +213,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
      * @return string
      */
     @VisibleForTesting
-    String getNetworkKey(NetworkInfo networkInfo) {
+    String getNetworkKey(@Nullable NetworkInfo networkInfo) {
         if (networkInfo != null && networkInfo.getTypeName() != null) {
             if (networkInfo.getTypeName().equals(WIFI_NETWORK)) {
                 return WIFI_NETWORK + "_" + getWifiSSID();
@@ -214,8 +226,10 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     }
 
     @VisibleForTesting
+    @SuppressLint("MissingPermission")
     int getWifiSSID() {
-        WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
+        boolean granted = PermissionChecker.checkSelfPermission(mContext, Manifest.permission.ACCESS_WIFI_STATE) == PermissionChecker.PERMISSION_GRANTED;
+        WifiInfo wifiInfo = granted ? mWifiManager.getConnectionInfo() : null;
         if (wifiInfo != null) {
             String ssid = wifiInfo.getSSID();
             if (!TextUtils.isEmpty(ssid)) {
