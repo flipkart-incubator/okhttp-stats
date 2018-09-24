@@ -30,6 +30,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.PermissionChecker;
@@ -71,22 +72,22 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     private ConnectivityManager mConnectivityManager;
     private Context mContext;
 
-    public PersistentStatsHandler(Context context) {
-        this.mContext = context;
+    public PersistentStatsHandler(@NonNull Context context) {
+        this.mContext = context.getApplicationContext();
         this.mPreferenceManager = new PreferenceManager(context);
         this.MAX_SIZE = DEFAULT_MAX_SIZE;
-        this.mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        this.mWifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
         this.mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         this.mNetworkStat = new NetworkStat();
         this.mCurrentAvgSpeed = mPreferenceManager.getAverageSpeed(getNetworkKey(getActiveNetworkInfo()));
     }
 
     @VisibleForTesting
-    PersistentStatsHandler(Context context, PreferenceManager preferenceManager) {
-        this.mContext = context;
+    PersistentStatsHandler(@NonNull Context context, PreferenceManager preferenceManager) {
+        this.mContext = context.getApplicationContext();
         this.mPreferenceManager = preferenceManager;
         this.MAX_SIZE = DEFAULT_MAX_SIZE;
-        this.mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        this.mWifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
         this.mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         this.mNetworkStat = new NetworkStat();
         this.mCurrentAvgSpeed = mPreferenceManager.getAverageSpeed(getNetworkKey(getActiveNetworkInfo()));
