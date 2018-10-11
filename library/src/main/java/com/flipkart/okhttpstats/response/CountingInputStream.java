@@ -46,7 +46,7 @@ public class CountingInputStream extends FilterInputStream {
     }
 
     @Override
-    public int read() throws IOException {
+    public int read() {
         try {
             int result = checkEOF(in.read());
             if (result != -1) {
@@ -65,7 +65,7 @@ public class CountingInputStream extends FilterInputStream {
     }
 
     @Override
-    public int read(@NonNull byte[] b, int off, int len) throws IOException {
+    public int read(@NonNull byte[] b, int off, int len) {
         try {
             int result = checkEOF(in.read(b, off, len));
             if (result != -1) {
@@ -84,7 +84,7 @@ public class CountingInputStream extends FilterInputStream {
     }
 
     @Override
-    public void reset() throws IOException {
+    public void reset() {
         throw new UnsupportedOperationException("Mark not supported");
     }
 }

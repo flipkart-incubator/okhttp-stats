@@ -26,7 +26,7 @@ public class ForwardingResponseTest {
      * @throws Exception
      */
     @Test
-    public void testOnResponseServerSuccessCalledFor2XX3XX() throws Exception {
+    public void testOnResponseServerSuccessCalledFor2XX3XX() {
         OnStatusCodeAwareResponseListener onStatusCodeAwareResponseListener = mock(OnStatusCodeAwareResponseListener.class);
         ForwardingResponse forwardingResponse = new ForwardingResponse(onStatusCodeAwareResponseListener);
 
@@ -80,7 +80,7 @@ public class ForwardingResponseTest {
      * @throws Exception
      */
     @Test
-    public void testOnResponseServerErrorCalledFor4XX5XX() throws Exception {
+    public void testOnResponseServerErrorCalledFor4XX5XX() {
         OnStatusCodeAwareResponseListener onStatusCodeAwareResponseListener = mock(OnStatusCodeAwareResponseListener.class);
         ForwardingResponse forwardingResponse = new ForwardingResponse(onStatusCodeAwareResponseListener);
 
@@ -134,7 +134,7 @@ public class ForwardingResponseTest {
      * @throws Exception
      */
     @Test
-    public void testOnResponseNetworkErrorCalledForNetworkErrors() throws Exception {
+    public void testOnResponseNetworkErrorCalledForNetworkErrors() {
         OnStatusCodeAwareResponseListener onStatusCodeAwareResponseListener = mock(OnStatusCodeAwareResponseListener.class);
         ForwardingResponse forwardingResponse = new ForwardingResponse(onStatusCodeAwareResponseListener);
 

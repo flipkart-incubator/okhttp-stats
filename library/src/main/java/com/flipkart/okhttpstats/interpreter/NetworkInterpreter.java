@@ -46,7 +46,7 @@ public interface NetworkInterpreter {
      * @return Response
      * @throws IOException
      */
-    Response interpretResponseStream(int requestId, NetworkInterceptor.TimeInfo timeInfo, Request request, Response response) throws IOException;
+    Response interpretResponseStream(int requestId, NetworkInterceptor.TimeInfo timeInfo, Request request, Response response);
 
     /**
      * Interpre the error received

@@ -51,14 +51,14 @@ import okio.Okio;
 public class DefaultInterpreter implements NetworkInterpreter {
     private static final String HOST_NAME = "HOST";
     private static final String CONTENT_LENGTH = "Content-Length";
-    NetworkEventReporter mEventReporter;
+    final NetworkEventReporter mEventReporter;
 
     public DefaultInterpreter(NetworkEventReporter mEventReporter) {
         this.mEventReporter = mEventReporter;
     }
 
     @Override
-    public Response interpretResponseStream(int requestId, NetworkInterceptor.TimeInfo timeInfo, Request request, Response response) throws IOException {
+    public Response interpretResponseStream(int requestId, NetworkInterceptor.TimeInfo timeInfo, Request request, Response response) {
         ResponseBody responseBody = response.body();
 
         final OkHttpInspectorRequest okHttpInspectorRequest = new OkHttpInspectorRequest(requestId, request.url().url(), request.method(), Utils.contentLength(request.headers()), request.url().host(), request.body());
@@ -162,12 +162,12 @@ public class DefaultInterpreter implements NetworkInterpreter {
      * Implementation of {@link NetworkEventReporter.InspectorResponse}
      */
     static class OkHttpInspectorResponse implements NetworkEventReporter.InspectorResponse {
-        int mRequestId;
-        long mStartTime;
-        long mEndTime;
-        int mStatusCode;
+        final int mRequestId;
+        final long mStartTime;
+        final long mEndTime;
+        final int mStatusCode;
         long mResponseSize;
-        @Nullable
+        @Nullable final
         ResponseBody responseBody;
 
         OkHttpInspectorResponse(int requestId, int statusCode, long responseSize, long startTime, long endTime, @Nullable ResponseBody responseBody) {
