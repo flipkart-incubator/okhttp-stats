@@ -60,7 +60,7 @@ public class NetworkInterceptorTest {
      * @throws Exception
      */
     @Test(expected = IllegalStateException.class)
-    public void testIfExceptionThrownIfInterpreterNull() throws Exception {
+    public void testIfExceptionThrownIfInterpreterNull() {
         new NetworkInterceptor.Builder()
                 .setEnabled(true)
                 .setNetworkInterpreter(null)
@@ -304,7 +304,7 @@ public class NetworkInterceptorTest {
      * Tests setter and getter of {@link com.flipkart.okhttpstats.interpreter.DefaultInterpreter.OkHttpInspectorRequest}
      */
     @Test
-    public void testOkHttpInspectorRequest() throws Exception {
+    public void testOkHttpInspectorRequest() {
 
         Uri requestUri = Uri.parse("http://www.flipkart.com");
         String requestText = "Test Request";
@@ -334,7 +334,7 @@ public class NetworkInterceptorTest {
      * Tests setter and getter of {@link com.flipkart.okhttpstats.interpreter.DefaultInterpreter.OkHttpInspectorResponse}
      */
     @Test
-    public void testOkHttpInspectorResponse() throws Exception {
+    public void testOkHttpInspectorResponse() {
 
         DefaultInterpreter.OkHttpInspectorResponse okHttpInspectorResponse = new DefaultInterpreter.OkHttpInspectorResponse(1, 200, 20, 2, 3, mock(ResponseBody.class));
 
@@ -369,7 +369,7 @@ public class NetworkInterceptorTest {
         }
 
         @Override
-        public Response proceed(Request request) throws IOException {
+        public Response proceed(Request request) {
             if (mRequest != request) {
                 throw new IllegalArgumentException(
                         "Expected " + System.identityHashCode(mRequest) +

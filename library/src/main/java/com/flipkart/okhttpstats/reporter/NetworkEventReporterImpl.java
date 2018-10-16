@@ -44,7 +44,7 @@ import okhttp3.ResponseBody;
  */
 public class NetworkEventReporterImpl implements NetworkEventReporter {
 
-    private NetworkRequestStatsHandler mNetworkRequestStatsHandler;
+    private final NetworkRequestStatsHandler mNetworkRequestStatsHandler;
 
     public NetworkEventReporterImpl(NetworkRequestStatsHandler networkRequestStatsHandler) {
         this.mNetworkRequestStatsHandler = networkRequestStatsHandler;

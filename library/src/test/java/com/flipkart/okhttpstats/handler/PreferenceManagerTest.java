@@ -30,7 +30,7 @@ public class PreferenceManagerTest {
      * @throws Exception
      */
     @Test
-    public void testSharedPreference() throws Exception {
+    public void testSharedPreference() {
 
         PreferenceManager preferenceManager = new PreferenceManager(RuntimeEnvironment.application);
 
@@ -50,7 +50,7 @@ public class PreferenceManagerTest {
      * @throws Exception
      */
     @Test
-    public void testSharedPrefForDiffNetwork() throws Exception {
+    public void testSharedPrefForDiffNetwork() {
         PreferenceManager preferenceManager = new PreferenceManager(RuntimeEnvironment.application);
         PersistentStatsHandler persistentStatsHandler = new PersistentStatsHandler(RuntimeEnvironment.application);
 

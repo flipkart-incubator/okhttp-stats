@@ -68,7 +68,7 @@ public class CountingInputStreamTest {
      * @throws IOException
      */
     @Test
-    public void testOnMark() throws IOException {
+    public void testOnMark() {
         ResponseHandler responseHandler = mock(ResponseHandler.class);
         String myString = "Hello! How are you";
         InputStream is = new ByteArrayInputStream(myString.getBytes());

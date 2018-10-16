@@ -35,7 +35,7 @@ public final class NetworkStat {
 
     private static final int MAX_QUEUE_SIZE = 5;
     private double mPeakSpeed = 0;
-    private Queue<RequestStats> mRequestStatQueue;
+    private final Queue<RequestStats> mRequestStatQueue;
     private double mTotalSize = 0;
     public double mCurrentAvgSpeed = 0;
 

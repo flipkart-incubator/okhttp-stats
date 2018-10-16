@@ -26,8 +26,6 @@ public class RequestStatsTest {
     public void testDataIntegrity() throws MalformedURLException {
         RequestStats requestStats = new RequestStats(1);
 
-        NetworkInfo networkInfo = mock(NetworkInfo.class);
-
         requestStats.url = new URL("http://www.flipkart.com");
         requestStats.requestSize = 20;
         requestStats.methodType = "POST";

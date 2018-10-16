@@ -42,7 +42,7 @@ public final class NetworkInterceptor implements Interceptor {
 
     private final NetworkInterpreter mInterpreter;
     private final AtomicInteger mNextRequestId = new AtomicInteger(1);
-    private boolean mEnabled = true;
+    private final boolean mEnabled;
 
     NetworkInterceptor(Builder builder) {
         mEnabled = builder.mEnabled;

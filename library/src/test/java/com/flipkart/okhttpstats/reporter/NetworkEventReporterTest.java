@@ -36,11 +36,10 @@ public class NetworkEventReporterTest {
      * @throws Exception
      */
     @Test
-    public void testResponseReceived() throws Exception {
+    public void testResponseReceived() {
         HandlerThread handlerThread = new HandlerThread("back");
         handlerThread.start();
         Looper looper = handlerThread.getLooper();
-        Handler handler = new Handler(looper);
         ShadowLooper shadowLooper = (ShadowLooper) ShadowExtractor.extract(looper);
 
         NetworkRequestStatsHandler networkRequestStatsHandler = mock(NetworkRequestStatsHandler.class);
@@ -63,11 +62,10 @@ public class NetworkEventReporterTest {
      * @throws Exception
      */
     @Test
-    public void testHttpExchangeError() throws Exception {
+    public void testHttpExchangeError() {
         HandlerThread handlerThread = new HandlerThread("back");
         handlerThread.start();
         Looper looper = handlerThread.getLooper();
-        Handler handler = new Handler(looper);
         ShadowLooper shadowLooper = (ShadowLooper) ShadowExtractor.extract(looper);
 
         NetworkRequestStatsHandler networkRequestStatsHandler = mock(NetworkRequestStatsHandler.class);
@@ -90,11 +88,10 @@ public class NetworkEventReporterTest {
      * @throws Exception
      */
     @Test
-    public void testResponseInputStreamError() throws Exception {
+    public void testResponseInputStreamError() {
         HandlerThread handlerThread = new HandlerThread("back");
         handlerThread.start();
         Looper looper = handlerThread.getLooper();
-        Handler handler = new Handler(looper);
         ShadowLooper shadowLooper = (ShadowLooper) ShadowExtractor.extract(looper);
 
         NetworkRequestStatsHandler networkRequestStatsHandler = mock(NetworkRequestStatsHandler.class);

@@ -30,7 +30,7 @@ import com.flipkart.okhttpstats.toolbox.HttpStatusCode;
 
 public class ForwardingResponse implements OnResponseListener {
 
-    private OnStatusCodeAwareResponseListener mOnStatusCodeAwareResponseListener;
+    private final OnStatusCodeAwareResponseListener mOnStatusCodeAwareResponseListener;
 
 
     public ForwardingResponse(OnStatusCodeAwareResponseListener onStatusCodeAwareResponseListener) {

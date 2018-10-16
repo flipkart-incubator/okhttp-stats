@@ -58,13 +58,13 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     private static final String MOBILE_NETWORK = "mobile";
     private static final String UNKNOWN_NETWORK = "unknown";
     private final PreferenceManager mPreferenceManager;
-    Set<OnResponseListener> mOnResponseListeners = new HashSet<>();
+    final Set<OnResponseListener> mOnResponseListeners = new HashSet<>();
     private int mResponseCount = 0;
     private int MAX_SIZE;
-    private WifiManager mWifiManager;
-    private NetworkStat mNetworkStat;
-    private float mCurrentAvgSpeed = 0;
-    private ConnectivityManager mConnectivityManager;
+    private final WifiManager mWifiManager;
+    private final NetworkStat mNetworkStat;
+    private float mCurrentAvgSpeed;
+    private final ConnectivityManager mConnectivityManager;
 
     public PersistentStatsHandler(Context context) {
         this.mPreferenceManager = new PreferenceManager(context);

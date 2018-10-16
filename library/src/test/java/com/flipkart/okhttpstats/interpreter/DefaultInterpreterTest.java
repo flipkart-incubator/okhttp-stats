@@ -68,7 +68,7 @@ public class DefaultInterpreterTest {
      * @throws Exception
      */
     @Test
-    public void testOnHttpExchangeErrorGetsCalled() throws Exception {
+    public void testOnHttpExchangeErrorGetsCalled() {
         NetworkEventReporter networkEventReporter = mock(NetworkEventReporter.class);
         DefaultInterpreter defaultInterpreter = new DefaultInterpreter(networkEventReporter);
 
@@ -92,7 +92,7 @@ public class DefaultInterpreterTest {
      * Tests setter and getter of {@link com.flipkart.okhttpstats.interpreter.DefaultInterpreter.OkHttpInspectorRequest}
      */
     @Test
-    public void testOkHttpInspectorRequest() throws Exception {
+    public void testOkHttpInspectorRequest() {
 
         String requestText = "Test Request";
 
@@ -121,7 +121,7 @@ public class DefaultInterpreterTest {
      * Tests setter and getter of {@link com.flipkart.okhttpstats.interpreter.DefaultInterpreter.OkHttpInspectorResponse}
      */
     @Test
-    public void testOkHttpInspectorResponse() throws Exception {
+    public void testOkHttpInspectorResponse() {
 
         ResponseBody responseBody = mock(ResponseBody.class);
         DefaultInterpreter.OkHttpInspectorResponse okHttpInspectorResponse = new DefaultInterpreter.OkHttpInspectorResponse(1, 200, 20, 2, 3, responseBody);

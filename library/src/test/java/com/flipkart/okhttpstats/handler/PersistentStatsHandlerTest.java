@@ -3,11 +3,11 @@ package com.flipkart.okhttpstats.handler;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-
 import com.flipkart.okhttpstats.BuildConfig;
 import com.flipkart.okhttpstats.model.RequestStats;
 import com.flipkart.okhttpstats.toolbox.PreferenceManager;
-
+import java.io.IOException;
+import java.net.SocketTimeoutException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,9 +18,6 @@ import org.robolectric.internal.ShadowExtractor;
 import org.robolectric.shadows.ShadowConnectivityManager;
 import org.robolectric.shadows.ShadowNetworkInfo;
 
-import java.io.IOException;
-import java.net.SocketTimeoutException;
-
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyFloat;
 import static org.mockito.Matchers.anyString;
@@ -29,7 +26,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by anirudh.r on 13/05/16 at 12:28 AM.
@@ -45,7 +41,7 @@ public class PersistentStatsHandlerTest {
      * @throws Exception
      */
     @Test
-    public void testAddListener() throws Exception {
+    public void testAddListener() {
         ConnectivityManager connectivityManager = (ConnectivityManager) RuntimeEnvironment.application.getSystemService(Context.CONNECTIVITY_SERVICE);
         ShadowConnectivityManager shadowConnectivityManager = (ShadowConnectivityManager) ShadowExtractor.extract(connectivityManager);
         ShadowNetworkInfo shadowOfActiveNetworkInfo = (ShadowNetworkInfo) ShadowExtractor.extract(connectivityManager.getActiveNetworkInfo());
@@ -68,7 +64,7 @@ public class PersistentStatsHandlerTest {
      * @throws Exception
      */
     @Test
-    public void testRemoveListener() throws Exception {
+    public void testRemoveListener() {
         OnResponseListener onResponseListener = mock(OnResponseListener.class);
 
         PersistentStatsHandler persistentStatsHandler = new PersistentStatsHandler(RuntimeEnvironment.application);
@@ -88,7 +84,7 @@ public class PersistentStatsHandlerTest {
      * @throws Exception
      */
     @Test
-    public void testOnResponseReceived() throws Exception {
+    public void testOnResponseReceived() {
         OnResponseListener onResponseListener = mock(OnResponseListener.class);
         OnResponseListener onResponseListener1 = mock(OnResponseListener.class);
 
@@ -124,7 +120,7 @@ public class PersistentStatsHandlerTest {
      * @throws Exception
      */
     @Test
-    public void testOnHttpExchangeError() throws Exception {
+    public void testOnHttpExchangeError() {
         OnResponseListener onResponseListener = mock(OnResponseListener.class);
         OnResponseListener onResponseListener1 = mock(OnResponseListener.class);
 
@@ -158,7 +154,7 @@ public class PersistentStatsHandlerTest {
      * @throws Exception
      */
     @Test
-    public void testOnInputStreamError() throws Exception {
+    public void testOnInputStreamError() {
         OnResponseListener onResponseListener = mock(OnResponseListener.class);
         OnResponseListener onResponseListener1 = mock(OnResponseListener.class);
 
@@ -187,7 +183,7 @@ public class PersistentStatsHandlerTest {
      * @throws Exception
      */
     @Test
-    public void testGetWifiSSID() throws Exception {
+    public void testGetWifiSSID() {
         ConnectivityManager connectivityManager = (ConnectivityManager) RuntimeEnvironment.application.getSystemService(Context.CONNECTIVITY_SERVICE);
         ShadowConnectivityManager shadowConnectivityManager = (ShadowConnectivityManager) ShadowExtractor.extract(connectivityManager);
         ShadowNetworkInfo shadowOfActiveNetworkInfo = (ShadowNetworkInfo) ShadowExtractor.extract(connectivityManager.getActiveNetworkInfo());
@@ -205,7 +201,7 @@ public class PersistentStatsHandlerTest {
      * @throws Exception
      */
     @Test
-    public void testGetNetworkKey() throws Exception {
+    public void testGetNetworkKey() {
         ConnectivityManager connectivityManager = (ConnectivityManager) RuntimeEnvironment.application.getSystemService(Context.CONNECTIVITY_SERVICE);
         ShadowConnectivityManager shadowConnectivityManager = (ShadowConnectivityManager) ShadowExtractor.extract(connectivityManager);
         shadowConnectivityManager.setNetworkInfo(ConnectivityManager.TYPE_WIFI, connectivityManager.getActiveNetworkInfo());
@@ -221,7 +217,7 @@ public class PersistentStatsHandlerTest {
      * @throws Exception
      */
     @Test
-    public void testSaveToSharedPreferenceCalled() throws Exception {
+    public void testSaveToSharedPreferenceCalled() {
         PreferenceManager preferenceManager = mock(PreferenceManager.class);
 
         PersistentStatsHandler persistentStatsHandler = new PersistentStatsHandler(RuntimeEnvironment.application, preferenceManager);
