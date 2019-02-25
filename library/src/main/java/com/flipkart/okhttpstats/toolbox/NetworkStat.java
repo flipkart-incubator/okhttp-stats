@@ -34,10 +34,10 @@ import java.util.Queue;
 public final class NetworkStat {
 
     private static final int MAX_QUEUE_SIZE = 5;
-    private double mPeakSpeed = 0;
     private final Queue<RequestStats> mRequestStatQueue;
-    private double mTotalSize = 0;
     public double mCurrentAvgSpeed = 0;
+    private double mPeakSpeed = 0;
+    private double mTotalSize = 0;
 
     public NetworkStat() {
         mRequestStatQueue = new LinkedList<>();
@@ -72,6 +72,8 @@ public final class NetworkStat {
             double proportion = requestStats.responseSize / mTotalSize;
             newAvgSpeed += apiSpeed * proportion;
         }
-        mCurrentAvgSpeed = newAvgSpeed;
+        if (!Double.isNaN(newAvgSpeed)) {
+            mCurrentAvgSpeed = newAvgSpeed;
+        }
     }
 }
