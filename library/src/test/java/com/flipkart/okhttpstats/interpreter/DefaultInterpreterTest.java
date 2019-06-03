@@ -51,6 +51,7 @@ public class DefaultInterpreterTest {
         Response response = new Response.Builder()
                 .code(200)
                 .request(request)
+                .message("")
                 .protocol(Protocol.HTTP_1_1)
                 .addHeader("Content-Length", "20")
                 .build();
@@ -103,7 +104,7 @@ public class DefaultInterpreterTest {
                 .addHeader("HOST", "flipkart")
                 .build();
 
-        DefaultInterpreter.OkHttpInspectorRequest okHttpInspectorRequest = new DefaultInterpreter.OkHttpInspectorRequest(1, request.url().url(), request.method(), Utils.contentLength(request.headers()), request.header("HOST"));
+        DefaultInterpreter.OkHttpInspectorRequest okHttpInspectorRequest = new DefaultInterpreter.OkHttpInspectorRequest(1, request.url().url(), request.method(), Utils.contentLength(request.headers()), request.header("HOST"), null);
 
         //assert id is same
         Assert.assertTrue(okHttpInspectorRequest.requestId() == 1);
@@ -164,6 +165,7 @@ public class DefaultInterpreterTest {
                 .request(request)
                 .protocol(Protocol.HTTP_1_1)
                 .code(200)
+                .message("")
                 .addHeader("Content-Length", "20")
                 .body(ResponseBody.create(MediaType.parse("text/plain"), "any text"))
                 .build();

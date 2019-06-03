@@ -1,6 +1,7 @@
 package com.flipkart.okhttpstats.interpreter;
 
 import android.net.Uri;
+
 import androidx.annotation.Nullable;
 
 import com.flipkart.okhttpstats.BuildConfig;
@@ -18,8 +19,10 @@ import org.robolectric.annotation.Config;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPOutputStream;
 
+import okhttp3.Call;
 import okhttp3.Connection;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
@@ -96,6 +99,7 @@ public class NetworkInterceptorTest {
                 .request(request)
                 .protocol(Protocol.HTTP_1_1)
                 .code(200)
+                .message("")
                 .addHeader("Content-Length", "20")
                 .body(ResponseBody.create(MediaType.parse("text/plain"), "any text"))
                 .build();
@@ -148,6 +152,7 @@ public class NetworkInterceptorTest {
                 .header("Content-Length", "8")
                 .protocol(Protocol.HTTP_1_1)
                 .code(200)
+                .message("")
                 .body(ResponseBody.create(MediaType.parse("text/plain"), "any text"))
                 .build();
 
@@ -194,6 +199,7 @@ public class NetworkInterceptorTest {
                 .protocol(Protocol.HTTP_1_1)
                 .addHeader("Content-Length", "20")
                 .code(200)
+                .message("")
                 .body(ResponseBody.create(MediaType.parse("text/plain"), "any text"))
                 .build();
 
@@ -316,7 +322,7 @@ public class NetworkInterceptorTest {
                 .addHeader("HOST", "flipkart")
                 .build();
 
-        DefaultInterpreter.OkHttpInspectorRequest okHttpInspectorRequest = new DefaultInterpreter.OkHttpInspectorRequest(1, request.url().url(), request.method(), Utils.contentLength(request.headers()), request.header("HOST"));
+        DefaultInterpreter.OkHttpInspectorRequest okHttpInspectorRequest = new DefaultInterpreter.OkHttpInspectorRequest(1, request.url().url(), request.method(), Utils.contentLength(request.headers()), request.header("HOST"), null);
 
         //assert id is same
         Assert.assertTrue(okHttpInspectorRequest.requestId() == 1);
@@ -381,6 +387,41 @@ public class NetworkInterceptorTest {
         @Override
         public Connection connection() {
             return mConnection;
+        }
+
+        @Override
+        public Call call() {
+            return null;
+        }
+
+        @Override
+        public int connectTimeoutMillis() {
+            return 0;
+        }
+
+        @Override
+        public Interceptor.Chain withConnectTimeout(int timeout, TimeUnit unit) {
+            return null;
+        }
+
+        @Override
+        public int readTimeoutMillis() {
+            return 0;
+        }
+
+        @Override
+        public Interceptor.Chain withReadTimeout(int timeout, TimeUnit unit) {
+            return null;
+        }
+
+        @Override
+        public int writeTimeoutMillis() {
+            return 0;
+        }
+
+        @Override
+        public Interceptor.Chain withWriteTimeout(int timeout, TimeUnit unit) {
+            return null;
         }
     }
 }
