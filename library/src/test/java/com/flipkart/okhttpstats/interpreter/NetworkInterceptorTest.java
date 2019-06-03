@@ -1,7 +1,7 @@
 package com.flipkart.okhttpstats.interpreter;
 
 import android.net.Uri;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.flipkart.okhttpstats.BuildConfig;
 import com.flipkart.okhttpstats.NetworkInterceptor;
