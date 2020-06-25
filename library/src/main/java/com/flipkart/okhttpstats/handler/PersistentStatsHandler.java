@@ -32,6 +32,7 @@ import androidx.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.flipkart.okhttpstats.model.ConnectionQuality;
 import com.flipkart.okhttpstats.model.RequestStats;
 import com.flipkart.okhttpstats.toolbox.NetworkStat;
 import com.flipkart.okhttpstats.toolbox.PreferenceManager;
@@ -65,6 +66,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
     private final NetworkStat mNetworkStat;
     private float mCurrentAvgSpeed;
     private final ConnectivityManager mConnectivityManager;
+    private ConnectionQuality mConnectionQuality;
 
     public PersistentStatsHandler(Context context) {
         this.mPreferenceManager = new PreferenceManager(context);
@@ -73,6 +75,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
         this.mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         this.mNetworkStat = new NetworkStat();
         this.mCurrentAvgSpeed = mPreferenceManager.getAverageSpeed(getNetworkKey(getActiveNetworkInfo()));
+        this.mConnectionQuality = ConnectionQuality.getConnectionQualityFromSpeed((int) mCurrentAvgSpeed);
     }
 
     @VisibleForTesting
@@ -83,6 +86,7 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
         this.mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         this.mNetworkStat = new NetworkStat();
         this.mCurrentAvgSpeed = mPreferenceManager.getAverageSpeed(getNetworkKey(getActiveNetworkInfo()));
+        this.mConnectionQuality = ConnectionQuality.getConnectionQualityFromSpeed((int) mCurrentAvgSpeed);
     }
 
     /**
@@ -137,6 +141,16 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
         return mCurrentAvgSpeed;
     }
 
+    /**
+     * Exposed to client to get the current connection quality.
+     * Possible values include: UNKNOWN, POOR, MODERATE, GOOD, EXCELLENT
+     *
+     * @return the current connection quality
+     */
+    public ConnectionQuality getConnectionQuality() {
+        return this.mConnectionQuality;
+    }
+
     @Override
     public void onResponseReceived(final RequestStats requestStats) {
         if (Utils.isLoggingEnabled) {
@@ -157,6 +171,8 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
                 //calculate the new average speed
                 double newAvgSpeed = mNetworkStat.mCurrentAvgSpeed;
                 mCurrentAvgSpeed = (float) ((mCurrentAvgSpeed + newAvgSpeed) / 2);
+                //calculate the new connection quality
+                mConnectionQuality = ConnectionQuality.getConnectionQualityFromSpeed((int) mCurrentAvgSpeed);
                 //save it in shared preference
                 String networkKey = getNetworkKey(getActiveNetworkInfo());
                 mPreferenceManager.setAverageSpeed(networkKey, mCurrentAvgSpeed);
