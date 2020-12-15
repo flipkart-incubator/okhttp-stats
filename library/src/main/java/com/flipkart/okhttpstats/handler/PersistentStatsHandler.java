@@ -96,7 +96,11 @@ public class PersistentStatsHandler implements NetworkRequestStatsHandler {
      */
     public NetworkInfo getActiveNetworkInfo() {
         if (mConnectivityManager != null) {
-            return mConnectivityManager.getActiveNetworkInfo();
+            try {
+                return mConnectivityManager.getActiveNetworkInfo();
+            } catch (SecurityException e) {
+                return null;
+            }
         }
         return null;
     }
